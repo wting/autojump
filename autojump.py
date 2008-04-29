@@ -5,7 +5,7 @@ import getopt
 from sys import argv
 import os
 
-max_keyweight=10000
+max_keyweight=2000
 
 def dicadd(dic,key,increment=1):
     dic[key]=dic.get(key,0.)+increment
