@@ -5,6 +5,12 @@ import getopt
 from sys import argv
 import os
 
+#add the following to your .bashrc:
+"""
+PROMPT_COMMAND='autojump.py -a $(pwd)'
+function j { cd "$(autojump.py $1)"; }
+"""
+
 max_keyweight=2000
 
 def dicadd(dic,key,increment=1):
