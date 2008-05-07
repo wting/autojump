@@ -19,7 +19,7 @@ def dicadd(dic,key,increment=1):
 def match(path,pattern,path_dict):
     import re
     if os.path.realpath(os.curdir)==path : return False
-    if re.search(pattern,"/".join(path.split('/')[-1-pattern.count('/'):])) is None:
+    if re.search(pattern,"/".join(path.split('/')[-1-pattern.count('/'):]),re.IGNORECASE) is None:
         return False
     else: 
         if os.path.exists(path) : return True
