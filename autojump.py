@@ -4,6 +4,12 @@ import cPickle
 import getopt
 from sys import argv
 import os
+import signal
+
+def signal_handler(arg1,arg2):
+    print "Received SIGINT, trying to continue"
+
+signal.signal(signal.SIGINT,signal_handler) #Don't break on sigint
 
 #add the following to your .bashrc:
 """
@@ -11,7 +17,7 @@ PROMPT_COMMAND='autojump.py -a $(pwd)'
 function j { cd "$(autojump.py $1)"; }
 """
 
-max_keyweight=2000
+max_keyweight=1000
 
 def dicadd(dic,key,increment=1):
     dic[key]=dic.get(key,0.)+increment
