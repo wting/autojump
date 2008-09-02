@@ -22,10 +22,10 @@ max_keyweight=1000
 def dicadd(dic,key,increment=1):
     dic[key]=dic.get(key,0.)+increment
 
-def match(path,pattern,path_dict):
+def match(path,pattern,path_dict,re_flags=0):
     import re
     if os.path.realpath(os.curdir)==path : return False
-    if re.search(pattern,"/".join(path.split('/')[-1-pattern.count('/'):]),re.IGNORECASE) is None:
+    if re.search(pattern,"/".join(path.split('/')[-1-pattern.count('/'):]),re_flags) is None:
         return False
     else: 
         if os.path.exists(path) : return True
@@ -63,10 +63,18 @@ else:
     if not args: args=['']
     dirs=path_dict.items()
     dirs.sort(key=lambda e:e[1],reverse=True)
+    import re
+    found=False
     for path,count in dirs:
-        if match(path," ".join(args),path_dict):
+        if match(path," ".join(args),path_dict): #First look for case-matching path
             print path
+            found=True
             break
+    if not found:
+        for path,count in dirs:
+            if match(path," ".join(args),path_dict,re.IGNORECASE): #Then try to ignore case
+                print path
+                break
     cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
     import shutil
     shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
