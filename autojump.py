@@ -70,6 +70,8 @@ else:
             print path
             found=True
             break
+    dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
+    dirs.sort(key=lambda e:e[1],reverse=True)
     if not found:
         for path,count in dirs:
             if match(path," ".join(args),path_dict,re.IGNORECASE): #Then try to ignore case
