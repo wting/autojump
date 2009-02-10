@@ -2,6 +2,7 @@
 post_install() {
   echo " > You need to source /etc/profile in your ~/.bash_profile our ~/.bashrc for this to work"
   echo " > Only guaranteed to work with bash"
+  echo " > man autojump for instructions."
   /bin/true
 }
 
