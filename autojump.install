@@ -1,0 +1,17 @@
+# arg 1:  the new package version
+post_install() {
+  echo " > You need to source /etc/profile in your ~/.bash_profile our ~/.bashrc for this to work"
+  echo " > Only guaranteed to work with bash"
+  /bin/true
+}
+
+# arg 1:  the new package version
+# arg 2:  the old package version
+post_upgrade() {
+  post_install $1
+  /bin/true
+}
+
+op=$1
+shift
+$op $*
