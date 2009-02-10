@@ -1,0 +1,34 @@
+.\" A sample man page. 
+.\" Contact admin@yourcompany.com to correct errors or omissions. 
+.TH autojump 1 "10 February 2009" "1.0" "A faster way to navigate your filesystem"
+.SH NAME
+autojump \- a faster way to navigate your filesystem
+.SH SYNOPSIS
+.\" Syntax goes here. 
+.B j 
+dirspec
+.P
+.B jstat
+.SH DESCRIPTION
+.B autojump
+is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line. The 
+.B jstat
+command shows you the current contents of the database. You need to work a little bit before the database becomes useable. Once your database is reasonably complete, you can "jump" to a directory by typing:
+.P
+.B j
+dirspec
+.P
+where dirspec is a few characters of the directory you want to jump to. It will jump to the most used directory whose name matches the pattern given in dirspec.
+.SH EXAMPLES
+.B j
+mp3
+.P
+could jump to /home/gwb/my\ mp3\ collection, if that is the directory in which you keep your mp3s.
+.SH BUGS
+No known bugs at this time. 
+.SH AUTHOR
+.nf
+Joel Schaerer (joel.schaerer@laposte.net)
+.fi
+.SH HISTORY
+2009 \- First version.
