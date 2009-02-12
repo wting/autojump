@@ -43,7 +43,9 @@ autojump is distributed under the terms of the GPL, version 3.
 
 INSTALLATION
 
-Manual installation of autojump is very simple: copy autojump to /usr/bin, autojump.sh to /etc/profile.d, and autojump.1 to /usr/share/man/man1. Make sure you source /etc/profile in your .bashrc, and voilà!
+Manual installation of autojump is very simple: copy autojump to /usr/bin, autojump.sh to /etc/profile.d, and autojump.1 to /usr/share/man/man1. Make sure you source /etc/profile in your .bashrc:
+
+    source /etc/profile
 
 PACKAGING
 
