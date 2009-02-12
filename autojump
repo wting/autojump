@@ -1,4 +1,6 @@
 #!/usr/bin/python
+#This code is licensed under the GPL, version 3.
+#A full copy of the license can be obtained by contacting the author at the following email adress: joel.schaerer@laposte.net
 from __future__ import division
 import cPickle
 import getopt

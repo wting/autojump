@@ -1,3 +1,6 @@
+#This code is licensed under the GPL, version 3.
+#A full copy of the license can be obtained by contacting the author at the following email adress: joel.schaerer@laposte.net
+
 # arg 1:  the new package version
 post_install() {
   echo " > You need to source /etc/profile in your ~/.bashrc for this to work"
