@@ -8,7 +8,6 @@ url="http://wiki.github.com/joelthelion/autojump"
 license=('GPL')
 depends=('bash' 'python')
 makedepends=('git')
-md5sums=() 
 install=(autojump.install)
 
 _gitroot="git://github.com/joelthelion/autojump.git"
