@@ -21,6 +21,10 @@ function j { cd "$(autojump.py $1)"; }
 
 max_keyweight=1000
 
+def uniqadd(list,key):
+    if key not in list:
+        list.append(key)
+
 def dicadd(dic,key,increment=1):
     dic[key]=dic.get(key,0.)+increment
 
@@ -35,7 +39,7 @@ def match(path,pattern,path_dict,re_flags=0):
             del path_dict[path]
             return False
 
-optlist, args = getopt.getopt(argv[1:], 'a',['stat','import']) 
+optlist, args = getopt.getopt(argv[1:], 'a',['stat','import','completion']) 
 dic_file=os.path.expanduser("~/.autojump_py")
 try:
     aj_file=open(dic_file)
@@ -58,6 +62,10 @@ elif ('--import','') in optlist:
         dicadd(path_dict,i[:-1])
     cPickle.dump(path_dict,open(dic_file,'w'),-1)
 else:
+    completion=False
+    if ('--completion','') in optlist:
+        completion=True
+        results=[]
     keyweight=sum(path_dict.values()) #Gradually forget about old directories
     if keyweight>max_keyweight:
         for k in path_dict.keys():
@@ -69,16 +77,22 @@ else:
     found=False
     for path,count in dirs:
         if match(path," ".join(args),path_dict): #First look for case-matching path
-            print path
-            found=True
-            break
+            if not completion:
+                print path
+                found=True
+                break
+            else: uniqadd(results,path)
     dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
     dirs.sort(key=lambda e:e[1],reverse=True)
     if not found:
         for path,count in dirs:
             if match(path," ".join(args),path_dict,re.IGNORECASE): #Then try to ignore case
-                print path
-                break
+                if not completion:
+                    print path
+                    break
+                else: uniqadd(results,path)
+    if completion:
+        for p in results: print p
     cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
     import shutil
     shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
