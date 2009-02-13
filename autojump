@@ -49,7 +49,7 @@ except IOError:
     path_dict={}
 
 if ('-a','') in optlist:
-    dicadd(path_dict," ".join(args))
+    dicadd(path_dict,args[-1])
     cPickle.dump(path_dict,open(dic_file,'w'),-1)
 elif ('--stat','') in optlist:
     a=path_dict.items()
@@ -58,7 +58,7 @@ elif ('--stat','') in optlist:
         print "%.1f:\t%s" % (count,path)
     print "Total key weight: %d" % sum(path_dict.values())
 elif ('--import','') in optlist:
-    for i in open(" ".join(args)).readlines():
+    for i in open(args[-1]).readlines():
         dicadd(path_dict,i[:-1])
     cPickle.dump(path_dict,open(dic_file,'w'),-1)
 else:
@@ -76,7 +76,7 @@ else:
     import re
     found=False
     for path,count in dirs:
-        if match(path," ".join(args),path_dict): #First look for case-matching path
+        if match(path,args[-1],path_dict): #First look for case-matching path
             if not completion:
                 print path
                 found=True
@@ -87,7 +87,7 @@ else:
     dirs.sort(key=lambda e:e[1],reverse=True)
     if not found:
         for path,count in dirs:
-            if match(path," ".join(args),path_dict,re.IGNORECASE): #Then try to ignore case
+            if match(path,args[-1],path_dict,re.IGNORECASE): #Then try to ignore case
                 if not completion:
                     print path
                     break
