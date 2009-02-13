@@ -81,7 +81,8 @@ else:
                 print path
                 found=True
                 break
-            else: uniqadd(results,path)
+            else: 
+                uniqadd(results,path)
     dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
     dirs.sort(key=lambda e:e[1],reverse=True)
     if not found:
@@ -90,9 +91,10 @@ else:
                 if not completion:
                     print path
                     break
-                else: uniqadd(results,path)
+                else:
+                    uniqadd(results,path)
     if completion:
-        print " ".join(results)
+        print " ".join(("%.4d)_%s" % (n,r) for n,r in enumerate(results)))
     cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
     import shutil
     shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
