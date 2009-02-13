@@ -94,7 +94,7 @@ else:
                 else:
                     uniqadd(results,path)
     if completion:
-        print " ".join(("%.4d)_%s" % (n,r) for n,r in enumerate(results)))
+        print " ".join(("%d)%s" % (n,r) for n,r in enumerate(results)))
     cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
     import shutil
     shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
