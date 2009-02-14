@@ -4,7 +4,7 @@
 from __future__ import division
 import cPickle
 import getopt
-from sys import argv
+from sys import argv,exit
 import os
 import signal
 
@@ -39,7 +39,12 @@ def match(path,pattern,path_dict,re_flags=0):
             del path_dict[path]
             return False
 
-optlist, args = getopt.getopt(argv[1:], 'a',['stat','import','completion']) 
+try:
+    optlist, args = getopt.getopt(argv[1:], 'a',['stat','import','completion']) 
+except getopt.GetoptError, e:
+    print "Unknown command line argument: %s" % e
+    exit(1)
+
 dic_file=os.path.expanduser("~/.autojump_py")
 try:
     aj_file=open(dic_file)
