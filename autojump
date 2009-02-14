@@ -62,6 +62,7 @@ elif ('--import','') in optlist:
         dicadd(path_dict,i[:-1])
     cPickle.dump(path_dict,open(dic_file,'w'),-1)
 else:
+    import re
     completion=False
     if ('--completion','') in optlist:
         completion=True
@@ -71,12 +72,12 @@ else:
         for k in path_dict.keys():
             path_dict[k]*=0.9*max_keyweight/keyweight
     if not args: args=['']
+    argument=re.sub("[0-9]*\__","",args[-1])
     dirs=path_dict.items()
     dirs.sort(key=lambda e:e[1],reverse=True)
-    import re
     found=False
     for path,count in dirs:
-        if match(path,args[-1],path_dict): #First look for case-matching path
+        if match(path,argument,path_dict): #First look for case-matching path
             if not completion:
                 print path
                 found=True
@@ -87,14 +88,14 @@ else:
     dirs.sort(key=lambda e:e[1],reverse=True)
     if not found:
         for path,count in dirs:
-            if match(path,args[-1],path_dict,re.IGNORECASE): #Then try to ignore case
+            if match(path,argument,path_dict,re.IGNORECASE): #Then try to ignore case
                 if not completion:
                     print path
                     break
                 else:
                     uniqadd(results,path)
     if completion:
-        print " ".join(("%d)%s" % (n,r) for n,r in enumerate(results)))
+        print " ".join(("%d__%s" % (n,r) for n,r in enumerate(results)))
     cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
     import shutil
     shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
