@@ -43,6 +43,16 @@ autojump is distributed under the terms of the GPL, version 3.
 
 INSTALLATION
 
+Auto Installation:
+Just run ./install.sh 
+It uses sudo, so it will probably prompt you for your root password. 
+You stiill need to do: 
+    source /etc/profile
+in your .bashrc
+If the script fails, you may need to do 
+    chmod +x install.sh
+before the first step. 
+
 Manual installation of autojump is very simple: copy autojump to /usr/bin, autojump.sh to /etc/profile.d, and autojump.1 to /usr/share/man/man1. Make sure you source /etc/profile in your .bashrc:
 
     source /etc/profile
