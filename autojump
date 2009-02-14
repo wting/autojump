@@ -64,6 +64,7 @@ elif ('--import','') in optlist:
 else:
     import re
     completion=False
+    userchoice=-1 #3 if the pattern is of the form __pattern__3, otherwise -1
     if ('--completion','') in optlist:
         completion=True
         results=[]
@@ -72,7 +73,18 @@ else:
         for k in path_dict.keys():
             path_dict[k]*=0.9*max_keyweight/keyweight
     if not args: args=['']
-    argument=re.sub("[0-9]*\__","",args[-1])
+    if completion:
+        argument=args[-1]
+        endmatch=re.search("__([0-9]+)$",argument)
+        if endmatch:
+            userchoice=int(endmatch.group(1))
+            argument=argument[2:]
+            argument=re.sub("__[0-9]+$","",argument)
+        else:
+            endmatch=re.match("__(.*)__",argument)
+            if endmatch: argument=endmatch.group(1)
+    else:
+        argument=re.sub("^__.*__[0-9]+__","",args[-1])
     dirs=path_dict.items()
     dirs.sort(key=lambda e:e[1],reverse=True)
     found=False
@@ -95,7 +107,10 @@ else:
                 else:
                     uniqadd(results,path)
     if completion:
-        print " ".join(("%d__%s" % (n,r) for n,r in enumerate(results)))
+        if userchoice!=-1:
+            print results[userchoice]
+        else:
+            print " ".join(("__%s__%d__%s" % (argument,n,r) for n,r in enumerate(results)))
     cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
     import shutil
     shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
