@@ -54,7 +54,7 @@ except IOError:
     path_dict={}
 
 if ('-a','') in optlist:
-    dicadd(path_dict," ".join(args))
+    dicadd(path_dict,args[-1])
     cPickle.dump(path_dict,open(dic_file,'w'),-1)
 elif ('--stat','') in optlist:
     a=path_dict.items()
@@ -63,11 +63,13 @@ elif ('--stat','') in optlist:
         print "%.1f:\t%s" % (count,path)
     print "Total key weight: %d" % sum(path_dict.values())
 elif ('--import','') in optlist:
-    for i in open(" ".join(args)).readlines():
+    for i in open(args[-1]).readlines():
         dicadd(path_dict,i[:-1])
     cPickle.dump(path_dict,open(dic_file,'w'),-1)
 else:
+    import re
     completion=False
+    userchoice=-1 #3 if the pattern is of the form __pattern__3, otherwise -1
     if ('--completion','') in optlist:
         completion=True
         results=[]
@@ -76,28 +78,44 @@ else:
         for k in path_dict.keys():
             path_dict[k]*=0.9*max_keyweight/keyweight
     if not args: args=['']
+    if completion:
+        argument=args[-1]
+        endmatch=re.search("__([0-9]+)$",argument)
+        if endmatch:
+            userchoice=int(endmatch.group(1))
+            argument=argument[2:]
+            argument=re.sub("__[0-9]+$","",argument)
+        else:
+            endmatch=re.match("__(.*)__",argument)
+            if endmatch: argument=endmatch.group(1)
+    else:
+        argument=re.sub("^__.*__[0-9]+__","",args[-1])
     dirs=path_dict.items()
     dirs.sort(key=lambda e:e[1],reverse=True)
-    import re
     found=False
     for path,count in dirs:
-        if match(path," ".join(args),path_dict): #First look for case-matching path
+        if match(path,argument,path_dict): #First look for case-matching path
             if not completion:
                 print path
                 found=True
                 break
-            else: uniqadd(results,path)
+            else: 
+                uniqadd(results,path)
     dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
     dirs.sort(key=lambda e:e[1],reverse=True)
     if not found:
         for path,count in dirs:
-            if match(path," ".join(args),path_dict,re.IGNORECASE): #Then try to ignore case
+            if match(path,argument,path_dict,re.IGNORECASE): #Then try to ignore case
                 if not completion:
                     print path
                     break
-                else: uniqadd(results,path)
+                else:
+                    uniqadd(results,path)
     if completion:
-        print " ".join(results)
+        if userchoice!=-1:
+            print results[userchoice]
+        else:
+            print " ".join(("__%s__%d__%s" % (argument,n,r) for n,r in enumerate(results)))
     cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
     import shutil
     shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure

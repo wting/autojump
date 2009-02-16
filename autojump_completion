@@ -1,0 +1,31 @@
+# unrar(1) completion by Guillaume Rousse <rousse@ccr.jussieu.fr>
+#
+# $Id: unrar,v 1.4 2004/07/05 23:37:47 ianmacd Exp $
+
+_autojump() 
+{
+	local cur
+
+	COMPREPLY=()
+	cur=${COMP_WORDS[1]}
+	COMPREPLY=($(autojump --completion "$cur"))
+
+#	case "$cur" in
+#	    -*)
+#		COMPREPLY=( $( compgen -W '-ad -ap -av- -c- -cfg- -cl -cu \
+#		-dh -ep -f -idp -ierr -inul -kb -o+ -o- -ow -p -p- -r -ta \
+#		-tb -tn -to -u -v -ver -vp -x -x@ -y' -- $cur ) )
+#		;;
+#	    *)
+#		if [ $COMP_CWORD -eq 1 ]; then
+#			COMPREPLY=( $( compgen -W 'e l lb lt p t v vb vt x' -- $cur ) )
+#		else
+#			_filedir '@(rar|RAR)'
+#		fi
+#		;;
+#	esac
+  
+	return 0
+
+}
+complete -F _autojump j
