@@ -31,15 +31,18 @@ def match(path,pattern,path_dict,re_flags=0):
             del path_dict[path]
             return False
 
+def save(path_dict,dic_file):
+    cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
+    import shutil
+    shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
+
 def forget(path_dict,dic_file):
     """Gradually forget about directories. Only call from the actual jump since it can take time"""
     keyweight=sum(path_dict.values()) #Gradually forget about old directories
     if keyweight>max_keyweight: 
         for k in path_dict.keys():
             path_dict[k]*=0.9*max_keyweight/keyweight
-    cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
-    import shutil
-    shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
+    save(path_dict,dic_file)
 
 def find_matches(dirs,pattern,path_dict,result_list,re_flags):
     for path,count in dirs:
@@ -63,7 +66,7 @@ except IOError:
 
 if ('-a','') in optlist:
     dicadd(path_dict,args[-1])
-    cPickle.dump(path_dict,open(dic_file,'w'),-1)
+    save(path_dict,dic_file)
 elif ('--stat','') in optlist:
     a=path_dict.items()
     a.sort(key=lambda e:e[1])

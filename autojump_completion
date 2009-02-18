@@ -2,12 +2,3 @@
 #
 # $Id: unrar,v 1.4 2004/07/05 23:37:47 ianmacd Exp $
 
-_autojump() 
-{
-	local cur
-	COMPREPLY=()
-	cur=${COMP_WORDS[1]}
-	IFS=$'\n' read -d '' -a COMPREPLY < <(autojump --completion "$cur")
-	return 0
-}
-complete -F _autojump j
