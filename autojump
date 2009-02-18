@@ -7,19 +7,11 @@ import getopt
 from sys import argv,exit
 import os
 import signal
+max_keyweight=1000
 
 def signal_handler(arg1,arg2):
     print "Received SIGINT, trying to continue"
-
 signal.signal(signal.SIGINT,signal_handler) #Don't break on sigint
-
-#add the following to your .bashrc:
-"""
-PROMPT_COMMAND='autojump.py -a $(pwd)'
-function j { cd "$(autojump.py $1)"; }
-"""
-
-max_keyweight=1000
 
 def uniqadd(list,key):
     if key not in list:
@@ -39,6 +31,22 @@ def match(path,pattern,path_dict,re_flags=0):
             del path_dict[path]
             return False
 
+def forget(path_dict,dic_file):
+    """Gradually forget about directories. Only call from the actual jump since it can take time"""
+    keyweight=sum(path_dict.values()) #Gradually forget about old directories
+    if keyweight>max_keyweight: 
+        for k in path_dict.keys():
+            path_dict[k]*=0.9*max_keyweight/keyweight
+    cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
+    import shutil
+    shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
+
+def find_matches(dirs,pattern,path_dict,result_list,re_flags):
+    for path,count in dirs:
+        if match(path,pattern,path_dict,re_flags):
+            uniqadd(result_list,path)
+
+#Main code
 try:
     optlist, args = getopt.getopt(argv[1:], 'a',['stat','import','completion']) 
 except getopt.GetoptError, e:
@@ -70,52 +78,36 @@ else:
     import re
     completion=False
     userchoice=-1 #3 if the pattern is of the form __pattern__3, otherwise -1
+    results=[]
     if ('--completion','') in optlist:
         completion=True
-        results=[]
-    keyweight=sum(path_dict.values()) #Gradually forget about old directories
-    if keyweight>max_keyweight:
-        for k in path_dict.keys():
-            path_dict[k]*=0.9*max_keyweight/keyweight
-    if not args: args=['']
-    if completion:
-        argument=args[-1]
-        endmatch=re.search("__([0-9]+)$",argument)
+    else:
+        forget(path_dict,dic_file) #gradually forget about old directories
+    if not args: pattern=""
+    else: pattern=args[-1]
+
+    if len(pattern)>0 and pattern[0]=="/": #if pattern is a full path, jump there
+        if not completion : print pattern
+    else:
+        endmatch=re.search("__([0-9]+)",pattern)
         if endmatch:
             userchoice=int(endmatch.group(1))
-            argument=argument[2:]
-            argument=re.sub("__[0-9]+$","",argument)
+            pattern=re.sub("__[0-9]+.*","",pattern)
         else:
-            endmatch=re.match("__(.*)__",argument)
-            if endmatch: argument=endmatch.group(1)
-    else:
-        argument=re.sub("^__.*__[0-9]+__","",args[-1])
-    dirs=path_dict.items()
-    dirs.sort(key=lambda e:e[1],reverse=True)
-    found=False
-    for path,count in dirs:
-        if match(path,argument,path_dict): #First look for case-matching path
-            if not completion:
-                print path
-                found=True
-                break
-            else: 
-                uniqadd(results,path)
-    dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
-    dirs.sort(key=lambda e:e[1],reverse=True)
-    if not found:
-        for path,count in dirs:
-            if match(path,argument,path_dict,re.IGNORECASE): #Then try to ignore case
-                if not completion:
-                    print path
-                    break
-                else:
-                    uniqadd(results,path)
-    if completion:
+            endmatch=re.match("(.*)__",pattern)
+            if endmatch: pattern=endmatch.group(1)
+
+        dirs=path_dict.items()
+        dirs.sort(key=lambda e:e[1],reverse=True)
+        find_matches(dirs,pattern,path_dict,results,re_flags=0)
+        dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
+        dirs.sort(key=lambda e:e[1],reverse=True)
+        if completion or not results: #if not found, try ignoring case. On completion always show all results
+            find_matches(dirs,pattern,path_dict,results,re_flags=re.IGNORECASE) 
+
         if userchoice!=-1:
-            print results[userchoice]
-        else:
-            print " ".join(("__%s__%d__%s" % (argument,n,r) for n,r in enumerate(results)))
-    cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
-    import shutil
-    shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
+            if len(results) > userchoice-1 : print results[userchoice-1]
+        elif len(results) > 1 and completion:
+            print " ".join(("%s__%d__%s" % (pattern,n+1,r) for n,r in enumerate(results[:8])))
+        else: 
+            if results : print results[0]
