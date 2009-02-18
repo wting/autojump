@@ -108,6 +108,6 @@ else:
         if userchoice!=-1:
             if len(results) > userchoice-1 : print results[userchoice-1]
         elif len(results) > 1 and completion:
-            print " ".join(("%s__%d__%s" % (pattern,n+1,r) for n,r in enumerate(results[:8])))
+            print "\n".join(("%s__%d__%s" % (pattern,n+1,r) for n,r in enumerate(results[:8])))
         else: 
             if results : print results[0]
