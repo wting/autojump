@@ -5,7 +5,8 @@ if [ $SHELL = "/bin/bash" ] && [ -n "$PS1" ]; then
     {
             local cur
             COMPREPLY=()
-            cur=${COMP_WORDS[1]}
+            unset COMP_WORDS[0] #remove "j" from the array
+            cur=${COMP_WORDS[*]}
             IFS=$'\n' read -d '' -a COMPREPLY < <(autojump --completion "$cur")
             return 0
     }
