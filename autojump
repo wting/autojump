@@ -91,7 +91,7 @@ else:
     if not args: pattern=""
     else: pattern=args[-1]
 
-    if len(pattern)>0 and pattern[0]=="/": #if pattern is a full path, jump there
+    if len(pattern)>0 and pattern[0]=="/" and os.path.exists(pattern): #if pattern is a full path, jump there
         if not completion : print pattern
     else:
         endmatch=re.search("__([0-9]+)",pattern)
