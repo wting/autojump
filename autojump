@@ -44,8 +44,10 @@ def forget(path_dict,dic_file):
             path_dict[k]*=0.9*max_keyweight/keyweight
     save(path_dict,dic_file)
 
-def find_matches(dirs,pattern,path_dict,result_list,re_flags):
+def find_matches(dirs,pattern,path_dict,result_list,re_flags,max_matches):
+    """Find max_matches paths that match the pattern, and add them to the result_list"""
     for path,count in dirs:
+        if len(result_list) >= max_matches : break
         if match(path,pattern,path_dict,re_flags):
             uniqadd(result_list,path)
 
@@ -102,11 +104,11 @@ else:
 
         dirs=path_dict.items()
         dirs.sort(key=lambda e:e[1],reverse=True)
-        find_matches(dirs,pattern,path_dict,results,re_flags=0)
+        find_matches(dirs,pattern,path_dict,results,re_flags=0,max_matches=9)
         dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
         dirs.sort(key=lambda e:e[1],reverse=True)
         if completion or not results: #if not found, try ignoring case. On completion always show all results
-            find_matches(dirs,pattern,path_dict,results,re_flags=re.IGNORECASE) 
+            find_matches(dirs,pattern,path_dict,results,re_flags=re.IGNORECASE,max_matches=9) 
 
         if userchoice!=-1:
             if len(results) > userchoice-1 : print results[userchoice-1]
