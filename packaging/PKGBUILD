@@ -27,6 +27,7 @@ build() {
 
   msg "GIT checkout done"
   install -Dm 755 autojump ${pkgdir}/usr/bin/autojump
+  install -Dm 755 autojump.sh ${pkgdir}/etc/profile.d/autojump.bash
   install -Dm 755 autojump.sh ${pkgdir}/etc/profile.d/autojump.sh
   install -Dm 644 autojump.1.gz ${pkgdir}/usr/share/man/man1/autojump.1.gz
 } 
