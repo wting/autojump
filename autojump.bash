@@ -1,6 +1,6 @@
 #This shell snippet sets the prompt command and the necessary aliases
 #Only excecute if the shell is bash and it is interactive
-if [ $SHELL = "/bin/bash" ] && [ -n "$PS1" ]; then
+if [ "$BASH_VERSION" ] && [ -n "$PS1" ]; then
     _autojump() 
     {
             local cur
