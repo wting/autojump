@@ -66,13 +66,9 @@ try:
 except IOError:
     path_dict={}
 
-if ('-a','') in optlist: #this can be done in the background
-    os.nice(10)
-    pid=os.fork()
-    if not pid:
-        os.setsid()
-        dicadd(path_dict,args[-1])
-        save(path_dict,dic_file)
+if ('-a','') in optlist:
+    dicadd(path_dict,args[-1])
+    save(path_dict,dic_file)
 elif ('--stat','') in optlist:
     a=path_dict.items()
     a.sort(key=lambda e:e[1])
