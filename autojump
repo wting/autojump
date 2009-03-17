@@ -32,9 +32,14 @@ def match(path,pattern,path_dict,re_flags=0):
             return False
 
 def save(path_dict,dic_file):
-    cPickle.dump(path_dict,open(dic_file+".tmp",'w'),-1)
-    import shutil
-    shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
+    f=open(dic_file+".tmp",'w')
+    cPickle.dump(path_dict,f,-1)
+    f.flush()
+    os.fsync(f)
+    f.close()
+    os.rename(dic_file+".tmp",dic_file) #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
+    #import shutil
+    #shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
 
 def forget(path_dict,dic_file):
     """Gradually forget about directories. Only call from the actual jump since it can take time"""
