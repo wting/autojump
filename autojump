@@ -37,7 +37,10 @@ def save(path_dict,dic_file):
     f.flush()
     os.fsync(f)
     f.close()
-    os.rename(dic_file+".tmp",dic_file) #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
+    try:
+        os.rename(dic_file+".tmp",dic_file) #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
+    except OSError:
+        pass #Fail quietly, this usually means a concurrent autojump process already did the job
     #import shutil
     #shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
 
