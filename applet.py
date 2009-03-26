@@ -33,14 +33,16 @@ class Action:
     def _unknown(self):
         print "unknown action %s for %s" % (self.name,self.path)
     def terminal(self):
-        print "terminal %s" % self.path
         if not os.fork():
             subprocess.Popen(['gnome-terminal',"--default-working-directory='%s'" % self.path]).wait()
             sys.exit()
     def nautilus(self):
-        print "nautilus %s" % self.path
         if not os.fork():
             subprocess.Popen(['nautilus',self.path]).wait()
+            sys.exit()
+    def gitk(self):
+        if not os.fork():
+            subprocess.Popen(['gitk',self.path]).wait()
             sys.exit()
 
     def __call__(self):
