@@ -34,7 +34,7 @@ class Action:
         print "unknown action %s for %s" % (self.name,self.path)
     def terminal(self):
         if not os.fork():
-            subprocess.Popen(['gnome-terminal',"--default-working-directory='%s'" % self.path]).wait()
+            subprocess.Popen(['gnome-terminal',"--default-working-directory=%s" % self.path]).wait()
             sys.exit()
     def nautilus(self):
         if not os.fork():
