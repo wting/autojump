@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import subprocess
 import cPickle
 import os.path
+import os
+import sys
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -31,8 +34,14 @@ class Action:
         print "unknown action %s for %s" % (self.name,self.path)
     def terminal(self):
         print "terminal %s" % self.path
+        if not os.fork():
+            subprocess.Popen(['gnome-terminal',"--default-working-directory='%s'" % self.path]).wait()
+            sys.exit()
     def nautilus(self):
         print "nautilus %s" % self.path
+        if not os.fork():
+            subprocess.Popen(['nautilus',self.path]).wait()
+            sys.exit()
 
     def __call__(self):
         getattr(self,self.name,self._unknown)()
