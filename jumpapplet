@@ -22,9 +22,15 @@ def action(validator,name=None):
     return wrapper
 
 #validator helper
-def has_child_dir(dirname):
+def has_child_dir(dirname,recursion=0):
     def wrapper(path):
-        return os.path.isdir(os.path.join(path,dirname))
+        k=recursion
+        ii=""
+        while k>=0:
+            if os.path.isdir(os.path.join(path,ii,dirname)): return True
+            k-=1
+            ii=os.path.join("..",ii)
+        return False
     return wrapper
 
 
@@ -90,7 +96,7 @@ def quit(sender):
 ######################################################
 #insert other actions here using the action decorator#
 ######################################################
-@action(has_child_dir(".git"))
+@action(has_child_dir(".git",recursion=3))
 def gitk(sender,path):
     if not os.fork():
         os.chdir(path)
