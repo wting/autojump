@@ -1,3 +1,6 @@
+sudo mkdir -p /usr/share/autojump/
+sudo cp icon.png /usr/share/autojump/
+sudo cp jumpapplet /usr/bin/
 sudo cp autojump /usr/bin/
 sudo cp autojump.1 /usr/share/man/man1/
 if [ -d "/etc/profile.d" ]; then

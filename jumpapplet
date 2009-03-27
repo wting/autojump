@@ -22,8 +22,6 @@ def action(validator,name=None):
     return wrapper
 
 #validator helper
-always=lambda x: True
-
 def has_child_dir(dirname):
     def wrapper(path):
         return os.path.isdir(os.path.join(path,dirname))
@@ -81,7 +79,8 @@ def popup(sender,button,activation):
     menu.popup(None,None,gtk.status_icon_position_menu,button,activation,sender)
 
 def init():
-    icon=gtk.status_icon_new_from_file("icon.png")
+    if os.path.isfile("icon.png"): icon=gtk.status_icon_new_from_file("icon.png")
+    elif os.path.isfile("/usr/share/autojump/icon.png"): icon=gtk.status_icon_new_from_file("/usr/share/autojump/icon.png")
     icon.set_visible(True)
     icon.connect("popup-menu",popup)
 
@@ -105,14 +104,14 @@ def cmake(sender,path):
         subprocess.Popen(['cmake-gui','.']).wait()
         sys.exit()
 
-@action(always)
+@action(os.path.isdir)
 def terminal(sender,path):
     if not os.fork():
         os.chdir(path)
         subprocess.Popen(['gnome-terminal']).wait()
         sys.exit()
 
-@action(always,"navigateur")
+@action(os.path.isdir,"navigateur")
 def nautilus(sender,path):
     if not os.fork():
         subprocess.Popen(['nautilus',path]).wait()
