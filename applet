@@ -1,0 +1,123 @@
+#!/usr/bin/env python
+
+import subprocess
+import cPickle
+import os.path
+import os
+import sys
+import pygtk
+pygtk.require('2.0')
+import gtk
+
+#decorator truff
+actions={}
+
+def action(validator,name=None):
+    if name is None:
+        def wrapper(action):
+            actions[action.__name__]=(action,validator)
+    else:
+        def wrapper(action):
+            actions[name]=(action,validator)
+    return wrapper
+
+#validator helper
+always=lambda x: True
+
+def has_child_dir(dirname):
+    def wrapper(path):
+        return os.path.isdir(os.path.join(path,dirname))
+    return wrapper
+
+
+def has_child_file(filename):
+    def wrapper(path):
+        return os.path.isfile(os.path.join(path,filename))
+    return wrapper
+
+#do the work
+def load_paths(filename="~/.autojump_py",maxpath=10):
+    dic_file=os.path.expanduser(filename)
+
+    try:
+        aj_file=open(dic_file)
+        path_dict=cPickle.load(aj_file)
+        aj_file.close()
+    except IOError:
+        pass
+
+    path_dict=path_dict.items()
+    path_dict.sort(key=lambda x: x[1],reverse=True)
+
+    return [path for path,score in path_dict[:maxpath]]
+
+def get_actions(path):
+    return [(name,action) for name,(action,validator) in actions.items() if validator(path)]
+
+def popup(sender,button,activation):
+    paths=load_paths()
+
+    menu=gtk.Menu()
+    for path in paths:
+        actions=get_actions(path)
+        if not actions: continue
+
+        item=gtk.MenuItem(path)
+        submenu=gtk.Menu()
+        item.set_submenu(submenu)
+        for name,action in actions:
+            subitem=gtk.MenuItem(name)
+            subitem.connect("activate",action,path)
+            submenu.append(subitem)
+        menu.append(item)
+
+    menu.append(gtk.SeparatorMenuItem())
+    
+    item=gtk.MenuItem("quit")
+    item.connect("activate",quit)
+    menu.append(item)
+
+    menu.show_all()
+    menu.popup(None,None,gtk.status_icon_position_menu,button,activation,sender)
+
+def init():
+    icon=gtk.status_icon_new_from_file("icon.png")
+    icon.set_visible(True)
+    icon.connect("popup-menu",popup)
+
+def quit(sender):
+    gtk.main_quit()
+
+######################################################
+#insert other actions here using the action decorator#
+######################################################
+@action(has_child_dir(".git"))
+def gitk(sender,path):
+    if not os.fork():
+        os.chdir(path)
+        subprocess.Popen(['gitk']).wait()
+        sys.exit()
+
+@action(has_child_file("CMakeCache.txt"),"configure")
+def cmake(sender,path):
+    if not os.fork():
+        os.chdir(path)
+        subprocess.Popen(['cmake-gui','.']).wait()
+        sys.exit()
+
+@action(always)
+def terminal(sender,path):
+    if not os.fork():
+        os.chdir(path)
+        subprocess.Popen(['gnome-terminal']).wait()
+        sys.exit()
+
+@action(always,"navigateur")
+def nautilus(sender,path):
+    if not os.fork():
+        subprocess.Popen(['nautilus',path]).wait()
+        sys.exit()
+
+if __name__=='__main__':
+    init()
+    gtk.main()
