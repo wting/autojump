@@ -155,6 +155,7 @@ def init():
     load_defaults()
     if os.path.isfile("icon.png"): icon=gtk.status_icon_new_from_file("icon.png")
     elif os.path.isfile("/usr/share/autojump/icon.png"): icon=gtk.status_icon_new_from_file("/usr/share/autojump/icon.png")
+    else: icon=gtk.status_icon_new_from_icon_name("help")
     icon.set_visible(True)
     icon.connect("popup-menu",popup)
 
