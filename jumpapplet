@@ -9,9 +9,10 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-#decorator truff
+defaults={}
 actions={}
 
+#decorator truff
 def action(validator,name=None):
     if name is None:
         def wrapper(action):
@@ -55,6 +56,33 @@ def load_paths(filename="~/.autojump_py",maxpath=10):
 
     return [path for path,score in path_dict[:maxpath]]
 
+def load_defaults(filename="~/.jumpapplet_py"):
+    print "loading settings"
+    global defaults
+    dic_file=os.path.expanduser(filename)
+
+    try:
+        aj_file=open(dic_file,'r')
+        defaults=cPickle.load(aj_file)
+        aj_file.close()
+    except IOError:
+        print "no config file"
+        pass
+
+    if not "terminal" in defaults: defaults["terminal"]="gnome-terminal"
+    if not "navigator" in defaults: defaults["navigator"]="nautilus"
+
+    create_actions()
+
+def save_defaults(filename="~/.jumpapplet_py"):
+    print "saving settings"
+    dic_file=os.path.expanduser(filename)
+
+    aj_file=open(dic_file,'w')
+    cPickle.dump(defaults,aj_file)
+    aj_file.close()
+
+
 def get_actions(path):
     return [(name,action) for name,(action,validator) in actions.items() if validator(path)]
 
@@ -77,6 +105,9 @@ def popup(sender,button,activation):
 
     menu.append(gtk.SeparatorMenuItem())
     
+    item=gtk.MenuItem("settings")
+    item.connect("activate",settings)
+    menu.append(item)
     item=gtk.MenuItem("quit")
     item.connect("activate",quit)
     menu.append(item)
@@ -84,7 +115,44 @@ def popup(sender,button,activation):
     menu.show_all()
     menu.popup(None,None,gtk.status_icon_position_menu,button,activation,sender)
 
+def settings(sender):
+    window=gtk.Window(gtk.WINDOW_TOPLEVEL)
+    window.set_title("jump applet settings")
+
+    vbox=gtk.VBox()
+    window.add(vbox)
+    def add_setting(name):
+        label=gtk.Label("%10s: " %name)
+        entry=gtk.Entry()
+        if name in defaults: entry.set_text(defaults[name])
+
+        hbox=gtk.HBox()
+        hbox.add(label)
+        hbox.add(entry)
+        vbox.add(hbox)
+        return (name,entry)
+
+    entries=[]
+    entries.append(add_setting("terminal"))
+    entries.append(add_setting("navigator"))
+    button=gtk.Button("save")
+    button.connect("clicked",save_settings,entries,window)
+    vbox.add(button)
+
+    window.show_all();
+
+def save_settings(sender,entries,window):
+    window.hide_all()
+    global defaults
+    for name,entry in entries:
+        defaults[name]=entry.get_text()
+
+    save_defaults()
+    create_actions()
+        
+
 def init():
+    load_defaults()
     if os.path.isfile("icon.png"): icon=gtk.status_icon_new_from_file("icon.png")
     elif os.path.isfile("/usr/share/autojump/icon.png"): icon=gtk.status_icon_new_from_file("/usr/share/autojump/icon.png")
     icon.set_visible(True)
@@ -96,32 +164,44 @@ def quit(sender):
 ######################################################
 #insert other actions here using the action decorator#
 ######################################################
-@action(has_child_dir(".git",recursion=3))
-def gitk(sender,path):
-    if not os.fork():
-        os.chdir(path)
-        subprocess.Popen(['gitk']).wait()
-        sys.exit()
+def create_actions():
+    global actions
+    actions={}
 
-@action(has_child_file("CMakeCache.txt"),"configure")
-def cmake(sender,path):
-    if not os.fork():
-        os.chdir(path)
-        subprocess.Popen(['cmake-gui','.']).wait()
-        sys.exit()
+    @action(has_child_dir(".git",recursion=3))
+    def gitk(sender,path):
+        if not os.fork():
+            os.chdir(path)
+            subprocess.Popen(['gitk']).wait()
+            sys.exit()
 
-@action(os.path.isdir)
-def terminal(sender,path):
-    if not os.fork():
-        os.chdir(path)
-        subprocess.Popen(['gnome-terminal']).wait()
-        sys.exit()
+    @action(has_child_file("CMakeCache.txt"),"configure")
+    def cmake(sender,path):
+        if not os.fork():
+            os.chdir(path)
+            subprocess.Popen(['cmake-gui','.']).wait()
+            sys.exit()
 
-@action(os.path.isdir,"navigateur")
-def nautilus(sender,path):
-    if not os.fork():
-        subprocess.Popen(['nautilus',path]).wait()
-        sys.exit()
+    @action(os.path.isdir)
+    def terminal(sender,path):
+        print "launch terminal '%s'" % defaults["terminal"]
+        if not os.fork():
+            try:
+                os.chdir(path)
+                subprocess.Popen([defaults["terminal"]]).wait()
+            except OSError:
+                pass
+            sys.exit()
+
+    @action(os.path.isdir)
+    def navigator(sender,path):
+        print "launch navigator '%s'" % defaults["navigator"]
+        if not os.fork():
+            try:
+                subprocess.Popen([defaults["navigator"],path]).wait()
+            except OSError:
+                pass
+            sys.exit()
 
 if __name__=='__main__':
     init()
