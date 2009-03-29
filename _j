@@ -1,0 +1,17 @@
+#compdef j
+
+cur=${words[2, -1]}
+
+ret=$(autojump --completion "${cur[*]}")
+
+#echo "complete on " ${cur[*]}
+
+if [ "$ret" != "" ]; then  # if at least one answer
+    #if [ $( echo "$ret" | wc -l ) -eq 1 ]; then # Only one answer
+    #    echo $ret
+    #else # several answers
+        for i in $(echo "$ret"); do
+            compadd -U $i
+        done
+    #fi
+fi
