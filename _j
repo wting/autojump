@@ -1,0 +1,11 @@
+#compdef j
+
+cur=${words[2, -1]}
+
+ret=$(autojump --completion "${cur[*]}")
+
+if [ "$ret" != "" ]; then  # if at least one answer
+    for i in $(echo "$ret"); do
+        compadd -U $i # add all of them as possible completion
+    done
+fi

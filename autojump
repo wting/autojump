@@ -75,8 +75,9 @@ except IOError:
     path_dict={}
 
 if ('-a','') in optlist:
-    dicadd(path_dict,args[-1])
-    save(path_dict,dic_file)
+    if(args[-1] != os.path.expanduser("~")): # home dir can be reached quickly by "cd" and may interfere with other directory
+        dicadd(path_dict,args[-1])
+        save(path_dict,dic_file)
 elif ('--stat','') in optlist:
     a=path_dict.items()
     a.sort(key=lambda e:e[1])

@@ -62,20 +62,25 @@ run::
 
  ./install.sh 
 
+or::
+ 
+ ./install.zsh
+
+depending on your shell.
 Enter your root password if it asks. 
 
 Add the line::
 
  source /etc/profile
 
-to ``~/.bashrc`` if it isn't already there. 
+to ``~/.bashrc`` or ``~/.zshrc`` if it isn't already there. 
 
 Troubleshoot
 ------------
 
 If the script fails, you may need to do::
 
- chmod +x install.sh
+ chmod +x install.(z)sh
 
 before the first step. 
 
@@ -86,7 +91,7 @@ Manual installation of autojump is very simple: copy
 - autojump.sh to /etc/profile.d,
 - autojump.1 to /usr/share/man/man1.
 
-Make sure to source ``/etc/profile`` in your ``.bashrc``::
+Make sure to source ``/etc/profile`` in your ``.bashrc`` or ``.zshrc`` ::
 
  source /etc/profile
 
