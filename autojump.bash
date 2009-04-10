@@ -9,6 +9,9 @@ _autojump()
         return 0
 }
 complete -F _autojump j
-export PROMPT_COMMAND='(autojump -a "$(pwd -P)"&)>/dev/null'
+AUTOJUMP='(autojump -a "$(pwd -P)"&)>/dev/null'
+if ! [[ $PROMPT_COMMAND =~ autojump ]]; then
+  export PROMPT_COMMAND="$PROMPT_COMMAND && $AUTOJUMP"
+fi 
 alias jumpstat="autojump --stat"
 function j { new_path="$(autojump $@)";if [ -n "$new_path" ]; then echo -e "\\033[31m${new_path}\\033[0m"; cd "$new_path";fi }
