@@ -17,6 +17,10 @@ name matches the pattern given in dirspec.
 
 Autojump supports tab completion. Try it!
 
+Pierre Gueth contributed a very nice applet for freedesktop desktops (Gnome/KDE/...). It is called "jumpapplet", try it!
+
+Thanks to Simon Marache-Francisco's outstanding work, autojump now works perfectly with zsh.
+
 Examples
 ========
 
@@ -45,7 +49,9 @@ Author
 ======
 
 Joel Schaerer (joel.schaerer (at) laposte.net)
-Install script written by Daniel Jackoway
+Autojump applet written by Pierre Gueth
+Zsh support: Simon Marache-Francisco
+Install script written by Daniel Jackoway and others.
 
 License
 =======
