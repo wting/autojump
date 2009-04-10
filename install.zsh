@@ -11,7 +11,7 @@ sudo cp autojump /usr/bin/
 sudo cp autojump.1 /usr/share/man/man1/
 
 # autocompletion file in the first directory of the FPATH variable
-cp _j $(echo $FPATH | cut -d":" -f 1)
+sudo cp _j $(echo $FPATH | cut -d":" -f 1)
 
 
 if [ -d "/etc/profile.d" ]; then
