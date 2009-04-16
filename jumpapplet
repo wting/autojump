@@ -56,7 +56,7 @@ def load_paths(filename="~/.autojump_py",maxpath=10):
 
     return [path for path,score in path_dict[:maxpath]]
 
-def load_defaults(filename="~/.jumpapplet_py"):
+def load_settings_file(filename="~/.jumpapplet_py"):
     print "loading settings"
     global defaults
     dic_file=os.path.expanduser(filename)
@@ -71,10 +71,12 @@ def load_defaults(filename="~/.jumpapplet_py"):
 
     if not "terminal" in defaults: defaults["terminal"]="gnome-terminal"
     if not "navigator" in defaults: defaults["navigator"]="nautilus"
+    if not "maxpath" in defaults: defaults["maxpath"]=15
+    if not "invert" in defaults: defaults["invert"]=False
 
     create_actions()
 
-def save_defaults(filename="~/.jumpapplet_py"):
+def save_settings_file(filename="~/.jumpapplet_py"):
     print "saving settings"
     dic_file=os.path.expanduser(filename)
 
@@ -87,30 +89,53 @@ def get_actions(path):
     return [(name,action) for name,(action,validator) in actions.items() if validator(path)]
 
 def popup(sender,button,activation):
-    paths=load_paths()
+    paths=load_paths(maxpath=defaults["maxpath"])
 
     menu=gtk.Menu()
-    for path in paths:
-        actions=get_actions(path)
-        if not actions: continue
-
-        item=gtk.MenuItem(path)
-        submenu=gtk.Menu()
-        item.set_submenu(submenu)
-        for name,action in actions:
-            subitem=gtk.MenuItem(name)
-            subitem.connect("activate",action,path)
-            submenu.append(subitem)
+    if defaults["invert"]:
+        item=gtk.MenuItem("quit")
+        item.connect("activate",quit)
+        menu.append(item)
+        item=gtk.MenuItem("settings")
+        item.connect("activate",settings)
         menu.append(item)
 
-    menu.append(gtk.SeparatorMenuItem())
-    
-    item=gtk.MenuItem("settings")
-    item.connect("activate",settings)
-    menu.append(item)
-    item=gtk.MenuItem("quit")
-    item.connect("activate",quit)
-    menu.append(item)
+        menu.append(gtk.SeparatorMenuItem())
+        
+        for path in reversed(paths):
+            actions=get_actions(path)
+            if not actions: continue
+
+            item=gtk.MenuItem(path)
+            submenu=gtk.Menu()
+            item.set_submenu(submenu)
+            for name,action in actions:
+                subitem=gtk.MenuItem(name)
+                subitem.connect("activate",action,path)
+                submenu.append(subitem)
+            menu.append(item)
+    else:
+        for path in paths:
+            actions=get_actions(path)
+            if not actions: continue
+
+            item=gtk.MenuItem(path)
+            submenu=gtk.Menu()
+            item.set_submenu(submenu)
+            for name,action in actions:
+                subitem=gtk.MenuItem(name)
+                subitem.connect("activate",action,path)
+                submenu.append(subitem)
+            menu.append(item)
+
+        menu.append(gtk.SeparatorMenuItem())
+        
+        item=gtk.MenuItem("settings")
+        item.connect("activate",settings)
+        menu.append(item)
+        item=gtk.MenuItem("quit")
+        item.connect("activate",quit)
+        menu.append(item)
 
     menu.show_all()
     menu.popup(None,None,gtk.status_icon_position_menu,button,activation,sender)
@@ -119,25 +144,48 @@ def settings(sender):
     window=gtk.Window(gtk.WINDOW_TOPLEVEL)
     window.set_title("jump applet settings")
 
-    vbox=gtk.VBox()
+    vbox=gtk.Table(5,2)
     window.add(vbox)
-    def add_setting(name):
+    def add_string_setting(name,nsettings):
         label=gtk.Label("%10s: " %name)
         entry=gtk.Entry()
         if name in defaults: entry.set_text(defaults[name])
 
-        hbox=gtk.HBox()
-        hbox.add(label)
-        hbox.add(entry)
-        vbox.add(hbox)
+        vbox.attach(label,0,1,nsettings,nsettings+1)
+        vbox.attach(entry,1,2,nsettings,nsettings+1)
+        nsettings+=1
+        return (name,entry)
+
+    def add_integer_setting(name,nsettings):
+        label=gtk.Label("%10s: " %name)
+        entry=gtk.SpinButton()
+        entry.set_range(5,35)
+        entry.set_numeric(True)
+        entry.set_increments(1,5)
+        entry.set_snap_to_ticks(True)
+        if name in defaults: entry.set_value(defaults[name])
+
+        vbox.attach(label,0,1,nsettings,nsettings+1)
+        vbox.attach(entry,1,2,nsettings,nsettings+1)
+        nsettings+=1
+        return (name,entry)
+
+    def add_bool_setting(name,nsettings):
+        entry=gtk.CheckButton(label=name,use_underline=False)
+        if name in defaults: entry.set_active(defaults[name])
+
+        vbox.attach(entry,0,2,nsettings,nsettings+1)
+        nsettings+=1
         return (name,entry)
 
     entries=[]
-    entries.append(add_setting("terminal"))
-    entries.append(add_setting("navigator"))
+    entries.append(add_string_setting("terminal",0))
+    entries.append(add_string_setting("navigator",1))
+    entries.append(add_integer_setting("maxpath",2))
+    entries.append(add_bool_setting("invert",3))
     button=gtk.Button("save")
     button.connect("clicked",save_settings,entries,window)
-    vbox.add(button)
+    vbox.attach(button,0,2,4,5)
 
     window.show_all();
 
@@ -145,14 +193,19 @@ def save_settings(sender,entries,window):
     window.hide_all()
     global defaults
     for name,entry in entries:
-        defaults[name]=entry.get_text()
+        try:
+            defaults[name]=int(entry.get_text())
+        except (ValueError,AttributeError):
+            try:
+                defaults[name]=entry.get_active()
+            except AttributeError:
+                defaults[name]=entry.get_text()
 
-    save_defaults()
+    save_settings_file()
     create_actions()
-        
 
 def init():
-    load_defaults()
+    load_settings_file()
     if os.path.isfile("icon.png"): icon=gtk.status_icon_new_from_file("icon.png")
     elif os.path.isfile("/usr/share/autojump/icon.png"): icon=gtk.status_icon_new_from_file("/usr/share/autojump/icon.png")
     else: icon=gtk.status_icon_new_from_icon_name("help")
