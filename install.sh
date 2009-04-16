@@ -7,6 +7,8 @@ if [ -d "/etc/profile.d" ]; then
     sudo cp autojump.bash /etc/profile.d/
     sudo cp autojump.sh /etc/profile.d/
     echo "Remember to add the line" 
+    echo "    source /etc/profile.d/autojump.bash"
+    echo "or"
     echo "    source /etc/profile"
     echo "to your ~/.bashrc if it's not there already"
     # TODO intelligently source /etc/profile for them if the line isn't already in their .bashrc
