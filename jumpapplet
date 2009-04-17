@@ -253,8 +253,11 @@ def create_actions():
         print "launch terminal '%s'" % defaults["terminal"]
         if not os.fork():
             try:
-                os.chdir(path)
-                subprocess.Popen([defaults["terminal"]]).wait()
+                if defaults["terminal"]=="konsole":
+                    subprocess.Popen([defaults["terminal"],"--workdir=%s"%path]).wait()
+                else:
+                    os.chdir(path)
+                    subprocess.Popen([defaults["terminal"]]).wait()
             except OSError:
                 pass
             sys.exit()
