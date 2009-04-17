@@ -73,6 +73,7 @@ def load_settings_file(filename="~/.jumpapplet_py"):
     if not "navigator" in defaults: defaults["navigator"]="nautilus"
     if not "maxpath" in defaults: defaults["maxpath"]=15
     if not "invert" in defaults: defaults["invert"]=False
+    if not "collapse" in defaults: defaults["collapse"]=True
 
     create_actions()
 
@@ -91,6 +92,14 @@ def get_actions(path):
 def popup(sender,button,activation):
     paths=load_paths(maxpath=defaults["maxpath"])
 
+    if defaults["collapse"]:
+        def collapse_home(path):
+            return path.replace(os.path.expanduser('~'),"~")
+    else:
+        def collapse_home(path):
+            return path
+
+
     menu=gtk.Menu()
     if defaults["invert"]:
         item=gtk.MenuItem("quit")
@@ -106,7 +115,7 @@ def popup(sender,button,activation):
             actions=get_actions(path)
             if not actions: continue
 
-            item=gtk.MenuItem(path)
+            item=gtk.MenuItem(collapse_home(path),use_underline=False)
             submenu=gtk.Menu()
             item.set_submenu(submenu)
             for name,action in actions:
@@ -119,7 +128,7 @@ def popup(sender,button,activation):
             actions=get_actions(path)
             if not actions: continue
 
-            item=gtk.MenuItem(path)
+            item=gtk.MenuItem(collapse_home(path),use_underline=False)
             submenu=gtk.Menu()
             item.set_submenu(submenu)
             for name,action in actions:
@@ -143,21 +152,25 @@ def popup(sender,button,activation):
 def settings(sender):
     window=gtk.Window(gtk.WINDOW_TOPLEVEL)
     window.set_title("jump applet settings")
+    window.set_border_width(3)
+    window.set_resizable(False)
 
-    vbox=gtk.Table(5,2)
+    vbox=gtk.Table(6,2)
+    vbox.set_row_spacings(3)
     window.add(vbox)
-    def add_string_setting(name,nsettings):
-        label=gtk.Label("%10s: " %name)
+    def add_string_setting(name,label,nsettings):
+        label=gtk.Label(label+' ')
+        label.set_alignment(1.,.5)
         entry=gtk.Entry()
         if name in defaults: entry.set_text(defaults[name])
 
         vbox.attach(label,0,1,nsettings,nsettings+1)
         vbox.attach(entry,1,2,nsettings,nsettings+1)
-        nsettings+=1
         return (name,entry)
 
-    def add_integer_setting(name,nsettings):
-        label=gtk.Label("%10s: " %name)
+    def add_integer_setting(name,label,nsettings):
+        label=gtk.Label(label+' ')
+        label.set_alignment(1.,.5)
         entry=gtk.SpinButton()
         entry.set_range(5,35)
         entry.set_numeric(True)
@@ -167,25 +180,24 @@ def settings(sender):
 
         vbox.attach(label,0,1,nsettings,nsettings+1)
         vbox.attach(entry,1,2,nsettings,nsettings+1)
-        nsettings+=1
         return (name,entry)
 
-    def add_bool_setting(name,nsettings):
-        entry=gtk.CheckButton(label=name,use_underline=False)
+    def add_bool_setting(name,label,nsettings):
+        entry=gtk.CheckButton(label=label,use_underline=False)
         if name in defaults: entry.set_active(defaults[name])
 
         vbox.attach(entry,0,2,nsettings,nsettings+1)
-        nsettings+=1
         return (name,entry)
 
     entries=[]
-    entries.append(add_string_setting("terminal",0))
-    entries.append(add_string_setting("navigator",1))
-    entries.append(add_integer_setting("maxpath",2))
-    entries.append(add_bool_setting("invert",3))
+    entries.append(add_string_setting("terminal","terminal program",0))
+    entries.append(add_string_setting("navigator","navigator program",1))
+    entries.append(add_integer_setting("maxpath","number of directories",2))
+    entries.append(add_bool_setting("invert","list directories in reverse order",3))
+    entries.append(add_bool_setting("collapse","collapse home directory to ~",4))
     button=gtk.Button("save")
     button.connect("clicked",save_settings,entries,window)
-    vbox.attach(button,0,2,4,5)
+    vbox.attach(button,0,2,5,6)
 
     window.show_all();
 
