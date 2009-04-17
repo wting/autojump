@@ -1,6 +1,9 @@
-function preexec() {
+function autojump_preexec() {
     (autojump -a "$(pwd -P)"&)>/dev/null
 }
+
+typeset -ga preexec_functions
+preexec_functions+=autojump_preexec
 
 alias jumpstat="autojump --stat"
 
