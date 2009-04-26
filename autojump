@@ -8,6 +8,7 @@ from sys import argv,exit
 import os
 import signal
 max_keyweight=1000
+dead_dirs=False #global variable (evil ;-) to know if we should save the dict at the end
 
 def signal_handler(arg1,arg2):
     print "Received SIGINT, trying to continue"
@@ -29,6 +30,7 @@ def match(path,pattern,path_dict,re_flags=0):
         if os.path.exists(path) : return True
         else: #clean up dead directories
             del path_dict[path]
+            dead_dirs=True
             return False
 
 def save(path_dict,dic_file):
@@ -118,6 +120,8 @@ else:
         dirs.sort(key=lambda e:e[1],reverse=True)
         if completion or not results: #if not found, try ignoring case. On completion always show all results
             find_matches(dirs,pattern,path_dict,results,re_flags=re.IGNORECASE,max_matches=9) 
+        if dead_dirs: #save the dict if there were some non-existent directories in the database
+            save(path_dict,dic_file)
 
         if userchoice!=-1:
             if len(results) > userchoice-1 : print results[userchoice-1]
