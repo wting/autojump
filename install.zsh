@@ -18,7 +18,7 @@ if [ -d "/etc/profile.d" ]; then
     sudo cp autojump.zsh /etc/profile.d/
     sudo cp autojump.sh /etc/profile.d/
     echo "Remember to add the line" 
-    echo "    source /etc/profile.d/autojump.bash"
+    echo "    source /etc/profile.d/autojump.zsh"
     echo "or"
     echo "    source /etc/profile"
     echo "to your ~/.zshrc if it's not there already"
