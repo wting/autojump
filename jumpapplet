@@ -64,13 +64,12 @@ def load_paths(filename="~/.autojump_py",maxpath=10):
         aj_file=open(dic_file)
         path_dict=cPickle.load(aj_file)
         aj_file.close()
+        path_dict=path_dict.items()
+        path_dict.sort(key=lambda x: x[1],reverse=True)
+
+        return [path for path,score in path_dict[:maxpath]]
     except IOError:
-        pass
-
-    path_dict=path_dict.items()
-    path_dict.sort(key=lambda x: x[1],reverse=True)
-
-    return [path for path,score in path_dict[:maxpath]]
+        return []
 
 def load_settings_file(filename="~/.jumpapplet_py"):
     print "loading settings"
