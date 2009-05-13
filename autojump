@@ -22,8 +22,7 @@ from sys import argv,exit
 import os
 import signal
 max_keyweight=1000
-global dead_dirs #global variable (evil ;-) to know if we should save the dict at the end
-dead_dirs=False
+dead_dirs=False #global variable (evil ;-) to know if we should save the dict at the end
 
 def signal_handler(arg1,arg2):
     print "Received SIGINT, trying to continue"
@@ -45,6 +44,7 @@ def match(path,pattern,path_dict,re_flags=0):
         if os.path.exists(path) : return True
         else: #clean up dead directories
             del path_dict[path]
+            global dead_dirs
             dead_dirs=True
             return False
 
