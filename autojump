@@ -22,7 +22,8 @@ from sys import argv,exit
 import os
 import signal
 max_keyweight=1000
-dead_dirs=False #global variable (evil ;-) to know if we should save the dict at the end
+global dead_dirs #global variable (evil ;-) to know if we should save the dict at the end
+dead_dirs=False
 
 def signal_handler(arg1,arg2):
     print "Received SIGINT, trying to continue"
