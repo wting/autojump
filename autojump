@@ -135,7 +135,7 @@ else:
         dirs.sort(key=lambda e:e[1],reverse=True)
         if completion or not results: #if not found, try ignoring case. On completion always show all results
             find_matches(dirs,pattern,path_dict,results,re_flags=re.IGNORECASE,max_matches=9) 
-        if dead_dirs: #save the dict if there were some non-existent directories in the database
+        if dead_dirs and not completion: #save the dict if there were some non-existent directories in the database
             save(path_dict,dic_file)
 
         if userchoice!=-1:
