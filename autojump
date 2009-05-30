@@ -58,8 +58,6 @@ def save(path_dict,dic_file):
         os.rename(dic_file+".tmp",dic_file) #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
     except OSError:
         pass #Fail quietly, this usually means a concurrent autojump process already did the job
-    #import shutil
-    #shutil.copy(dic_file+".tmp",dic_file) #cPickle.dump doesn't seem to be atomic, so this is more secure
 
 def forget(path_dict,dic_file):
     """Gradually forget about directories. Only call from the actual jump since it can take time"""
@@ -67,7 +65,7 @@ def forget(path_dict,dic_file):
     if keyweight>max_keyweight: 
         for k in path_dict.keys():
             path_dict[k]*=0.9*max_keyweight/keyweight
-    save(path_dict,dic_file)
+        save(path_dict,dic_file)
 
 def find_matches(dirs,pattern,path_dict,result_list,re_flags,max_matches):
     """Find max_matches paths that match the pattern, and add them to the result_list"""
