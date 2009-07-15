@@ -15,7 +15,7 @@ autojump is a faster way to navigate your filesystem. It works by maintaining a 
 where dirspec is a few characters of the directory you want to jump to. It will jump to the most used  directory  whose
 name matches the pattern given in dirspec.
 
-Autojump supports tab completion. Try it!
+Autojump supports tab completion. Try it! Autojump should be compatible with bash 4. Please report any problems!
 
 Pierre Gueth contributed a very nice applet for freedesktop desktops (Gnome/KDE/...). It is called "jumpapplet", try it!
 
