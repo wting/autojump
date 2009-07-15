@@ -125,9 +125,13 @@ Uninstallation
 ==============
 
 To completely remove autojump you should remove these files:
+
 ``/etc/profile.d/autojump.bash``
+
 ``/etc/profile.d/autojump.sh``
+
 ``/etc/profile.d/autojump.zsh``
-Remove any mention of autojump in your ``.bashrc`` or ``.zshrc``, then in currently running shells do:``source /etc/profile``
+
+Remove any mention of autojump in your ``.bashrc`` or ``.zshrc``, then in currently running shells do:``source /etc/profile``.
 
 If you keep getting ``autojump: command not found`` at the Bash prompt, do:``unset PROMPT_COMMAND``. You can also restart your shell.
