@@ -120,3 +120,14 @@ For now gcarrier and I have packaged autojump for Arch Linux. It is available in
  pacman -S autojump
 
 I would be very interested by packages for other distros. If you think you can help me with the packaging, please contact me!
+
+Uninstallation
+==============
+
+To completely remove autojump you should remove these files:
+ /etc/profile.d/autojump.bash
+ /etc/profile.d/autojump.sh
+ /etc/profile.d/autojump.zsh
+Remove any mention of autojump in your ``.bashrc`` or ``.zshrc``, then in currently running shells do:``source /etc/profile``
+
+If you keep getting ``autojump: command not found`` at the Bash prompt, do:``unset PROMPT_COMMAND``. You can also restart your shell.
