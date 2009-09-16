@@ -147,9 +147,11 @@ else:
         if dead_dirs and not completion: #save the dict if there were some non-existent directories in the database
             save(path_dict,dic_file)
 
+        if completion: quotes='"'
+        else: quotes=""
+
         if userchoice!=-1:
-            if len(results) > userchoice-1 : print results[userchoice-1]
+            if len(results) > userchoice-1 : print quotes+results[userchoice-1]+quotes
         elif len(results) > 1 and completion:
             print "\n".join(("%s__%d__%s" % (pattern,n+1,r) for n,r in enumerate(results[:8])))
-        else: 
-            if results : print results[0]
+        elif results: print quotes+results[0]+quotes
