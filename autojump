@@ -58,6 +58,10 @@ def save(path_dict,dic_file):
         os.rename(dic_file+".tmp",dic_file) #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
     except OSError:
         pass #Fail quietly, this usually means a concurrent autojump process already did the job
+    import time #backup file
+    if not os.path.exists(dic_file+".bak") or time.time()-os.path.getmtime(dic_file+".bak")>86400:
+        import shutil
+        shutil.copy(dic_file,dic_file+".bak")
 
 def forget(path_dict,dic_file):
     """Gradually forget about directories. Only call from the actual jump since it can take time"""
