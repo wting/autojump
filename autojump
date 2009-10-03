@@ -18,7 +18,7 @@
 from __future__ import division
 import cPickle
 import getopt
-from sys import argv,exit
+from sys import argv,exit,stderr
 import os
 import signal
 max_keyweight=1000
@@ -84,8 +84,9 @@ def open_dic(dic_file,error_recovery=False):
         path_dict=cPickle.load(aj_file)
         aj_file.close()
         return path_dict
-    except (IOError,EOFError):
+    except (IOError,EOFError,cPickle.UnpicklingError):
         if not error_recovery and os.path.exists(dic_file+".bak"):
+            print >> stderr, 'Problem with autojump database, trying to recover from backup...'
             import shutil
             shutil.copy(dic_file+".bak",dic_file)
             return open_dic(dic_file,True)
