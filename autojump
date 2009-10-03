@@ -93,7 +93,7 @@ def open_dic(dic_file,error_recovery=False):
 
 #Main code
 try:
-    optlist, args = getopt.getopt(argv[1:], 'a',['stat','import','completion']) 
+    optlist, args = getopt.getopt(argv[1:], 'a',['stat','import','completion', 'bash']) 
 except getopt.GetoptError, e:
     print "Unknown command line argument: %s" % e
     exit(1)
@@ -147,7 +147,7 @@ else:
         if dead_dirs and not completion: #save the dict if there were some non-existent directories in the database
             save(path_dict,dic_file)
 
-        if completion: quotes='"'
+        if completion and ('--bash', '') in optlist: quotes='"'
         else: quotes=""
 
         if userchoice!=-1:

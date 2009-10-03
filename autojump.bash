@@ -21,7 +21,7 @@ _autojump()
         COMPREPLY=()
         unset COMP_WORDS[0] #remove "j" from the array
         cur=${COMP_WORDS[*]}
-        IFS=$'\n' read -d '' -a COMPREPLY < <(autojump --completion "$cur")
+        IFS=$'\n' read -d '' -a COMPREPLY < <(autojump --bash --completion "$cur")
         return 0
 }
 complete -F _autojump j
