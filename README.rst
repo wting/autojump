@@ -8,7 +8,7 @@ A ``cd`` command that learns
 
 One of the most used shell commands is ``cd``. A quick survey among my friends revealed that between 10 and 20% of all commands they type are actually ``cd`` commands! Unfortunately, jumping from one part of your system to another with ``cd`` requires to enter almost the full path, which isn't very practical and requires a lot of keystrokes.
 
-autojump is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line. The jumpstat command shows you the current contents of the database. You need to work a little bit  before  the  database becomes useable. Once your database is reasonably complete, you can "jump" to a directory by typing::
+autojump is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line. The jumpstat command shows you the current contents of the database. You need to work a little bit before the database becomes usable. Autojump will listen and rank your 'cd' commands by frequency. Once your database is reasonably complete, you can "jump" to a commonly "cd"ed directory by typing:
 
  j dirspec
 
