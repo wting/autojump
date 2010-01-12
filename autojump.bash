@@ -25,7 +25,7 @@ _autojump()
         return 0
 }
 complete -F _autojump j
-AUTOJUMP='(autojump -a "$(pwd -P)"&)>/dev/null'
+AUTOJUMP='(autojump -a "$(pwd -P)"&)>/dev/null 2>>${HOME}/.autojump_errors'
 if [[ ! $PROMPT_COMMAND =~ autojump ]]; then
   export PROMPT_COMMAND="${PROMPT_COMMAND:-:} && $AUTOJUMP"
 fi 
