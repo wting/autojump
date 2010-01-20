@@ -15,7 +15,7 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 function autojump_preexec() {
-    (autojump -a "$(pwd -P)"&)>/dev/null 2>>|${HOME}/.autojump_errors
+    { (autojump -a "$(pwd -P)"&)>/dev/null 2>>|${HOME}/.autojump_errors ; } 2>/dev/null
 }
 
 typeset -ga preexec_functions
