@@ -36,6 +36,11 @@ else
 	    echo "" >> ~/.bashrc
 	    echo "#autojump" >> ~/.bashrc
 	    cat autojump.bash >> ~/.bashrc
+            OS=`uname`
+            if [ $OS == 'Darwin' ]; then
+              echo "# Get the aliases and functions"
+              echo "\nif [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
+            fi
 	else
 	    echo "Then you need to put autojump.sh, or the code from it, somewhere where it will get read. Good luck!"
 	fi
