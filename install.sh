@@ -38,7 +38,7 @@ else
 	    cat autojump.bash >> ~/.bashrc
             OS=`uname`
             if [ $OS == 'Darwin' ]; then
-              echo "# Get the aliases and functions"
+              echo "# Get the aliases and functions" 
               echo "\nif [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
             fi
 	else
