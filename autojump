@@ -35,16 +35,21 @@ def uniqadd(list,key):
 def dicadd(dic,key,increment=1):
     dic[key]=dic.get(key,0.)+increment
 
-def match(path,pattern,path_dict,ignore_case=False):
+def match(path,pattern,path_dict,ignore_case=False,only_end=False):
     try:
         if os.path.realpath(os.curdir)==path : return False
     except OSError: #sometimes the current path doesn't exist anymore. In that case, jump if possible.
         pass
-    match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
+    if only_end:
+        match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
+    else:
+        match_string = path
     #import re
     #if re.search(pattern,match_string),re.IGNORECASE if ignore_case else 0) is None:
-    match=match_string.lower().find(pattern.lower()) == -1 if ignore_case else match_string.find(pattern) == -1
-    if match:
+    match=(match_string.lower().find(pattern.lower()) != -1)\
+            if ignore_case\
+            else (match_string.find(pattern) != -1)
+    if not match:
         return False
     else: 
         if os.path.exists(path) : return True
@@ -77,11 +82,12 @@ def forget(path_dict,dic_file):
             path_dict[k]*=0.9*max_keyweight/keyweight
         save(path_dict,dic_file)
 
-def find_matches(dirs,pattern,path_dict,result_list,ignore_case,max_matches):
+def find_matches(dirs,patterns,path_dict,result_list,ignore_case,max_matches):
     """Find max_matches paths that match the pattern, and add them to the result_list"""
     for path,count in dirs:
         if len(result_list) >= max_matches : break
-        if match(path,pattern,path_dict,ignore_case):
+        #For the last pattern, only match the end of the pattern
+        if all(match(path,p,path_dict,ignore_case, only_end = (n==len(patterns)-1)) for n,p in enumerate(patterns)):
             uniqadd(result_list,path)
 
 def open_dic(dic_file,error_recovery=False):
@@ -130,27 +136,32 @@ else:
         completion=True
     else:
         forget(path_dict,dic_file) #gradually forget about old directories
-    if not args: pattern=""
-    else: pattern=args[-1]
+    if not args: patterns=[""]
+    else: patterns=args
 
-    if len(pattern)>0 and pattern[0]=="/" and os.path.exists(pattern): #if pattern is a full path, jump there
+    #if pattern is a full path, jump there
+    if len(patterns) == 1 and\
+            len(patterns[0])>0 and\
+            patterns[0][0]=="/" and\
+            os.path.exists(patterns[0]): 
         if not completion : print pattern
     else:
-        endmatch=re.search("__([0-9]+)",pattern)
+        endmatch=re.search("__([0-9]+)",patterns[-1])
         if endmatch:
             userchoice=int(endmatch.group(1))
-            pattern=re.sub("__[0-9]+.*","",pattern)
+            patterns[-1]=re.sub("__[0-9]+.*","",patterns[-1])
         else:
-            endmatch=re.match("(.*)__",pattern)
-            if endmatch: pattern=endmatch.group(1)
+            endmatch=re.match("(.*)__",patterns[-1])
+            if endmatch: patterns[-1]=endmatch.group(1)
 
         dirs=path_dict.items()
         dirs.sort(key=lambda e:e[1],reverse=True)
-        find_matches(dirs,pattern,path_dict,results,False,max_matches=9)
+        max_matches = 9 if completion else 1
+        find_matches(dirs,patterns,path_dict,results,False,max_matches)
         dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
         dirs.sort(key=lambda e:e[1],reverse=True)
         if completion or not results: #if not found, try ignoring case. On completion always show all results
-            find_matches(dirs,pattern,path_dict,results,ignore_case=True,max_matches=9) 
+            find_matches(dirs,patterns,path_dict,results,ignore_case=True,max_matches=max_matches) 
         if dead_dirs and not completion: #save the dict if there were some non-existent directories in the database
             save(path_dict,dic_file)
 
@@ -160,5 +171,5 @@ else:
         if userchoice!=-1:
             if len(results) > userchoice-1 : print quotes+results[userchoice-1]+quotes
         elif len(results) > 1 and completion:
-            print "\n".join(("%s__%d__%s" % (pattern,n+1,r) for n,r in enumerate(results[:8])))
+            print "\n".join(("%s__%d__%s" % (" ".join(patterns),n+1,r) for n,r in enumerate(results[:8])))
         elif results: print quotes+results[0]+quotes
