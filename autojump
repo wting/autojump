@@ -36,12 +36,14 @@ def dicadd(dic,key,increment=1):
     dic[key]=dic.get(key,0.)+increment
 
 def match(path,pattern,path_dict,re_flags=0):
-    import re
     try:
         if os.path.realpath(os.curdir)==path : return False
     except OSError: #sometimes the current path doesn't exist anymore. In that case, jump if possible.
         pass
-    if re.search(pattern,"/".join(path.split('/')[-1-pattern.count('/'):]),re_flags) is None:
+    match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
+    #import re
+    #if re.search(pattern,match_string),re_flags) is None:
+    if match_string.find(pattern) == -1:
         return False
     else: 
         if os.path.exists(path) : return True
