@@ -105,7 +105,7 @@ except getopt.GetoptError, e:
 dic_file=os.path.expanduser("~/.autojump_py")
 path_dict=open_dic(dic_file)
 if ('-a','') in optlist:
-    if(args[-1] != os.path.expanduser("~")): # home dir can be reached quickly by "cd" and may interfere with other directory
+    if(args[-1] != os.path.expanduser("~")): # home dir can be reached quickly by "cd" and may interfere with other directories
         dicadd(path_dict,args[-1])
         save(path_dict,dic_file)
 elif ('--stat','') in optlist:
@@ -121,7 +121,7 @@ elif ('--import','') in optlist:
 else:
     import re
     completion=False
-    userchoice=-1 #3 if the pattern is of the form __pattern__3, otherwise -1
+    userchoice=-1 #i if the pattern is of the form __pattern__i, otherwise -1
     results=[]
     if ('--completion','') in optlist:
         completion=True
