@@ -144,7 +144,7 @@ else:
             len(patterns[0])>0 and\
             patterns[0][0]=="/" and\
             os.path.exists(patterns[0]): 
-        if not completion : print pattern
+        if not completion : print patterns[0]
     else:
         endmatch=re.search("__([0-9]+)",patterns[-1])
         if endmatch:
