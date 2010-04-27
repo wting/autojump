@@ -18,11 +18,11 @@
 _autojump() 
 {
         local cur
-        COMPREPLY=()
-        unset COMP_WORDS[0] #remove "j" from the array
-        cur=${COMP_WORDS[*]}
-        IFS=$'\n' read -d '' -a COMPREPLY < <(autojump --bash --completion "$cur")
-        return 0
+        cur=${COMP_WORDS[*]:1}
+        while read i
+        do
+            COMPREPLY=("${COMPREPLY[@]}" "${i}")
+        done  < <(autojump --bash --completion $cur)
 }
 complete -F _autojump j
 AUTOJUMP='{ (autojump -a "$(pwd -P)"&)>/dev/null 2>>${HOME}/.autojump_errors;} 2>/dev/null'

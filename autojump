@@ -139,12 +139,9 @@ else:
     if not args: patterns=[""]
     else: patterns=args
 
-    #if pattern is a full path, jump there
-    if len(patterns) == 1 and\
-            len(patterns[0])>0 and\
-            patterns[0][0]=="/" and\
-            os.path.exists(patterns[0]): 
-        if not completion : print patterns[0]
+    #if the last pattern is a full path, jump there
+    if len(patterns[-1])>0 and patterns[-1][0]=="/" and os.path.exists(patterns[-1]): 
+        if not completion : print patterns[-1]
     else:
         endmatch=re.search("__([0-9]+)",patterns[-1])
         if endmatch:
@@ -171,5 +168,5 @@ else:
         if userchoice!=-1:
             if len(results) > userchoice-1 : print quotes+results[userchoice-1]+quotes
         elif len(results) > 1 and completion:
-            print "\n".join(("%s__%d__%s" % (" ".join(patterns),n+1,r) for n,r in enumerate(results[:8])))
+            print "\n".join(("%s__%d__%s" % (patterns[-1],n+1,r) for n,r in enumerate(results[:8])))
         elif results: print quotes+results[0]+quotes
