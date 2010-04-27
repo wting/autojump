@@ -30,7 +30,7 @@ Examples
 
 could jump to ``/home/gwb/my mp3 collection``, if that is the directory in which you keep your mp3s. ::
 
- jumpstat</b>
+ jumpstat
 
 will print out something in the lines of::
 
