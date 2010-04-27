@@ -18,6 +18,6 @@
 
 cur=${words[2, -1]}
 
-autojump --completion ${cur[*]} | while read i; do 
-    compadd -U $i; 
+autojump --completion ${=cur[*]} | while read i; do 
+    compadd -U "$i"; 
 done
