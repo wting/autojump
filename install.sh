@@ -15,14 +15,39 @@
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
-sudo mkdir -p /usr/share/autojump/
-sudo cp icon.png /usr/share/autojump/
-sudo cp jumpapplet /usr/bin/
-sudo cp autojump /usr/bin/
-sudo cp autojump.1 /usr/share/man/man1/
+function show_help {
+        echo "sudo ./install.sh [--prefix /usr/local]"
+}
+
+prefix=/usr
+
+#command line parsing
+while true; do
+    case "$1" in
+      -h|--help|-\?) show_help; exit 0;;
+      -p|--prefix) if [ $# -gt 1 ]; then
+            prefix=$2; shift 2
+          else 
+            echo "--prefix or -p require an argument" 1>&2
+            exit 1
+          fi ;;
+      --) shift; break;;
+      -*) echo "invalid option: $1" 1>&2; show_help; exit 1;;
+      *)  break;;
+    esac
+done
+
+echo "Installing to ${prefix} ..."
+
+sudo mkdir -p ${prefix}/share/autojump/
+sudo cp icon.png ${prefix}/share/autojump/
+sudo cp jumpapplet ${prefix}/bin/
+sudo cp autojump ${prefix}/bin/
+sudo cp autojump.1 ${prefix}/share/man/man1/
 if [ -d "/etc/profile.d" ]; then
     sudo cp autojump.bash /etc/profile.d/
     sudo cp autojump.sh /etc/profile.d/
+    echo "Done!"
     echo "Remember to add the line" 
     echo "    source /etc/profile.d/autojump.bash"
     echo "or"
