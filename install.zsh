@@ -1,5 +1,4 @@
 #! /bin/zsh
-
 #Copyright Joel Schaerer 2008, 2009
 #This file is part of autojump
 
@@ -16,20 +15,38 @@
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
-# applet icon
-sudo mkdir -p /usr/share/autojump/
-sudo cp icon.png /usr/share/autojump/
+function show_help {
+        echo "sudo ./install.sh [--prefix /usr/local]"
+}
 
-# scripts
-sudo cp jumpapplet /usr/bin/
-sudo cp autojump /usr/bin/
+prefix=/usr
 
-# man pages
-sudo cp autojump.1 /usr/share/man/man1/
+#command line parsing
+while true; do
+    case "$1" in
+      -h|--help|-\?) show_help; exit 0;;
+      -p|--prefix) if [ $# -gt 1 ]; then
+            prefix=$2; shift 2
+          else 
+            echo "--prefix or -p require an argument" 1>&2
+            exit 1
+          fi ;;
+      --) shift; break;;
+      -*) echo "invalid option: $1" 1>&2; show_help; exit 1;;
+      *)  break;;
+    esac
+done
+
+echo "Installing to ${prefix} ..."
+
+sudo mkdir -p ${prefix}/share/autojump/
+sudo cp icon.png ${prefix}/share/autojump/
+sudo cp jumpapplet ${prefix}/bin/
+sudo cp autojump ${prefix}/bin/
+sudo cp autojump.1 ${prefix}/share/man/man1/
 
 # autocompletion file in the first directory of the FPATH variable
 sudo cp _j $(echo $FPATH | cut -d":" -f 1)
-
 
 if [ -d "/etc/profile.d" ]; then
     sudo cp autojump.zsh /etc/profile.d/
