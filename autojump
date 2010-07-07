@@ -139,15 +139,19 @@ else:
     if not args: patterns=[""]
     else: patterns=args
 
-    #if the last pattern is a full path, jump there
-    if len(patterns[-1])>0 and patterns[-1][0]=="/" and os.path.exists(patterns[-1]): 
-        if not completion : print patterns[-1]
+    #if the last pattern contains a full path, jump there
+    #the regexp is because we need to support stuff like "j wo jo__3__/home/joel/workspace/joel" for zsh
+    last_pattern_path = re.sub("(.*)__","",patterns[-1])
+    #print >> stderr, last_pattern_path
+    if len(last_pattern_path)>0 and last_pattern_path[0]=="/" and os.path.exists(last_pattern_path):
+        if not completion : print last_pattern_path
     else:
-        endmatch=re.search("__([0-9]+)",patterns[-1])
+        #check for ongoing completion, and act accordingly
+        endmatch=re.search("__([0-9]+)",patterns[-1]) #user has selected a completion
         if endmatch:
             userchoice=int(endmatch.group(1))
             patterns[-1]=re.sub("__[0-9]+.*","",patterns[-1])
-        else:
+        else: #user hasn't selected a completion, display the same choices again
             endmatch=re.match("(.*)__",patterns[-1])
             if endmatch: patterns[-1]=endmatch.group(1)
 
