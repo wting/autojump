@@ -22,6 +22,7 @@ from sys import argv,exit,stderr
 import os
 import signal
 max_keyweight=1000
+completion_separator='__'
 dead_dirs=False #global variable (evil ;-) to know if we should save the dict at the end
 
 def signal_handler(arg1,arg2):
@@ -141,18 +142,18 @@ else:
 
     #if the last pattern contains a full path, jump there
     #the regexp is because we need to support stuff like "j wo jo__3__/home/joel/workspace/joel" for zsh
-    last_pattern_path = re.sub("(.*)__","",patterns[-1])
+    last_pattern_path = re.sub("(.*)"+completion_separator,"",patterns[-1])
     #print >> stderr, last_pattern_path
     if len(last_pattern_path)>0 and last_pattern_path[0]=="/" and os.path.exists(last_pattern_path):
         if not completion : print last_pattern_path
     else:
         #check for ongoing completion, and act accordingly
-        endmatch=re.search("__([0-9]+)",patterns[-1]) #user has selected a completion
+        endmatch=re.search(completion_separator+"([0-9]+)",patterns[-1]) #user has selected a completion
         if endmatch:
             userchoice=int(endmatch.group(1))
-            patterns[-1]=re.sub("__[0-9]+.*","",patterns[-1])
+            patterns[-1]=re.sub(completion_separator+"[0-9]+.*","",patterns[-1])
         else: #user hasn't selected a completion, display the same choices again
-            endmatch=re.match("(.*)__",patterns[-1])
+            endmatch=re.match("(.*)"+completion_separator,patterns[-1])
             if endmatch: patterns[-1]=endmatch.group(1)
 
         dirs=path_dict.items()
@@ -172,5 +173,6 @@ else:
         if userchoice!=-1:
             if len(results) > userchoice-1 : print quotes+results[userchoice-1]+quotes
         elif len(results) > 1 and completion:
-            print "\n".join(("%s__%d__%s" % (patterns[-1],n+1,r) for n,r in enumerate(results[:8])))
+            print "\n".join(("%s%s%d%s%s" % (patterns[-1],completion_separator,n+1,completion_separator,r)\
+                for n,r in enumerate(results[:8])))
         elif results: print quotes+results[0]+quotes
