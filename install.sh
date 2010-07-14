@@ -51,13 +51,7 @@ sudo cp jumpapplet ${prefix}/bin/
 sudo cp autojump ${prefix}/bin/
 sudo cp autojump.1 ${prefix}/share/man/man1/
 
-#
-# INSTALL BASH AUTOCOMPLETE
-#
-echo "Installing Autocompletion"
-
 if [ -d "/etc/profile.d" ]; then
-    # Copy the autocompletion code
     sudo cp autojump.bash /etc/profile.d/
     sudo cp autojump.sh /etc/profile.d/
 
@@ -77,7 +71,7 @@ else
     if [ ${#ans} -gt 0 ]; then
 	     if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
 
-            # Answered yes. Go ahead and add the autojump bash autocompletion code
+            # Answered yes. Go ahead and add the autojump code
 	         echo "" >> ~/.bashrc
 	         echo "#autojump" >> ~/.bashrc
 	         cat autojump.bash >> ~/.bashrc
