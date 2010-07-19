@@ -22,9 +22,7 @@ function show_help {
 # Default install directory.
 prefix=/usr
 
-#
 # Command line parsing
-#
 while true; do
     case "$1" in
       -h|--help|-\?) show_help; exit 0;;
@@ -42,9 +40,7 @@ done
 
 echo "Installing to ${prefix} ..."
 
-#
 # INSTALL AUTOJUMP
-#
 sudo mkdir -p ${prefix}/share/autojump/
 sudo cp icon.png ${prefix}/share/autojump/
 sudo cp jumpapplet ${prefix}/bin/
@@ -71,21 +67,21 @@ else
     if [ ${#ans} -gt 0 ]; then
 	     if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
 
-            # Answered yes. Go ahead and add the autojump code
-	         echo "" >> ~/.bashrc
-	         echo "#autojump" >> ~/.bashrc
-	         cat autojump.bash >> ~/.bashrc
+                # Answered yes. Go ahead and add the autojump code
+	        echo "" >> ~/.bashrc
+	        echo "#autojump" >> ~/.bashrc
+	        cat autojump.bash >> ~/.bashrc
 
-            # Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
-            # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
-            # .bashrc has been properly sourced and you don't need to add it.
-            OS=`uname`
-            if [ $OS == 'Darwin' -a `grep -c "^[[:space:]]*source\|\. ~/\.bashrc[[:space:]]*$" ~/.bash_profile` -eq 0 ]; then
-                echo "You are using OSX and your .bash_profile doesn't seem to be sourcing .bashrc"
-                echo "Adding source ~/.bashrc to your bashrc"
-                echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
-                echo -e "if [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
-            fi
+                # Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
+                # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
+                # .bashrc has been properly sourced and you don't need to add it.
+                OS=`uname`
+                if [ $OS == 'Darwin' -a `grep -c "^[[:space:]]*source\|\. ~/\.bashrc[[:space:]]*$" ~/.bash_profile` -eq 0 ]; then
+                    echo "You are using OSX and your .bash_profile doesn't seem to be sourcing .bashrc"
+                    echo "Adding source ~/.bashrc to your bashrc"
+                    echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
+                    echo -e "if [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
+                fi
 	     else
 	         echo "Then you need to put autojump.sh, or the code from it, somewhere where it will get read. Good luck!"
 	     fi
