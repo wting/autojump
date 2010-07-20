@@ -47,9 +47,10 @@ def match(path,pattern,path_dict,ignore_case=False,only_end=False):
         match_string = path
     #import re
     #if re.search(pattern,match_string),re.IGNORECASE if ignore_case else 0) is None:
-    match=(match_string.lower().find(pattern.lower()) != -1)\
-            if ignore_case\
-            else (match_string.find(pattern) != -1)
+    if ignore_case:
+        match=(match_string.lower().find(pattern.lower()) != -1)
+    else:
+        match=(match_string.find(pattern) != -1)
     if not match:
         return False
     else: 
@@ -82,6 +83,16 @@ def forget(path_dict,dic_file):
         for k in path_dict.keys():
             path_dict[k]*=0.9*max_keyweight/keyweight
         save(path_dict,dic_file)
+
+# catch all unavailable (python < 2.5)
+try:
+    all
+except:
+    def all(iterable):
+        for element in iterable:
+            if not element:
+                return False
+        return True
 
 def find_matches(dirs,patterns,path_dict,result_list,ignore_case,max_matches):
     """Find max_matches paths that match the pattern, and add them to the result_list"""
@@ -158,7 +169,10 @@ else:
 
         dirs=path_dict.items()
         dirs.sort(key=lambda e:e[1],reverse=True)
-        max_matches = 9 if completion else 1
+        if completion:
+            max_matches = 9
+        else:
+            max_matches = 1
         find_matches(dirs,patterns,path_dict,results,False,max_matches)
         dirs=path_dict.items() #we need to recreate the list since the first iteration potentially deletes paths
         dirs.sort(key=lambda e:e[1],reverse=True)
