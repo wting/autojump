@@ -22,7 +22,7 @@ from sys import argv,exit,stderr
 import os
 import signal
 max_keyweight=1000
-max_stored_paths=300
+max_stored_paths=400
 completion_separator='__'
 
 def signal_handler(arg1,arg2):
@@ -62,7 +62,8 @@ def forget(path_dict,dic_file):
 def clean_dict(sorted_dirs,path_dict):
     """Limits the sized of the path_dict to max_stored_paths. Returns True if keys were deleted"""
     if len(sorted_dirs) > max_stored_paths:
-        for dir,dummy in sorted_dirs[max_stored_paths:]:
+        #remove 25 more than needed, to avoid doing it every time
+        for dir,dummy in sorted_dirs[max_stored_paths-25:]:
             del path_dict[dir]
         return True
     else: return False
