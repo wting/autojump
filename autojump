@@ -134,7 +134,7 @@ elif ('--stat','') in optlist:
     a.sort(key=lambda e:e[1])
     for path,count in a[-100:]:
         print "%.1f:\t%s" % (count,path)
-    print "Total key weight: %d" % sum(path_dict.values())
+    print "Total key weight: %d. Number of stored paths: %d" % (sum(path_dict.values()),len(a))
 elif ('--import','') in optlist:
     for i in open(args[-1]).readlines():
         dicadd(path_dict,i[:-1])
