@@ -70,7 +70,7 @@ else
                 # Answered yes. Go ahead and add the autojump code
 	        echo "" >> ~/.bashrc
 	        echo "#autojump" >> ~/.bashrc
-	        cat autojump.bash >> ~/.bashrc
+	        cat autojump.bash | grep -v "^#" >> ~/.bashrc
 
                 # Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
                 # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
