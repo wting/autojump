@@ -169,7 +169,7 @@ else:
 
         dirs=path_dict.items()
         dirs.sort(key=lambda e:e[1],reverse=True)
-        if completion:
+        if completion or userchoice != -1:
             max_matches = 9
         else:
             max_matches = 1
