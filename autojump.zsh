@@ -14,8 +14,23 @@
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
+data_dir=${XDG_DATA_DIR:-$([ -e ~/.config ] && echo ~/.config || echo ~)}
+if [ "$data_dir" = "~" ]
+then
+    export AUTOJUMP_DATA_DIR=${data_dir}
+else
+    export AUTOJUMP_DATA_DIR=${data_dir}/autojump
+fi
+if [ ! -e "${AUTOJUMP_DATA_DIR}" ]
+then
+    mkdir "${AUTOJUMP_DATA_DIR}"
+    mv ~/.autojump_py "${AUTOJUMP_DATA_DIR}/autojump_py" 2>>/dev/null #migration
+    mv ~/.autojump_py.bak "${AUTOJUMP_DATA_DIR}/autojump_py.bak" 2>>/dev/null
+    mv ~/.autojump_errors "${AUTOJUMP_DATA_DIR}/autojump_errors" 2>>/dev/null
+fi
+
 function autojump_preexec() {
-    { (autojump -a "$(pwd -P)"&)>/dev/null 2>>|${HOME}/.autojump_errors ; } 2>/dev/null
+    { (autojump -a "$(pwd -P)"&)>/dev/null 2>>|${AUTOJUMP_DATA_DIR}/.autojump_errors ; } 2>/dev/null
 }
 
 typeset -ga preexec_functions

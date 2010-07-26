@@ -24,6 +24,7 @@ import signal
 max_keyweight=1000
 max_stored_paths=400
 completion_separator='__'
+config_dir=os.environ.get("AUTOJUMP_DATA_DIR",os.path.expanduser("~"))
 
 def signal_handler(arg1,arg2):
     print "Received SIGINT, trying to continue"
@@ -123,7 +124,10 @@ except getopt.GetoptError, e:
     print "Unknown command line argument: %s" % e
     exit(1)
 
-dic_file=os.path.expanduser("~/.autojump_py")
+if config_dir == os.path.expanduser("~"):
+    dic_file=config_dir+"/.autojump_py"
+else:
+    dic_file=config_dir+"/autojump_py"
 path_dict=open_dic(dic_file)
 if ('-a','') in optlist:
     if(args[-1] != os.path.expanduser("~")): # home dir can be reached quickly by "cd" and may interfere with other directories

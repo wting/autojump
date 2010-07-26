@@ -25,7 +25,22 @@ _autojump()
         done  < <(autojump --bash --completion $cur)
 }
 complete -F _autojump j
-AUTOJUMP='{ (autojump -a "$(pwd -P)"&)>/dev/null 2>>${HOME}/.autojump_errors;} 2>/dev/null'
+data_dir=${XDG_DATA_DIR:-$([ -e ~/.config ] && echo ~/.config || echo ~)}
+if [ "$data_dir" = "~" ]
+then
+    export AUTOJUMP_DATA_DIR=${data_dir}
+else
+    export AUTOJUMP_DATA_DIR=${data_dir}/autojump
+fi
+if [ ! -e "${AUTOJUMP_DATA_DIR}" ]
+then
+    mkdir "${AUTOJUMP_DATA_DIR}"
+    mv ~/.autojump_py "${AUTOJUMP_DATA_DIR}/autojump_py" 2>>/dev/null #migration
+    mv ~/.autojump_py.bak "${AUTOJUMP_DATA_DIR}/autojump_py.bak" 2>>/dev/null
+    mv ~/.autojump_errors "${AUTOJUMP_DATA_DIR}/autojump_errors" 2>>/dev/null
+fi
+
+AUTOJUMP='{ (autojump -a "$(pwd -P)"&)>/dev/null 2>>${AUTOJUMP_DATA_DIR}/.autojump_errors;} 2>/dev/null'
 if [[ ! $PROMPT_COMMAND =~ autojump ]]; then
   export PROMPT_COMMAND="${PROMPT_COMMAND:-:} && $AUTOJUMP"
 fi 
