@@ -1,5 +1,3 @@
-#This shell snippet sets the prompt command and the necessary aliases
-
 #Copyright Joel Schaerer 2008, 2009
 #This file is part of autojump
 
@@ -15,6 +13,8 @@
 #
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
+
+#This shell snippet sets the prompt command and the necessary aliases
 _autojump() 
 {
         local cur
