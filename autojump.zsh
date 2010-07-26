@@ -14,7 +14,7 @@
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
-data_dir=${XDG_DATA_DIR:-$([ -e ~/.config ] && echo ~/.config || echo ~)}
+data_dir=${XDG_DATA_HOME:-$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)}
 if [ "$data_dir" = "~" ]
 then
     export AUTOJUMP_DATA_DIR=${data_dir}

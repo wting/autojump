@@ -25,7 +25,7 @@ _autojump()
         done  < <(autojump --bash --completion $cur)
 }
 complete -F _autojump j
-data_dir=${XDG_DATA_DIR:-$([ -e ~/.config ] && echo ~/.config || echo ~)}
+data_dir=${XDG_DATA_HOME:-$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)}
 if [ "$data_dir" = "~" ]
 then
     export AUTOJUMP_DATA_DIR=${data_dir}
