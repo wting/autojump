@@ -22,7 +22,7 @@ from sys import argv,exit,stderr
 import os
 import signal
 max_keyweight=1000
-max_stored_paths=400
+max_stored_paths=600
 completion_separator='__'
 config_dir=os.environ.get("AUTOJUMP_DATA_DIR",os.path.expanduser("~"))
 
