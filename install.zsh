@@ -37,7 +37,7 @@ while true; do
     esac
 done
 
-echo "Installing to ${prefix} ..."
+echo "Installing main files to ${prefix} ..."
 
 sudo mkdir -p ${prefix}/share/autojump/
 sudo cp icon.png ${prefix}/share/autojump/
@@ -46,7 +46,18 @@ sudo cp autojump ${prefix}/bin/
 sudo cp autojump.1 ${prefix}/share/man/man1/
 
 # autocompletion file in the first directory of the FPATH variable
-sudo cp _j $(echo $FPATH | cut -d":" -f 1)
+fail=true
+for f in $fpath
+do
+    sudo cp _j $f && fail=false && break
+done
+if $fail
+then
+    echo "Couldn't find a place to put the autocompletion file :-("
+    echo "Still trying to install the rest of autojump..."
+else
+    echo "Installed autocompletion file to $f"
+fi
 
 if [ -d "/etc/profile.d" ]; then
     sudo cp autojump.zsh /etc/profile.d/
