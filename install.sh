@@ -61,6 +61,8 @@ if [ -d "/etc/profile.d" ]; then
         echo "source /etc/profile.d/autojump.bash" >> ~/.bashrc
     fi
     echo "Done!"
+    echo
+    echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
 else
     echo "Your distribution does not have a /etc/profile.d directory, the default that we install one of the scripts to. Would you like us to copy it into your ~/.bashrc file to make it work? (If you have done this once before, delete the old version before doing it again.) [y/n]"
     read ans
@@ -82,6 +84,7 @@ else
                     echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
                     echo -e "if [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
                 fi
+                echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
 	     else
 	         echo "Then you need to put autojump.sh, or the code from it, somewhere where it will get read. Good luck!"
 	     fi

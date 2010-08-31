@@ -67,6 +67,8 @@ if [ -d "/etc/profile.d" ]; then
     echo "or"
     echo "    source /etc/profile"
     echo "to your ~/.zshrc if it's not there already"
+    echo
+    echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
 else
     echo "Your distribution does not have a /etc/profile.d directory, the default that we install one of the scripts to. Would you like us to copy it into your ~/.zshrc file to make it work? (If you have done this once before, delete the old version before doing it again.) [y/n]"
     read ans
@@ -75,6 +77,9 @@ else
 	    echo "" >> ~/.zshrc
 	    echo "#autojump" >> ~/.zshrc
 	    cat autojump.zsh >> ~/.zshrc
+            echo "Done!"
+            echo
+            echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
 	else
 	    echo "Then you need to put autojump.zsh, or the code from it, somewhere where it will get read. Good luck!"
 	fi
