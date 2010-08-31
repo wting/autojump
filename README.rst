@@ -13,7 +13,7 @@ autojump is a faster way to navigate your filesystem. It works by maintaining a 
  j dirspec
 
 where dirspec is a few characters of the directory you want to jump to. It will jump to the most used  directory  whose
-name matches the pattern given in dirspec. Note that autojump isn't meant to be a drop-in replacement for cd, but rather a complement. Cd is fine when staying in the same area of the filesystem; autojump is there to help you when you need to jump far away from your current location.
+name matches the pattern given in dirspec. Note that autojump isn't meant to be a drop-in replacement for cd, but rather a complement. Cd is fine when staying in the same area of the filesystem; autojump is there to help when you need to jump far away from your current location.
 
 Autojump supports tab completion. Try it! Autojump should be compatible with bash 4. Please report any problems!
 
