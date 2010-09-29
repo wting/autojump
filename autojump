@@ -19,6 +19,7 @@ from __future__ import division
 import cPickle
 import getopt
 from sys import argv,exit,stderr
+from tempfile import NamedTemporaryFile
 import os
 import signal
 max_keyweight=1000
@@ -38,19 +39,19 @@ def dicadd(dic,key,increment=1):
     dic[key]=dic.get(key,0.)+increment
 
 def save(path_dict,dic_file):
-    f=open(dic_file+".tmp",'w')
+    f=NamedTemporaryFile(dir=config_dir,delete=False)
     cPickle.dump(path_dict,f,-1)
     f.flush()
     os.fsync(f)
     f.close()
-    try:
-        os.rename(dic_file+".tmp",dic_file) #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
-        import time #backup file
+    os.rename(f.name,dic_file) #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
+    try: #backup file
+        import time 
         if not os.path.exists(dic_file+".bak") or time.time()-os.path.getmtime(dic_file+".bak")>86400:
             import shutil
             shutil.copy(dic_file,dic_file+".bak")
-    except OSError:
-        pass #Fail quietly, this usually means a concurrent autojump process already did the job
+    except OSError, e:
+        print >> stderr, "Error while creating backup autojump file. (%s)" % e
 
 def forget(path_dict,dic_file):
     """Gradually forget about directories. Only call from the actual jump since it can take time"""
