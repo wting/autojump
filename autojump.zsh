@@ -15,7 +15,7 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 local data_dir=${XDG_DATA_HOME:-$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)}
-if [ "$data_dir" = "~" ]
+if [[ "$data_dir" = "${HOME}" ]]
 then
     export AUTOJUMP_DATA_DIR=${data_dir}
 else
