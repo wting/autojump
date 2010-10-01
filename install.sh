@@ -42,6 +42,8 @@ echo "Installing to ${prefix} ..."
 
 # INSTALL AUTOJUMP
 sudo mkdir -p ${prefix}/share/autojump/
+sudo mkdir -p ${prefix}/bin/
+sudo mkdir -p ${prefix}/share/man/man1/
 sudo cp icon.png ${prefix}/share/autojump/
 sudo cp jumpapplet ${prefix}/bin/
 sudo cp autojump ${prefix}/bin/
