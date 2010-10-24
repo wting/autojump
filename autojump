@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#Copyright Joel Schaerer 2008, 2009
+#Copyright Joel Schaerer 2008-2010
 #This file is part of autojump
 
 #autojump is free software: you can redistribute it and/or modify
@@ -15,8 +15,13 @@
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-import cPickle
+from __future__ import division, print_function
+
+try: # fix to get optimised pickle in python < 3
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 import getopt
 from sys import argv,exit,stderr
 from tempfile import NamedTemporaryFile
@@ -28,7 +33,7 @@ completion_separator='__'
 config_dir=os.environ.get("AUTOJUMP_DATA_DIR",os.path.expanduser("~"))
 
 def signal_handler(arg1,arg2):
-    print "Received SIGINT, trying to continue"
+    print("Received SIGINT, trying to continue")
 signal.signal(signal.SIGINT,signal_handler) #Don't break on sigint
 
 def uniqadd(list,key):
@@ -40,7 +45,7 @@ def dicadd(dic,key,increment=1):
 
 def save(path_dict,dic_file):
     f=NamedTemporaryFile(dir=config_dir,delete=False)
-    cPickle.dump(path_dict,f,-1)
+    pickle.dump(path_dict,f,-1)
     f.flush()
     os.fsync(f)
     f.close()
@@ -50,8 +55,8 @@ def save(path_dict,dic_file):
         if not os.path.exists(dic_file+".bak") or time.time()-os.path.getmtime(dic_file+".bak")>86400:
             import shutil
             shutil.copy(dic_file,dic_file+".bak")
-    except OSError, e:
-        print >> stderr, "Error while creating backup autojump file. (%s)" % e
+    except OSError as e:
+        print("Error while creating backup autojump file. (%s)" % e, file=stderr)
 
 def forget(path_dict,dic_file):
     """Gradually forget about directories. Only call from the actual jump since it can take time"""
@@ -106,13 +111,13 @@ def find_matches(dirs,patterns,result_list,ignore_case,max_matches):
 
 def open_dic(dic_file,error_recovery=False):
     try:
-        aj_file=open(dic_file)
-        path_dict=cPickle.load(aj_file)
+        aj_file=open(dic_file, 'rb')
+        path_dict=pickle.load(aj_file)
         aj_file.close()
         return path_dict
-    except (IOError,EOFError,cPickle.UnpicklingError):
+    except (IOError,EOFError,pickle.UnpicklingError):
         if not error_recovery and os.path.exists(dic_file+".bak"):
-            print >> stderr, 'Problem with autojump database, trying to recover from backup...'
+            print('Problem with autojump database, trying to recover from backup...', file=stderr)
             import shutil
             shutil.copy(dic_file+".bak",dic_file)
             return open_dic(dic_file,True)
@@ -121,8 +126,8 @@ def open_dic(dic_file,error_recovery=False):
 #Main code
 try:
     optlist, args = getopt.getopt(argv[1:], 'a',['stat','import','completion', 'bash']) 
-except getopt.GetoptError, e:
-    print "Unknown command line argument: %s" % e
+except getopt.GetoptError as e:
+    print("Unknown command line argument: %s" % e)
     exit(1)
 
 if config_dir == os.path.expanduser("~"):
@@ -135,15 +140,15 @@ if ('-a','') in optlist:
         dicadd(path_dict,args[-1])
         save(path_dict,dic_file)
 elif ('--stat','') in optlist:
-    a=path_dict.items()
+    a=list(path_dict.items())
     a.sort(key=lambda e:e[1])
     for path,count in a[-100:]:
-        print "%.1f:\t%s" % (count,path)
-    print "Total key weight: %d. Number of stored paths: %d" % (sum(path_dict.values()),len(a))
+        print("%.1f:\t%s" % (count,path))
+    print("Total key weight: %d. Number of stored paths: %d" % (sum(path_dict.values()),len(a)))
 elif ('--import','') in optlist:
     for i in open(args[-1]).readlines():
         dicadd(path_dict,i[:-1])
-    cPickle.dump(path_dict,open(dic_file,'w'),-1)
+    pickle.dump(path_dict,open(dic_file,'w'),-1)
 else:
     import re
     completion=False
@@ -161,7 +166,7 @@ else:
     last_pattern_path = re.sub("(.*)"+completion_separator,"",patterns[-1])
     #print >> stderr, last_pattern_path
     if len(last_pattern_path)>0 and last_pattern_path[0]=="/" and os.path.exists(last_pattern_path):
-        if not completion : print last_pattern_path
+        if not completion: print(last_pattern_path)
     else:
         #check for ongoing completion, and act accordingly
         endmatch=re.search(completion_separator+"([0-9]+)",patterns[-1]) #user has selected a completion
@@ -172,7 +177,7 @@ else:
             endmatch=re.match("(.*)"+completion_separator,patterns[-1])
             if endmatch: patterns[-1]=endmatch.group(1)
 
-        dirs=path_dict.items()
+        dirs=list(path_dict.items())
         dirs.sort(key=lambda e:e[1],reverse=True)
         if completion or userchoice != -1:
             max_matches = 9
@@ -188,8 +193,8 @@ else:
         else: quotes=""
 
         if userchoice!=-1:
-            if len(results) > userchoice-1 : print quotes+results[userchoice-1]+quotes
+            if len(results) > userchoice-1 : print(quotes+results[userchoice-1]+quotes)
         elif len(results) > 1 and completion:
-            print "\n".join(("%s%s%d%s%s" % (patterns[-1],completion_separator,n+1,completion_separator,r)\
-                for n,r in enumerate(results[:8])))
-        elif results: print quotes+results[0]+quotes
+            print("\n".join(("%s%s%d%s%s" % (patterns[-1],completion_separator,n+1,completion_separator,r)\
+                for n,r in enumerate(results[:8]))))
+        elif results: print(quotes+results[0]+quotes)
