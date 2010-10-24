@@ -112,7 +112,8 @@ def find_matches(dirs,patterns,result_list,ignore_case,max_matches):
 def open_dic(dic_file,error_recovery=False):
     try:
         aj_file=open(dic_file, 'rb')
-        path_dict=pickle.load(aj_file)
+        #encoding is only specified for python2.x compatibility
+        path_dict=pickle.load(aj_file,encoding="utf-8")
         aj_file.close()
         return path_dict
     except (IOError,EOFError,pickle.UnpicklingError):
