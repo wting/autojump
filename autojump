@@ -75,16 +75,6 @@ def clean_dict(sorted_dirs,path_dict):
         return True
     else: return False
 
-# catch all unavailable (python < 2.5)
-try:
-    all
-except:
-    def all(iterable):
-        for element in iterable:
-            if not element:
-                return False
-        return True
-
 def match(path,pattern,ignore_case=False,only_end=False):
     try:
         if os.path.realpath(os.curdir)==path : return False
