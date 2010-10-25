@@ -1,0 +1,5 @@
+Thiss will be the last release to support python < 2.6
+
+Please use this release if you can't upgrade your python installation.
+I will try to support this version for a while if any significant
+bugs are found
