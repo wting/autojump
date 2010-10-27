@@ -41,7 +41,7 @@ then
     mv ~/.autojump_errors "${AUTOJUMP_DATA_DIR}/autojump_errors" 2>>/dev/null
 fi
 
-AUTOJUMP='{ (autojump -a "$(pwd -P)"&)>/dev/null 2>>${AUTOJUMP_DATA_DIR}/.autojump_errors;} 2>/dev/null'
+AUTOJUMP='{ (autojump -a "$(pwd -P)"&)>/dev/null 2>>${AUTOJUMP_DATA_DIR}/autojump_errors;} 2>/dev/null'
 if [[ ! $PROMPT_COMMAND =~ autojump ]]; then
   export PROMPT_COMMAND="${PROMPT_COMMAND:-:} ; $AUTOJUMP"
 fi 
