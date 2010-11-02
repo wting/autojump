@@ -27,6 +27,7 @@ _autojump()
 complete -F _autojump j
 #data_dir=${XDG_DATA_HOME:-$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)}
 data_dir=$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)
+export AUTOJUMP_HOME=${HOME}
 if [[ "$data_dir" = "${HOME}" ]]
 then
     export AUTOJUMP_DATA_DIR=${data_dir}
@@ -41,7 +42,7 @@ then
     mv ~/.autojump_errors "${AUTOJUMP_DATA_DIR}/autojump_errors" 2>>/dev/null
 fi
 
-AUTOJUMP='{ (autojump -a "$(pwd -P)"&)>/dev/null 2>>${AUTOJUMP_DATA_DIR}/autojump_errors;} 2>/dev/null'
+AUTOJUMP='{ [[ "$AUTOJUMP_HOME" == "$HOME" ]] && (autojump -a "$(pwd -P)"&)>/dev/null 2>>${AUTOJUMP_DATA_DIR}/autojump_errors;} 2>/dev/null'
 if [[ ! $PROMPT_COMMAND =~ autojump ]]; then
   export PROMPT_COMMAND="${PROMPT_COMMAND:-:} ; $AUTOJUMP"
 fi 
