@@ -25,6 +25,7 @@ except ImportError:
 import getopt
 from sys import argv,exit,stderr,version_info
 from tempfile import NamedTemporaryFile
+from operator import itemgetter
 import os
 import signal
 max_keyweight=1000
@@ -135,7 +136,7 @@ if ('-a','') in optlist:
         save(path_dict,dic_file)
 elif ('--stat','') in optlist:
     a=list(path_dict.items())
-    a.sort(key=lambda e:e[1])
+    a.sort(key=itemgetter(1))
     for path,count in a[-100:]:
         print("%.1f:\t%s" % (count,path))
     print("Total key weight: %d. Number of stored paths: %d" % (sum(path_dict.values()),len(a)))
@@ -172,7 +173,7 @@ else:
             if endmatch: patterns[-1]=endmatch.group(1)
 
         dirs=list(path_dict.items())
-        dirs.sort(key=lambda e:e[1],reverse=True)
+        dirs.sort(key=itemgetter(1), reverse=True)
         if completion or userchoice != -1:
             max_matches = 9
         else:
