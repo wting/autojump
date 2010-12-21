@@ -44,6 +44,12 @@ def uniqadd(list,key):
 def dicadd(dic,key,increment=1):
     dic[key]=dic.get(key,0.)+increment
 
+def dicremove(dic,key):
+    if key not in dic:
+        return False
+    del dic[key]
+    return True
+
 def save(path_dict,dic_file):
     f=NamedTemporaryFile(dir=config_dir,delete=False)
     pickle.dump(path_dict,f,-1)
@@ -120,7 +126,7 @@ def open_dic(dic_file,error_recovery=False):
 
 #Main code
 try:
-    optlist, args = getopt.getopt(argv[1:], 'a',['stat','import','completion', 'bash']) 
+    optlist, args = getopt.getopt(argv[1:], 'a',['remove', 'purge', 'stat','import','completion', 'bash']) 
 except getopt.GetoptError as e:
     print("Unknown command line argument: %s" % e)
     exit(1)
@@ -134,6 +140,26 @@ if ('-a','') in optlist:
     if(args[-1] != os.path.expanduser("~")): # home dir can be reached quickly by "cd" and may interfere with other directories
         dicadd(path_dict,args[-1])
         save(path_dict,dic_file)
+elif ('--remove','') in optlist and ('--completion', '') not in optlist:
+    try:
+        if dicremove(path_dict,args[-1]):
+            save(path_dict,dic_file)
+    except:
+        print "usage : autojump --remove key"
+        print "Remove key from autojump database"
+        exit
+elif ('--purge','') in optlist:
+    try:
+        a=path_dict.items()
+        limit=int(args[-1])
+        for path,count in a:
+            if count <= limit:
+                dicremove(path_dict,path)
+        save(path_dict,dic_file)
+    except:
+        print "usage : autojump --purge MaxKeyWeight"
+        print "Remove all keys <= MaxKeyWeight"
+        exit        
 elif ('--stat','') in optlist:
     a=list(path_dict.items())
     a.sort(key=itemgetter(1))

@@ -24,7 +24,8 @@ _autojump()
             COMPREPLY=("${COMPREPLY[@]}" "${i}")
         done  < <(autojump --bash --completion $cur)
 }
-complete -F _autojump j
+complete -o dirnames -F _autojump j
+complete -F _autojump autojump
 #data_dir=${XDG_DATA_HOME:-$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)}
 data_dir=$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)
 export AUTOJUMP_HOME=${HOME}
@@ -43,8 +44,21 @@ then
 fi
 
 AUTOJUMP='{ [[ "$AUTOJUMP_HOME" == "$HOME" ]] && (autojump -a "$(pwd -P)"&)>/dev/null 2>>${AUTOJUMP_DATA_DIR}/autojump_errors;} 2>/dev/null'
-if [[ ! $PROMPT_COMMAND =~ autojump ]]; then
-  export PROMPT_COMMAND="${PROMPT_COMMAND:-:} ; $AUTOJUMP"
-fi 
+# if [[ ! $PROMPT_COMMAND =~ autojump ]]; then
+#   export PROMPT_COMMAND="${PROMPT_COMMAND:-:} ; $AUTOJUMP"
+# fi 
 alias jumpstat="autojump --stat"
-function j { new_path="$(autojump $@)";if [ -n "$new_path" ]; then echo -e "\\033[31m${new_path}\\033[0m"; cd "$new_path";fi }
+function j { 
+    new_path="$(autojump $@)"
+    if [ -n "$new_path" ]; then 
+	echo -e "\\033[31m${new_path}\\033[0m"
+	cd "$new_path";
+	autojump -a "$(pwd -P)" >/dev/null 2>>${AUTOJUMP_DATA_DIR}/.autojump_errors
+    else
+	if [ -d "$@" ] ; then
+	    cd "$@"
+	    echo -e "\\033[31m$(pwd -P)\\033[0m"
+	    autojump -a "$(pwd -P)" >/dev/null 2>>${AUTOJUMP_DATA_DIR}/.autojump_errors
+	fi	    
+    fi    
+}
