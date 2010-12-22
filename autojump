@@ -65,22 +65,22 @@ def save(path_dict,dic_file):
     except OSError as e:
         print("Error while creating backup autojump file. (%s)" % e, file=stderr)
 
-def forget(path_dict,dic_file):
-    """Gradually forget about directories. Only call from the actual jump since it can take time"""
-    keyweight=sum(path_dict.values()) #Gradually forget about old directories
-    if keyweight>max_keyweight: 
-        for k in path_dict.keys():
-            path_dict[k]*=0.9*max_keyweight/keyweight
-        save(path_dict,dic_file)
+# def forget(path_dict,dic_file):
+#     """Gradually forget about directories. Only call from the actual jump since it can take time"""
+#     keyweight=sum(path_dict.values()) #Gradually forget about old directories
+#     if keyweight>max_keyweight: 
+#         for k in path_dict.keys():
+#             path_dict[k]*=0.9*max_keyweight/keyweight
+#         save(path_dict,dic_file)
 
-def clean_dict(sorted_dirs,path_dict):
-    """Limits the sized of the path_dict to max_stored_paths. Returns True if keys were deleted"""
-    if len(sorted_dirs) > max_stored_paths:
-        #remove 25 more than needed, to avoid doing it every time
-        for dir,dummy in sorted_dirs[max_stored_paths-25:]:
-            del path_dict[dir]
-        return True
-    else: return False
+# def clean_dict(sorted_dirs,path_dict):
+#     """Limits the sized of the path_dict to max_stored_paths. Returns True if keys were deleted"""
+#     if len(sorted_dirs) > max_stored_paths:
+#         #remove 25 more than needed, to avoid doing it every time
+#         for dir,dummy in sorted_dirs[max_stored_paths-25:]:
+#             del path_dict[dir]
+#         return True
+#     else: return False
 
 def match(path,pattern,ignore_case=False,only_end=False):
     try:
@@ -145,8 +145,8 @@ elif ('--remove','') in optlist and ('--completion', '') not in optlist:
         if dicremove(path_dict,args[-1]):
             save(path_dict,dic_file)
     except:
-        print "usage : autojump --remove key"
-        print "Remove key from autojump database"
+        print("usage : autojump --remove key")
+        print("Remove key from autojump database")
         exit
 elif ('--purge','') in optlist:
     try:
@@ -157,8 +157,8 @@ elif ('--purge','') in optlist:
                 dicremove(path_dict,path)
         save(path_dict,dic_file)
     except:
-        print "usage : autojump --purge MaxKeyWeight"
-        print "Remove all keys <= MaxKeyWeight"
+        print("usage : autojump --purge MaxKeyWeight")
+        print("Remove all keys <= MaxKeyWeight")
         exit        
 elif ('--stat','') in optlist:
     a=list(path_dict.items())
@@ -177,8 +177,8 @@ else:
     results=[]
     if ('--completion','') in optlist:
         completion=True
-    else:
-        forget(path_dict,dic_file) #gradually forget about old directories
+#     else:
+#         forget(path_dict,dic_file) #gradually forget about old directories
     if not args: patterns=[""]
     else: patterns=args
 
@@ -207,7 +207,7 @@ else:
         find_matches(dirs,patterns,results,False,max_matches)
         if completion or not results: #if not found, try ignoring case. On completion always show all results
             find_matches(dirs,patterns,results,ignore_case=True,max_matches=max_matches) 
-        if not completion and clean_dict(dirs,path_dict): #keep the database to a reasonable size
+        if not completion: #and clean_dict(dirs,path_dict): #keep the database to a reasonable size
             save(path_dict,dic_file)
 
         if completion and ('--bash', '') in optlist: quotes='"'
