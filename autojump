@@ -33,11 +33,6 @@ MAX_STORED_PATHS = 600
 COMPLETION_SEPARATOR = '__'
 CONFIG_DIR = os.environ.get("AUTOJUMP_DATA_DIR", os.path.expanduser("~"))
 
-def signal_handler(arg1, arg2):
-    """Autojump shouldn't break on SIGINT""" 
-    print("Received SIGINT, trying to continue")
-signal.signal(signal.SIGINT, signal_handler) 
-
 def uniqadd(collection, key):
     """Adds a key to a list only if it is not already present"""
     if key not in collection:
