@@ -165,10 +165,6 @@ def shell_utility():
             print("%.1f:\t%s" % (count, path))
         print("Total key weight: %d. Number of stored paths: %d" %
                 (sum(path_dict.values()), len(paths)))
-    elif ('--import', '') in optlist:
-        for i in open(args[-1]).readlines():
-            dicadd(path_dict, i[:-1])
-        pickle.dump(path_dict, open(dic_file, 'w'), -1)
     else:
         import re
         completion = False
