@@ -27,7 +27,7 @@ except ImportError:
     import pickle
 
 import getopt
-from sys import argv, stderr, version_info
+from sys import argv, stderr, version_info, exit
 from tempfile import NamedTemporaryFile
 from operator import itemgetter
 import os
@@ -224,7 +224,11 @@ def shell_utility():
                     COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
                     for n, r in enumerate(results[:8]))))
             elif results: print(quotes+results[0]+quotes)
+            else:
+                return False
+            return True
 
 
 if __name__ == "__main__":
-    shell_utility()
+    success=shell_utility()
+    if not success: exit(1)
