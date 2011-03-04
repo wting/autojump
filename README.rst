@@ -119,6 +119,10 @@ For now gcarrier and I have packaged autojump for Arch Linux. It is available in
 
  pacman -S autojump
 
+Tanguy Ortolo packaged autojump for Debian testing/unstable. It will eventually reach Ubuntu. To install, type::
+
+ apt-get install autojump
+
 I would be very interested by packages for other distros. If you think you can help me with the packaging, please contact me!
 
 Uninstallation
