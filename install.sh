@@ -20,7 +20,7 @@ function show_help {
 }
 
 # Default install directory.
-prefix=/usr
+prefix=/usr/local
 
 # Command line parsing
 while true; do
@@ -37,6 +37,26 @@ while true; do
       *)  break;;
     esac
 done
+
+uninstall=0;
+if [ -f "/usr/bin/autojump" ]; then
+    while true; do
+        read -p "Old installation detected, remove? [Yn] " yn
+        case $yn in
+            [Yy]* ) uninstall=1; break;;
+            [Nn]* ) "Already installed, exiting." exit 1;;
+            * ) uninstall=1; break;;
+        esac
+    done
+fi
+
+if [ ${uninstall} == 1 ]; then
+    echo "Deleting old installation files ..."
+    sudo rm -r /usr/share/autojump/
+    sudo rm /usr/bin/autojump
+    sudo rm /usr/bin/jumpapplet
+    sudo rm /usr/share/man/man1/autojump.1
+fi
 
 echo "Installing to ${prefix} ..."
 
@@ -69,12 +89,12 @@ else
     echo "Your distribution does not have a /etc/profile.d directory, the default that we install one of the scripts to. Would you like us to copy it into your ~/.bashrc file to make it work? (If you have done this once before, delete the old version before doing it again.) [y/n]"
     read ans
     if [ ${#ans} -gt 0 ]; then
-	     if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
+         if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
 
                 # Answered yes. Go ahead and add the autojump code
-	        echo "" >> ~/.bashrc
-	        echo "#autojump" >> ~/.bashrc
-	        cat autojump.bash | grep -v "^#" >> ~/.bashrc
+            echo "" >> ~/.bashrc
+            echo "#autojump" >> ~/.bashrc
+            cat autojump.bash | grep -v "^#" >> ~/.bashrc
 
                 # Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
                 # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
@@ -87,9 +107,9 @@ else
                     echo -e "if [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
                 fi
                 echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
-	     else
-	         echo "Then you need to put autojump.sh, or the code from it, somewhere where it will get read. Good luck!"
-	     fi
+         else
+             echo "Then you need to put autojump.sh, or the code from it, somewhere where it will get read. Good luck!"
+         fi
     else
         echo "Then you need to put autojump.sh, or the code from it, somewhere where it will get read. Good luck!"
     fi
