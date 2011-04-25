@@ -55,7 +55,7 @@ if [ -d "/etc/profile.d" ]; then
 
     # Make sure that the code we just copied has been sourced.
     # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
-    if [ `grep -c "^[[:space:]]*source\|\. /etc/profile(\.d/autojump\.bash)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
+    if [ `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
         echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
         echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
         echo "" >> ~/.bashrc
@@ -80,7 +80,7 @@ else
                 # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
                 # .bashrc has been properly sourced and you don't need to add it.
                 OS=`uname`
-                if [ $OS == 'Darwin' -a `grep -c "^[[:space:]]*source\|\. ~/\.bashrc[[:space:]]*$" ~/.bash_profile` -eq 0 ]; then
+                if [ $OS == 'Darwin' -a `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bash_profile` -eq 0 ]; then
                     echo "You are using OSX and your .bash_profile doesn't seem to be sourcing .bashrc"
                     echo "Adding source ~/.bashrc to your bashrc"
                     echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
