@@ -60,7 +60,9 @@ if [ -d "/etc/profile.d" ]; then
         echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
         echo "" >> ~/.bashrc
         echo "# Added by autojump install.sh" >> ~/.bashrc
-        echo "source /etc/profile.d/autojump.bash" >> ~/.bashrc
+        echo "if [ -f /etc/profile.d/autojump.bash ]; then" >> ~/.bashrc
+        echo "    source /etc/profile.d/autojump.bash" >> ~/.bashrc
+        echo "fi" >> ~/.bashrc
     fi
     echo "Done!"
     echo
