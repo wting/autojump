@@ -104,9 +104,9 @@ before the first step.
 
 Manual installation of autojump is very simple: copy
 
-- autojump to /usr/bin,
+- autojump to /usr/local/bin,
 - autojump.sh to /etc/profile.d,
-- autojump.1 to /usr/share/man/man1.
+- autojump.1 to /usr/local/share/man/man1.
 
 Make sure to source ``/etc/profile`` in your ``.bashrc`` or ``.zshrc`` ::
 
@@ -136,15 +136,15 @@ To completely remove autojump you should remove these files:
 
 ``/etc/profile.d/autojump.zsh``
 
-``/usr/bin/autojump``
+``/usr/local/bin/autojump``
 
-``/usr/bin/jumpapplet``
+``/usr/local/bin/jumpapplet``
 
-``/usr/share/autojump/icon.png``
+``/usr/local/share/autojump/icon.png``
 
-``/usr/share/autojump/``
+``/usr/local/share/autojump/``
 
-``/usr/share/man/man1/autojump.1``
+``/usr/local/share/man/man1/autojump.1``
 
 Remove any mention of autojump in your ``.bashrc`` or ``.zshrc``, then in currently running shells do:``source /etc/profile``.
 
