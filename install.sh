@@ -130,10 +130,6 @@ else
 
 fi
 
-echo "Done!"
-echo
-echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
-
 # Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
 # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
 # .bashrc has been properly sourced and you don't need to add it.
@@ -143,3 +139,7 @@ if [ `uname` == "Darwin" ] && [ `grep -c "^[[:space:]]*\(source\|\.\).*\.bashrc[
     echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
     echo -e "if [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
 fi
+
+echo "Done!"
+echo
+echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
