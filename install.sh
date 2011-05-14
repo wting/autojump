@@ -73,95 +73,73 @@ fi
 echo "Installing to ${prefix} ..."
 
 # INSTALL AUTOJUMP
-if [ `uname` != "Darwin" ]; then
-    if [ ${all_users} == 1 ]; then
-        sudo mkdir -p ${prefix}/share/autojump/
-        sudo mkdir -p ${prefix}/bin/
-        sudo mkdir -p ${prefix}/share/man/man1/
-        sudo cp icon.png ${prefix}/share/autojump/
-        sudo cp jumpapplet ${prefix}/bin/
-        sudo cp autojump ${prefix}/bin/
-        sudo cp autojump.1 ${prefix}/share/man/man1/
-        sudo mkdir -p /etc/profile.d/
-        sudo cp autojump.bash /etc/profile.d/
-        sudo cp autojump.sh /etc/profile.d/
+if [ ${all_users} == 1 ]; then
+    sudo mkdir -p ${prefix}/share/autojump/
+    sudo mkdir -p ${prefix}/bin/
+    sudo mkdir -p ${prefix}/share/man/man1/
+    sudo cp icon.png ${prefix}/share/autojump/
+    sudo cp jumpapplet ${prefix}/bin/
+    sudo cp autojump ${prefix}/bin/
+    sudo cp autojump.1 ${prefix}/share/man/man1/
+    sudo mkdir -p /etc/profile.d/
+    sudo cp autojump.bash /etc/profile.d/
+    sudo cp autojump.sh /etc/profile.d/
 
-        # Fail sudo install
-        if [ ! -f ${prefix}/bin/autojump ] || [ ! -f ${prefix}/share/man/man1/autojump.1 ] || [ ! -f /etc/profile.d/autojump.bash ] || [ ! -f /etc/profile.d/autojump.sh ]; then
-            echo "Autojump was not installed, please try again using single user installation or with the correct sudo password."
-            exit 1
-        fi
-
-        # Make sure that the code we just copied has been sourced.
-        # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
-        if [ `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
-            echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
-            echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
-            echo "" >> ~/.bashrc
-            echo "# Added by autojump install.sh" >> ~/.bashrc
-            echo "source /etc/profile.d/autojump.bash" >> ~/.bashrc
-        fi
-    else
-        mkdir -p ${prefix}/share/autojump/
-        mkdir -p ${prefix}/bin/
-        mkdir -p ${prefix}/share/man/man1/
-        cp icon.png ${prefix}/share/autojump/
-        cp jumpapplet ${prefix}/bin/
-        cp autojump ${prefix}/bin/
-        cp autojump.1 ${prefix}/share/man/man1/
-        mkdir -p ${prefix}/etc/profile.d/
-        cp autojump.bash ${prefix}/etc/profile.d/
-        cp autojump.sh ${prefix}/etc/profile.d/
-
-        if [ `grep -c "^[[:space:]]*\(source\|\.\) ${prefix}/etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
-            echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
-            echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
-            echo "" >> ~/.bashrc
-            echo "# Added by autojump install.sh" >> ~/.bashrc
-            echo "source ${prefix}/etc/profile.d/autojump.bash" >> ~/.bashrc
-        fi
-
-        if [ `grep -c ".*PATH.*.autojump/bin" ~/.bashrc` -eq 0 ]; then
-            echo "Your .bashrc doesn't seem to have ${prefix}/bin in your \$PATH"
-            echo "Adding the ${prefix}/bin/ to your PATH"
-            echo "" >> ~/.bashrc
-            echo "# Added by autojump install.sh" >> ~/.bashrc
-            echo 'export PATH=${PATH}:~/.autojump/bin' >> ~/.bashrc
-        fi
-
+    # Fail sudo install
+    if [ ! -f ${prefix}/bin/autojump ] || [ ! -f ${prefix}/share/man/man1/autojump.1 ] || [ ! -f /etc/profile.d/autojump.bash ] || [ ! -f /etc/profile.d/autojump.sh ]; then
+        echo "Autojump was not installed, please try again using single user installation or with the correct sudo password."
+        exit 1
     fi
 
-    echo "Done!"
-    echo
-    echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
-
+    # Make sure that the code we just copied has been sourced.
+    # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
+    if [ `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
+        echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
+        echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
+        echo "" >> ~/.bashrc
+        echo "# Added by autojump install.sh" >> ~/.bashrc
+        echo "source /etc/profile.d/autojump.bash" >> ~/.bashrc
+    fi
 else
-    echo "Your distribution does not have a /etc/profile.d directory, the default that we install one of the scripts to. Would you like us to copy it into your ~/.bashrc file to make it work? (If you have done this once before, delete the old version before doing it again.) [y/n]"
+    mkdir -p ${prefix}/share/autojump/
+    mkdir -p ${prefix}/bin/
+    mkdir -p ${prefix}/share/man/man1/
+    cp icon.png ${prefix}/share/autojump/
+    cp jumpapplet ${prefix}/bin/
+    cp autojump ${prefix}/bin/
+    cp autojump.1 ${prefix}/share/man/man1/
+    mkdir -p ${prefix}/etc/profile.d/
+    cp autojump.bash ${prefix}/etc/profile.d/
+    cp autojump.sh ${prefix}/etc/profile.d/
 
-    read ans
-    if [ ${#ans} -gt 0 ]; then
-         if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
-
-                # Answered yes. Go ahead and add the autojump code
-            echo "" >> ~/.bashrc
-            echo "#autojump" >> ~/.bashrc
-            cat autojump.bash | grep -v "^#" >> ~/.bashrc
-
-                # Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
-                # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
-                # .bashrc has been properly sourced and you don't need to add it.
-                OS=`uname`
-                if [ $OS == 'Darwin' -a `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bash_profile` -eq 0 ]; then
-                    echo "You are using OSX and your .bash_profile doesn't seem to be sourcing .bashrc"
-                    echo "Adding source ~/.bashrc to your bashrc"
-                    echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
-                    echo -e "if [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
-                fi
-                echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
-         else
-             echo "Then you need to put autojump.sh, or the code from it, somewhere where it will get read. Good luck!"
-         fi
-    else
-        echo "Then you need to put autojump.sh, or the code from it, somewhere where it will get read. Good luck!"
+    if [ `grep -c "^[[:space:]]*\(source\|\.\) ${prefix}/etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
+        echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
+        echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
+        echo "" >> ~/.bashrc
+        echo "# Added by autojump install.sh" >> ~/.bashrc
+        echo "source ${prefix}/etc/profile.d/autojump.bash" >> ~/.bashrc
     fi
+
+    if [ `grep -c ".*PATH.*.autojump/bin" ~/.bashrc` -eq 0 ]; then
+        echo "Your .bashrc doesn't seem to have ${prefix}/bin in your \$PATH"
+        echo "Adding the ${prefix}/bin/ to your PATH"
+        echo "" >> ~/.bashrc
+        echo "# Added by autojump install.sh" >> ~/.bashrc
+        echo 'export PATH=${PATH}:~/.autojump/bin' >> ~/.bashrc
+    fi
+
+fi
+
+echo "Done!"
+echo
+echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
+
+# Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
+# Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
+# .bashrc has been properly sourced and you don't need to add it.
+if [ `uname` == "Darwin" ] && [ `grep -c "^[[:space:]]*\(source\|\.\).*\.bashrc[[:space:]]*$" ~/.bash_profile` -eq 0 ]; then
+    echo "Your .bash_profile doesn't seem to be sourcing .bashrc"
+    echo "Adding source ~/.bashrc to your bashrc"
+    echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
+    echo -e "if [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
 fi
