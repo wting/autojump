@@ -19,9 +19,6 @@ function show_help {
         echo "sudo ./install.sh [--prefix /usr/local]"
 }
 
-# Default install directory.
-prefix=/usr/local
-
 # Command line parsing
 while true; do
     case "$1" in
@@ -58,6 +55,21 @@ if [ ${uninstall} == 1 ]; then
     sudo rm /usr/share/man/man1/autojump.1
 fi
 
+all_users=0;
+while true; do
+    read -p "Install for all users (requires root)? [Yn] " yn
+    case $yn in
+        [Yy]* ) all_users=1; break;;
+        [Nn]* ) all_users=0; break;;
+        * ) all_users=1; break;;
+    esac
+done
+
+prefix=/usr/local
+if [ ${all_users} == 0 ]; then
+    prefix=${HOME}/.autojump
+fi
+
 echo "Installing to ${prefix} ..."
 
 # INSTALL AUTOJUMP
@@ -69,24 +81,42 @@ sudo cp jumpapplet ${prefix}/bin/
 sudo cp autojump ${prefix}/bin/
 sudo cp autojump.1 ${prefix}/share/man/man1/
 
-if [ -d "/etc/profile.d" ]; then
-    sudo cp autojump.bash /etc/profile.d/
-    sudo cp autojump.sh /etc/profile.d/
+if [ `uname` != "Darwin" ]; then
+    if [ ${all_users} == 1 ]; then
+        sudo mkdir -p /etc/profile.d/
+        sudo cp autojump.bash /etc/profile.d/
+        sudo cp autojump.sh /etc/profile.d/
 
-    # Make sure that the code we just copied has been sourced.
-    # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
-    if [ `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
-        echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
-        echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
-        echo "" >> ~/.bashrc
-        echo "# Added by autojump install.sh" >> ~/.bashrc
-        echo "source /etc/profile.d/autojump.bash" >> ~/.bashrc
+        # Make sure that the code we just copied has been sourced.
+        # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
+        if [ `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
+            echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
+            echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
+            echo "" >> ~/.bashrc
+            echo "# Added by autojump install.sh" >> ~/.bashrc
+            echo "source /etc/profile.d/autojump.bash" >> ~/.bashrc
+        fi
+    else
+        mkdir -p ${prefix}/etc/profile.d/
+        cp autojump.bash ${prefix}/etc/profile.d/
+        cp autojump.sh ${prefix}/etc/profile.d/
+
+        if [ `grep -c "^[[:space:]]*\(source\|\.\) ${prefix}/etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
+            echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
+            echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
+            echo "" >> ~/.bashrc
+            echo "# Added by autojump install.sh" >> ~/.bashrc
+            echo "source ${prefix}/etc/profile.d/autojump.bash" >> ~/.bashrc
+        fi
     fi
+
     echo "Done!"
     echo
     echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
+
 else
     echo "Your distribution does not have a /etc/profile.d directory, the default that we install one of the scripts to. Would you like us to copy it into your ~/.bashrc file to make it work? (If you have done this once before, delete the old version before doing it again.) [y/n]"
+
     read ans
     if [ ${#ans} -gt 0 ]; then
          if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
