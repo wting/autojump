@@ -73,19 +73,24 @@ fi
 echo "Installing to ${prefix} ..."
 
 # INSTALL AUTOJUMP
-sudo mkdir -p ${prefix}/share/autojump/
-sudo mkdir -p ${prefix}/bin/
-sudo mkdir -p ${prefix}/share/man/man1/
-sudo cp icon.png ${prefix}/share/autojump/
-sudo cp jumpapplet ${prefix}/bin/
-sudo cp autojump ${prefix}/bin/
-sudo cp autojump.1 ${prefix}/share/man/man1/
-
 if [ `uname` != "Darwin" ]; then
     if [ ${all_users} == 1 ]; then
+        sudo mkdir -p ${prefix}/share/autojump/
+        sudo mkdir -p ${prefix}/bin/
+        sudo mkdir -p ${prefix}/share/man/man1/
+        sudo cp icon.png ${prefix}/share/autojump/
+        sudo cp jumpapplet ${prefix}/bin/
+        sudo cp autojump ${prefix}/bin/
+        sudo cp autojump.1 ${prefix}/share/man/man1/
         sudo mkdir -p /etc/profile.d/
         sudo cp autojump.bash /etc/profile.d/
         sudo cp autojump.sh /etc/profile.d/
+
+        # Fail sudo install
+        if [ ! -f ${prefix}/bin/autojump ] || [ ! -f ${prefix}/share/man/man1/autojump.1 ] || [ ! -f /etc/profile.d/autojump.bash ] || [ ! -f /etc/profile.d/autojump.sh ]; then
+            echo "Autojump was not installed, please try again using single user installation or with the correct sudo password."
+            exit 1
+        fi
 
         # Make sure that the code we just copied has been sourced.
         # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
@@ -97,6 +102,13 @@ if [ `uname` != "Darwin" ]; then
             echo "source /etc/profile.d/autojump.bash" >> ~/.bashrc
         fi
     else
+        mkdir -p ${prefix}/share/autojump/
+        mkdir -p ${prefix}/bin/
+        mkdir -p ${prefix}/share/man/man1/
+        cp icon.png ${prefix}/share/autojump/
+        cp jumpapplet ${prefix}/bin/
+        cp autojump ${prefix}/bin/
+        cp autojump.1 ${prefix}/share/man/man1/
         mkdir -p ${prefix}/etc/profile.d/
         cp autojump.bash ${prefix}/etc/profile.d/
         cp autojump.sh ${prefix}/etc/profile.d/

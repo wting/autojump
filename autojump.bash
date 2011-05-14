@@ -28,6 +28,9 @@ complete -F _autojump j
 
 export AUTOJUMP_HOME=${HOME}
 export AUTOJUMP_DATA_DIR=${HOME}/.autojump
+if [ ! -d ${AUTOJUMP_DATA_DIR} ]; then
+    mkdir -p ${AUTOJUMP_DATA_DIR}
+fi
 
 AUTOJUMP='{ [[ "$AUTOJUMP_HOME" == "$HOME" ]] && (autojump -a "$(pwd -P)"&)>/dev/null 2>>${AUTOJUMP_DATA_DIR}/autojump_errors;} 2>/dev/null'
 if [[ ! $PROMPT_COMMAND =~ autojump ]]; then
