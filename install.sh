@@ -120,6 +120,15 @@ if [ `uname` != "Darwin" ]; then
             echo "# Added by autojump install.sh" >> ~/.bashrc
             echo "source ${prefix}/etc/profile.d/autojump.bash" >> ~/.bashrc
         fi
+
+        if [ `grep -c ".*PATH.*.autojump/bin" ~/.bashrc` -eq 0 ]; then
+            echo "Your .bashrc doesn't seem to have ${prefix}/bin in your \$PATH"
+            echo "Adding the ${prefix}/bin/ to your PATH"
+            echo "" >> ~/.bashrc
+            echo "# Added by autojump install.sh" >> ~/.bashrc
+            echo 'export PATH=${PATH}:~/.autojump/bin' >> ~/.bashrc
+        fi
+
     fi
 
     echo "Done!"

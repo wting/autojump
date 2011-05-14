@@ -30,6 +30,9 @@ export AUTOJUMP_HOME=${HOME}
 export AUTOJUMP_DATA_DIR=${HOME}/.autojump
 if [ ! -d ${AUTOJUMP_DATA_DIR} ]; then
     mkdir -p ${AUTOJUMP_DATA_DIR}
+    mv ~/.autojump_py "${AUTOJUMP_DATA_DIR}/autojump_py" 2>>/dev/null #migration
+    mv ~/.autojump_py.bak "${AUTOJUMP_DATA_DIR}/autojump_py.bak" 2>>/dev/null
+    mv ~/.autojump_errors "${AUTOJUMP_DATA_DIR}/autojump_errors" 2>>/dev/null
 fi
 
 AUTOJUMP='{ [[ "$AUTOJUMP_HOME" == "$HOME" ]] && (autojump -a "$(pwd -P)"&)>/dev/null 2>>${AUTOJUMP_DATA_DIR}/autojump_errors;} 2>/dev/null'
