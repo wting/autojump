@@ -126,14 +126,22 @@ def find_matches(dirs, patterns, result_list, ignore_case, approx, max_matches):
         for path, count in dirs:
             if len(one_error_paths) >= max_matches:
                 break
-            errors = sum(approximatch(pattern, match_string)
-                    for pattern, match_string in get_pattern_and_match(patterns, path))
+            total_errors = 0
+            bad_match = False
+            for pattern, match_string in get_pattern_and_match(patterns, path):
+                errors = approximatch(pattern, match_string)
+                if errors >= len(pattern) or errors >= len(match_string):
+                    bad_match = True
+                    break
+                total_errors += errors
+            if bad_match:
+                continue
             #Verify that the path exists 
             #(useful in the case of external drives, for example)
-            if errors <= 2 and os.path.exists(path):
-                if errors == 1:
+            if total_errors <= 2 and os.path.exists(path):
+                if total_errors == 1:
                     uniqadd(one_error_paths, path)
-                elif errors == 2:
+                elif total_errors == 2:
                     uniqadd(two_error_paths, path)
         result_list.extend(one_error_paths)
         result_list.extend(two_error_paths[:max_matches-len(one_error_paths)])
