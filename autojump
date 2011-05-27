@@ -90,13 +90,6 @@ def clean_dict(sorted_dirs, path_dict):
 
 def match(path, pattern, ignore_case=False, only_end=False):
     """Check whether a path matches a particular pattern"""
-    try:
-        if os.path.realpath(os.curdir) == path :
-            return False
-    #Sometimes the current path doesn't exist anymore.
-    #In that case, jump if possible.
-    except OSError:
-        pass
     if only_end:
         match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
     else:
@@ -200,7 +193,14 @@ def shell_utility():
                 endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
                 if endmatch: patterns[-1] = endmatch.group(1)
 
-            dirs = list(path_dict.items())
+            try:
+                cwd = os.path.realpath(os.curdir)
+            #Sometimes the current path doesn't exist anymore.
+            #In that case, jump if possible.
+            except OSError:
+                cwd = None
+            dirs = list((path, count) for path, count in path_dict.items()
+                    if path != cwd)
             dirs.sort(key=itemgetter(1), reverse=True)
             if completion or userchoice != -1:
                 max_matches = 9
