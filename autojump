@@ -88,10 +88,11 @@ def clean_dict(sorted_dirs, path_dict):
         return True
     else: return False
 
-def approximatch(pat, text):
+def approximatch(pat, text, max_errors):
     cols = [list(range(0, len(pat)+1))]
-    for i in range(0, len(text)): cols.append([0] * (len(pat) + 1))
     errors = len(pat)
+    for i in range(0, len(text)): cols.append([errors] * (len(pat) + 1))
+    last_active = min(max_errors, len(pat))
     last_seen_in_text = {}
     for i, char1 in enumerate(text):
         cols[i+1][0] = 0
@@ -106,8 +107,17 @@ def approximatch(pat, text):
                 cols[i+1][j+1] = 1 + min(cols[i+1][j], cols[i][j+1], cols[i][j])
             if i1 and j1:
                 cols[i+1][j+1] = min(cols[i+1][j+1], 1 + (i - i1) + (j - j1) + cols[i1-1][j1-1])
-        errors = min(errors, cols[i+1][-1])
+
+            if j + 1 == len(pat):
+                errors = min(errors, cols[i+1][j+1])
+            elif j + 1 == last_active + 1:
+                break
+
         last_seen_in_text[char1] = i + 1
+
+        if last_active < len(pat): last_active += 1
+        while cols[i+1][last_active] > max_errors: last_active -= 1
+
     return errors
 
 def find_matches(dirs, patterns, result_list, ignore_case, approx, max_matches):
@@ -135,7 +145,7 @@ def find_matches(dirs, patterns, result_list, ignore_case, approx, max_matches):
             total_errors = 0
             bad_match = False
             for pattern, match_string in get_pattern_and_match(patterns, path):
-                errors = approximatch(pattern, match_string)
+                errors = approximatch(pattern, match_string, 2)
                 if errors >= len(pattern) or errors >= len(match_string):
                     bad_match = True
                     break
