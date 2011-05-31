@@ -30,7 +30,6 @@ import getopt
 from sys import argv, stderr, version_info, exit
 from tempfile import NamedTemporaryFile
 from operator import itemgetter
-from copy import copy
 import os
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 600
@@ -91,7 +90,7 @@ def clean_dict(sorted_dirs, path_dict):
 
 def approximatch(pat, text):
     cols = [list(range(0, len(pat)+1))]
-    cols.extend(copy(col) for col in [[0] * (len(pat) + 1)] * (len(text) + 1))
+    for i in range(0, len(text)): cols.append([0] * (len(pat) + 1))
     errors = len(pat)
     last_seen_in_text = {}
     for i, char1 in enumerate(text):
