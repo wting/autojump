@@ -90,18 +90,25 @@ def clean_dict(sorted_dirs, path_dict):
     else: return False
 
 def approximatch(pat, text):
-    prev_col = list(range(0, len(pat)+1))
-    col = [0] * (len(pat) + 1)
+    cols = [list(range(0, len(pat)+1))]
+    cols.extend(copy(col) for col in [[0] * (len(pat) + 1)] * (len(text) + 1))
     errors = len(pat)
-    for char1 in text:
-        col[0] = 0
-        for i, char2 in enumerate(pat):
+    last_seen_in_text = {}
+    for i, char1 in enumerate(text):
+        cols[i+1][0] = 0
+        last_seen_in_pat = 0
+        for j, char2 in enumerate(pat):
+            i1 = last_seen_in_text[char2] if char2 in last_seen_in_text else 0
+            j1 = last_seen_in_pat
             if char1 == char2:
-                col[i+1] = prev_col[i]
+                cols[i+1][j+1] = cols[i][j]
+                last_seen_in_pat = j + 1
             else:
-                col[i+1] = 1 + min(col[i], prev_col[i+1], prev_col[i])
-        prev_col = copy(col)
-        errors = min(errors, col[-1])
+                cols[i+1][j+1] = 1 + min(cols[i+1][j], cols[i][j+1], cols[i][j])
+            if i1 and j1:
+                cols[i+1][j+1] = min(cols[i+1][j+1], 1 + (i - i1) + (j - j1) + cols[i1-1][j1-1])
+        errors = min(errors, cols[i+1][-1])
+        last_seen_in_text[char1] = i + 1
     return errors
 
 def find_matches(dirs, patterns, result_list, ignore_case, approx, max_matches):
