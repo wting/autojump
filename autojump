@@ -53,7 +53,7 @@ def save(path_dict, dic_file):
     # Otherwise, fail quietly
     if (not os.path.exists(dic_file)) or os.getuid() == os.stat(dic_file)[4]:
         temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
-        pickle.dump(path_dict, temp, -1)
+        pickle.dump(path_dict, temp, 2)
         temp.flush()
         os.fsync(temp)
         temp.close()
