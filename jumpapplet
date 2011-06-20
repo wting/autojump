@@ -168,7 +168,7 @@ def settings(sender):
     window.set_border_width(3)
     window.set_resizable(False)
     if os.path.isfile("icon.png"): window.set_icon_from_file("icon.png")
-    elif os.path.isfile("/usr/share/autojump/icon.png"): window.set_icon_from_file("/usr/share/autojump/icon.png")
+    elif os.path.isfile("/usr/local/share/autojump/icon.png"): window.set_icon_from_file("/usr/local/share/autojump/icon.png")
 
     vbox=gtk.Table(5,2)
     vbox.set_row_spacings(3)
@@ -234,7 +234,7 @@ def save_settings(sender,response,entries,window):
 def init():
     load_settings_file()
     if os.path.isfile("icon.png"): icon=gtk.status_icon_new_from_file("icon.png")
-    elif os.path.isfile("/usr/share/autojump/icon.png"): icon=gtk.status_icon_new_from_file("/usr/share/autojump/icon.png")
+    elif os.path.isfile("/usr/local/share/autojump/icon.png"): icon=gtk.status_icon_new_from_file("/usr/local/share/autojump/icon.png")
     else: icon=gtk.status_icon_new_from_icon_name("help")
     icon.set_visible(True)
     icon.connect("popup-menu",popup)
