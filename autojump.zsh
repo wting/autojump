@@ -14,17 +14,17 @@
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
-#local data_dir=${XDG_DATA_HOME:-$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)}
-local data_dir=$([ -e ~/.local/share ] && echo ~/.local/share || echo ~)
-if [[ "$data_dir" = "${HOME}" ]]
+#determine the data directory according to the XDG Base Directory Specification
+if [ -n "$XDG_DATA_HOME" ]
 then
-    export AUTOJUMP_DATA_DIR=${data_dir}
+    export AUTOJUMP_DATA_DIR="$XDG_DATA_HOME/autojump"
 else
-    export AUTOJUMP_DATA_DIR=${data_dir}/autojump
+    export AUTOJUMP_DATA_DIR=~/.local/share/autojump
 fi
+
 if [ ! -e "${AUTOJUMP_DATA_DIR}" ]
 then
-    mkdir "${AUTOJUMP_DATA_DIR}"
+    mkdir -p "${AUTOJUMP_DATA_DIR}"
     mv ~/.autojump_py "${AUTOJUMP_DATA_DIR}/autojump_py" 2>>/dev/null #migration
     mv ~/.autojump_py.bak "${AUTOJUMP_DATA_DIR}/autojump_py.bak" 2>>/dev/null
     mv ~/.autojump_errors "${AUTOJUMP_DATA_DIR}/autojump_errors" 2>>/dev/null
