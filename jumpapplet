@@ -28,6 +28,15 @@ import gtk
 defaults={}
 actions={}
 
+#directory finding helpers, conforming to the XDG Base Directory Specification
+def data_dir():
+    xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
+    return os.path.join(xdg_data_dir, 'autojump')
+
+def config_dir():
+    xdg_config_dir = os.environ.get('XDG_CONFIG_HOME') or os.path.join(os.environ['HOME'], '.config')
+    return os.path.join(xdg_config_dir, 'autojump')
+
 #decorator truff
 def action(validator,name=None):
     if name is None:
@@ -57,8 +66,11 @@ def has_child_file(filename):
     return wrapper
 
 #do the work
-def load_paths(filename="~/.autojump_py",maxpath=10):
-    dic_file=os.path.expanduser(filename)
+def load_paths(filename=None,maxpath=10):
+    if not filename:
+        filename = os.path.join(data_dir(), 'autojump_py')
+
+    dic_file = filename
 
     try:
         aj_file=open(dic_file)
@@ -71,10 +83,18 @@ def load_paths(filename="~/.autojump_py",maxpath=10):
     except IOError:
         return []
 
-def load_settings_file(filename="~/.jumpapplet_py"):
+def load_settings_file(filename=None):
+    if not filename:
+        filename = os.path.join(config_dir(), 'jumpapplet_py')
+
+    #migration from old location
+    old_filename =  os.path.join(os.environ['HOME'], '.jumpapplet_py')
+    if not os.path.exists(filename) and os.path.exists(old_filename):
+        os.rename(old_filename, filename)
+
     print "loading settings"
     global defaults
-    dic_file=os.path.expanduser(filename)
+    dic_file = filename
 
     try:
         aj_file=open(dic_file,'r')
@@ -92,9 +112,16 @@ def load_settings_file(filename="~/.jumpapplet_py"):
 
     create_actions()
 
-def save_settings_file(filename="~/.jumpapplet_py"):
+def save_settings_file(filename=None):
+    directory = config_dir()
+    if not filename:
+        filename = os.path.join(directory, 'jumpapplet_py')
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     print "saving settings"
-    dic_file=os.path.expanduser(filename)
+    dic_file= filename
 
     aj_file=open(dic_file,'w')
     cPickle.dump(defaults,aj_file)
