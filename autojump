@@ -34,7 +34,11 @@ import os
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 600
 COMPLETION_SEPARATOR = '__'
-CONFIG_DIR = os.environ.get("AUTOJUMP_DATA_DIR", os.path.expanduser("~"))
+if "AUTOJUMP_DATA_DIR" in os.environ:
+    CONFIG_DIR = os.environ.get("AUTOJUMP_DATA_DIR")
+else:
+    xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
+    CONFIG_DIR=os.path.join(xdg_data_dir, 'autojump')
 
 def uniqadd(collection, key):
     """Adds a key to a list only if it is not already present"""
