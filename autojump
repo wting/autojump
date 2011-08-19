@@ -141,6 +141,13 @@ def open_dic(dic_file, error_recovery=False):
             return open_dic(dic_file, True)
         else: return {} #if everything fails, return an empty file
 
+def get_dic_file():
+    if CONFIG_DIR == os.path.expanduser("~"):
+        dic_file = CONFIG_DIR+"/.autojump_py"
+    else:
+        dic_file = CONFIG_DIR+"/autojump_py"
+    return dic_file
+
 def shell_utility():
     """Run this when autojump is called as a shell utility"""
     try:
@@ -150,10 +157,7 @@ def shell_utility():
         print("Unknown command line argument: %s" % ex)
         exit(1)
 
-    if CONFIG_DIR == os.path.expanduser("~"):
-        dic_file = CONFIG_DIR+"/.autojump_py"
-    else:
-        dic_file = CONFIG_DIR+"/autojump_py"
+    dic_file = get_dic_file()
     path_dict = open_dic(dic_file)
     if ('-a', '') in optlist:
         # The home dir can be reached quickly by "cd"

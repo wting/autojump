@@ -24,6 +24,7 @@ import sys
 import pygtk
 pygtk.require('2.0')
 import gtk
+from autojump import open_dic,get_dic_file
 
 defaults={}
 actions={}
@@ -57,19 +58,11 @@ def has_child_file(filename):
     return wrapper
 
 #do the work
-def load_paths(filename="~/.autojump_py",maxpath=10):
-    dic_file=os.path.expanduser(filename)
-
-    try:
-        aj_file=open(dic_file)
-        path_dict=cPickle.load(aj_file)
-        aj_file.close()
-        path_dict=path_dict.items()
-        path_dict.sort(key=lambda x: x[1],reverse=True)
-
-        return [path for path,score in path_dict[:maxpath]]
-    except IOError:
-        return []
+def load_paths(maxpath=10):
+    path_dict=open_dic(get_dic_file())
+    path_dict=path_dict.items()
+    path_dict.sort(key=lambda x: x[1],reverse=True)
+    return [path for path,score in path_dict[:maxpath]]
 
 def load_settings_file(filename="~/.jumpapplet_py"):
     print "loading settings"
