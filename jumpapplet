@@ -29,6 +29,15 @@ from autojump import open_dic,get_dic_file
 defaults={}
 actions={}
 
+#directory finding helpers, conforming to the XDG Base Directory Specification
+def data_dir():
+    xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
+    return os.path.join(xdg_data_dir, 'autojump')
+
+def config_dir():
+    xdg_config_dir = os.environ.get('XDG_CONFIG_HOME') or os.path.join(os.environ['HOME'], '.config')
+    return os.path.join(xdg_config_dir, 'autojump')
+
 #decorator truff
 def action(validator,name=None):
     if name is None:
@@ -57,17 +66,22 @@ def has_child_file(filename):
         return os.path.isfile(os.path.join(path,filename))
     return wrapper
 
-#do the work
 def load_paths(maxpath=10):
     path_dict=open_dic(get_dic_file())
     path_dict=path_dict.items()
     path_dict.sort(key=lambda x: x[1],reverse=True)
     return [path for path,score in path_dict[:maxpath]]
 
-def load_settings_file(filename="~/.jumpapplet_py"):
+def load_settings_file():
+    filename = os.path.join(config_dir(), 'jumpapplet_py')
+    #migration from old location
+    old_filename =  os.path.join(os.environ['HOME'], '.jumpapplet_py')
+    if not os.path.exists(filename) and os.path.exists(old_filename):
+        os.rename(old_filename, filename)
+
     print "loading settings"
     global defaults
-    dic_file=os.path.expanduser(filename)
+    dic_file = filename
 
     try:
         aj_file=open(dic_file,'r')
@@ -85,9 +99,16 @@ def load_settings_file(filename="~/.jumpapplet_py"):
 
     create_actions()
 
-def save_settings_file(filename="~/.jumpapplet_py"):
+def save_settings_file(filename=None):
+    directory = config_dir()
+    if not filename:
+        filename = os.path.join(directory, 'jumpapplet_py')
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     print "saving settings"
-    dic_file=os.path.expanduser(filename)
+    dic_file= filename
 
     aj_file=open(dic_file,'w')
     cPickle.dump(defaults,aj_file)
