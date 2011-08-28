@@ -80,7 +80,7 @@ else
                 # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
                 # .bashrc has been properly sourced and you don't need to add it.
                 OS=`uname`
-                if [ $OS == 'Darwin' -a `grep -c "^[[:space:]]*\(source\|\.\) ~/\.bashrc[[:space:]]*$" ~/.bash_profile` -eq 0 ]; then
+                if [ $OS == 'Darwin' -a x`grep -c "^[[:space:]]*\(source\|\.\) ~/\.bashrc[[:space:]]*$" ~/.bash_profile` == x0 ]; then
                     echo "You are using OSX and your .bash_profile doesn't seem to be sourcing .bashrc"
                     echo "Adding source ~/.bashrc to your bashrc"
                     echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
