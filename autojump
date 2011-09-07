@@ -223,7 +223,7 @@ def shell_utility():
             if not completion and clean_dict(dirs, path_dict):
                 save(path_dict, dic_file)
 
-            if completion and ('--bash', '') in optlist: quotes = '"'
+            if completion and ('--bash', '') in optlist: quotes = "'"
             else: quotes = ""
 
             if userchoice != -1:
