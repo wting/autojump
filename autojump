@@ -93,36 +93,49 @@ def clean_dict(sorted_dirs, path_dict):
     else: return False
 
 def match(path, pattern, ignore_case=False, only_end=False):
-    """Check whether a path matches a particular pattern"""
-    try:
-        if os.path.realpath(os.curdir) == path :
-            return False
-    #Sometimes the current path doesn't exist anymore.
-    #In that case, jump if possible.
-    except OSError:
-        pass
+    """Check whether a path matches a particular pattern, and return
+       the remaning part of the string"""
     if only_end:
         match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
     else:
         match_string = path
     if ignore_case:
-        does_match = (match_string.lower().find(pattern.lower()) != -1)
+        find_idx = match_string.lower().find(pattern.lower())
     else:
-        does_match = (match_string.find(pattern) != -1)
-    #return True if there is a match and the path exists 
-    #(useful in the case of external drives, for example)
-    return does_match and os.path.exists(path) 
+        find_idx = match_string.find(pattern)
+    does_match = (find_idx != -1)
+    # Eat the path to avoid two patterns matching the same part of the string
+    if does_match:
+        eaten_path = path[find_idx+len(pattern):]
+    else:
+        eaten_path = path
+    return (does_match, eaten_path)
 
 def find_matches(dirs, patterns, result_list, ignore_case, max_matches):
     """Find max_matches paths that match the pattern, 
     and add them to the result_list"""
     for path, count in dirs:
-        if len(result_list) >= max_matches :
-            break
-        #For the last pattern, only match the end of the pattern
-        if all(match(path, p, ignore_case,
-            only_end=(n == len(patterns)-1)) for n, p in enumerate(patterns)):
+        # Don't jump to where we alread are
+        try:
+            if os.path.realpath(os.curdir) == path :
+                continue
+        #Sometimes the current path doesn't exist anymore.
+        #In that case, jump if possible.
+        except OSError:
+            pass
+        #If a path doesn't exist, don't jump there
+        #We still keep it in db in case it's from a removable drive
+        if not os.path.exists(path):
+            continue
+        does_match, eaten_path = True, path
+        for n,p in enumerate(patterns):
+            #For the last pattern, only match the end of the pattern
+            does_match, eaten_path = match(eaten_path, p, ignore_case, only_end=(n == len(patterns)-1))
+            if not does_match: break
+        if does_match:
             uniqadd(result_list, path)
+            if len(result_list) >= max_matches :
+                break
 
 def open_dic(dic_file, error_recovery=False):
     """Try hard to open the database file, recovering
