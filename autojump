@@ -92,37 +92,97 @@ def clean_dict(sorted_dirs, path_dict):
         return True
     else: return False
 
-def match(path, pattern, ignore_case=False, only_end=False):
-    """Check whether a path matches a particular pattern"""
-    try:
-        if os.path.realpath(os.curdir) == path :
-            return False
-    #Sometimes the current path doesn't exist anymore.
-    #In that case, jump if possible.
-    except OSError:
-        pass
-    if only_end:
-        match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
-    else:
-        match_string = path
-    if ignore_case:
-        does_match = (match_string.lower().find(pattern.lower()) != -1)
-    else:
-        does_match = (match_string.find(pattern) != -1)
-    #return True if there is a match and the path exists 
-    #(useful in the case of external drives, for example)
-    return does_match and os.path.exists(path) 
+def approximatch(pat, text, max_errors):
+    """Calculate the Damerau-Levenshtein distance between :pat and :text,
+    minimized over all possible positions of :pat within :text. As an
+    optimization, this distance is only accurate if it is <= :max_errors.
+    Return values greater than :max_errors indicate that the distance is _at
+    least_ that much. Runs in O(:max_errors * len(:text)) time."""
+    cols = [list(range(0, len(pat)+1))]
+    errors = len(pat)
+    for i in range(0, len(text)): cols.append([errors] * (len(pat) + 1))
+    last_active = min(max_errors, len(pat))
+    last_seen_in_text = {}
+    for i, char1 in enumerate(text):
+        cols[i+1][0] = 0
+        last_seen_in_pat = 0
+        for j, char2 in enumerate(pat):
+            i1 = last_seen_in_text[char2] if char2 in last_seen_in_text else 0
+            j1 = last_seen_in_pat
+            if char1 == char2:
+                cols[i+1][j+1] = cols[i][j]
+                last_seen_in_pat = j + 1
+            else:
+                cols[i+1][j+1] = 1 + min(cols[i+1][j], cols[i][j+1], cols[i][j])
+            if i1 and j1:
+                cols[i+1][j+1] = min(cols[i+1][j+1], 1 + (i - i1) + (j - j1) + cols[i1-1][j1-1])
 
-def find_matches(dirs, patterns, result_list, ignore_case, max_matches):
+            #Ukkonen's cut-off heuristic. See 'Theoretical and Empirical
+            #Comparisons of Approximate String Matching Algorithms by Chang and
+            #Lampe for details.
+            if j + 1 == len(pat):
+                errors = min(errors, cols[i+1][j+1])
+            elif j + 1 == last_active + 1:
+                break
+
+        last_seen_in_text[char1] = i + 1
+
+        if last_active < len(pat): last_active += 1
+        while cols[i+1][last_active] > max_errors: last_active -= 1
+
+    return errors
+
+def find_matches(dirs, patterns, result_list, ignore_case, approx, max_matches):
     """Find max_matches paths that match the pattern, 
     and add them to the result_list"""
-    for path, count in dirs:
-        if len(result_list) >= max_matches :
-            break
+
+    def get_pattern_and_match(patterns, path):
         #For the last pattern, only match the end of the pattern
-        if all(match(path, p, ignore_case,
-            only_end=(n == len(patterns)-1)) for n, p in enumerate(patterns)):
-            uniqadd(result_list, path)
+        for n, pattern in enumerate(patterns):
+            if n == len(patterns) - 1:
+                match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
+            else:
+                match_string = path
+            if ignore_case:
+                pattern = pattern.lower()
+                match_string = match_string.lower()
+            yield (pattern, match_string)
+
+    if approx:
+        one_error_paths = []
+        two_error_paths = []
+        for path, count in dirs:
+            if len(one_error_paths) >= max_matches:
+                break
+            total_errors = 0
+            bad_match = False
+            for pattern, match_string in get_pattern_and_match(patterns, path):
+                errors = approximatch(pattern, match_string, 2)
+                #If the number of errors are >= than the string length, then a
+                #match is always possible, so this result is useless.
+                if errors >= len(pattern) or errors >= len(match_string):
+                    bad_match = True
+                    break
+                total_errors += errors
+            if bad_match:
+                continue
+            #Verify that the path exists 
+            #(useful in the case of external drives, for example)
+            if total_errors <= 2 and os.path.exists(path):
+                if total_errors == 1:
+                    uniqadd(one_error_paths, path)
+                elif total_errors == 2:
+                    uniqadd(two_error_paths, path)
+        result_list.extend(one_error_paths)
+        result_list.extend(two_error_paths[:max_matches-len(one_error_paths)])
+    else:
+        for path, count in dirs:
+            if len(result_list) >= max_matches:
+                break
+            if all(match_string.find(pattern) != -1
+                    for pattern, match_string in
+                    get_pattern_and_match(patterns, path)) and os.path.exists(path):
+                uniqadd(result_list, path)
 
 def open_dic(dic_file, error_recovery=False):
     """Try hard to open the database file, recovering
@@ -208,18 +268,30 @@ def shell_utility():
                 endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
                 if endmatch: patterns[-1] = endmatch.group(1)
 
-            dirs = list(path_dict.items())
+            try:
+                cwd = os.path.realpath(os.curdir)
+            #Sometimes the current path doesn't exist anymore.
+            #In that case, jump if possible.
+            except OSError:
+                cwd = None
+            dirs = list((path, count) for path, count in path_dict.items()
+                    if path != cwd)
             dirs.sort(key=itemgetter(1), reverse=True)
             if completion or userchoice != -1:
                 max_matches = 9
             else:
                 max_matches = 1
-            find_matches(dirs, patterns, results, False, max_matches)
+            find_matches(dirs, patterns, results, False, False, max_matches)
             # If not found, try ignoring case.
             # On completion always show all results
             if completion or not results: 
                 find_matches(dirs, patterns, results,
-                        ignore_case=True, max_matches=max_matches) 
+                        ignore_case=True, approx=False, max_matches=max_matches) 
+
+            if not results:
+                find_matches(dirs, patterns, results,
+                        ignore_case=True, approx=True, max_matches=max_matches) 
+
             # Keep the database to a reasonable size
             if not completion and clean_dict(dirs, path_dict):
                 save(path_dict, dic_file)
