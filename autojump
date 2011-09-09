@@ -171,7 +171,7 @@ def shell_utility():
         optlist, args = getopt.getopt(argv[1:], 'a',
                 ['stat', 'import', 'completion', 'bash']) 
     except getopt.GetoptError as ex:
-        print("Unknown command line argument: %s" % ex)
+        print("Unknown command line argument: %s" % ex, file=stderr)
         exit(1)
 
     dic_file = get_dic_file()
