@@ -22,7 +22,7 @@ frequently used places."""
 from __future__ import division, print_function
 
 import getopt
-from sys import argv, stderr, version_info, exit
+from sys import argv, stderr, version_info, exit, getfilesystemencoding
 from tempfile import NamedTemporaryFile
 from operator import itemgetter
 import os
@@ -47,6 +47,22 @@ def dicadd(dic, key, increment=1):
     if is is not already present"""
     dic[key] = dic.get(key, 0.)+increment
 
+def output(unicode_text,encoding=None):
+    """Wrapper for the print function, using the filesystem encoding by default
+    to minimize encoding mismatch problems in directory names"""
+    if encoding is None:
+        encoding = getfilesystemencoding()
+    print(unicode_text.encode(encoding))
+
+def decode(text,encoding=None,errors="strict"):
+    """Decoding step for python2.x which does not default to unicode"""
+    if version_info[0] > 2:
+        return text
+    else:
+        if encoding is None:
+            encoding = getfilesystemencoding()
+        return text.decode(encoding,errors)
+
 def save(path_dict, dic_file):
     """Save the database in an atomic way, and preserve
        a backup file."""
@@ -55,8 +71,8 @@ def save(path_dict, dic_file):
     if (not os.path.exists(dic_file)) or os.getuid() == os.stat(dic_file)[4]:
         temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
         for path in path_dict:
-            print(path_dict[path])
-            temp.write((repr(path_dict[path]) + "\t" + path + "\n").encode("utf-8"))
+            # the db is stored in utf-8
+            temp.write((u"%s\t%s\n" %(path_dict[path],path)).encode("utf-8"))
         temp.flush()
         os.fsync(temp)
         temp.close()
@@ -80,6 +96,8 @@ def open_dic(dic_file, error_recovery=False):
         with open(dic_file, 'r') as aj_file:
             for l in aj_file.readlines():
                 weight,path = l[:-1].split("\t",1)
+                # the db is stored in utf-8
+                path = decode(path,"utf-8")
                 path_dict[path] = float(weight)
             return path_dict
     except (IOError, EOFError):
@@ -104,8 +122,11 @@ def open_dic(dic_file, error_recovery=False):
                             path_dict = pickle.load(aj_file, encoding="utf-8")
                         else:
                             path_dict = pickle.load(aj_file)
-                        aj_file.close()
-                        return path_dict
+                    unicode_dict = {} #we now use unicode internally
+                    for k,v in path_dict.items():
+                        print(k)
+                        unicode_dict[decode(k,errors="replace")] = v
+                    return unicode_dict
                 except (IOError, EOFError, pickle.UnpicklingError):
                     pass
             return {} #if everything fails, return an empty file
@@ -155,7 +176,7 @@ def find_matches(dirs, patterns, result_list, ignore_case, max_matches):
     for path, count in dirs:
         # Don't jump to where we alread are
         try:
-            if os.path.realpath(os.curdir) == path :
+            if decode(os.path.realpath(os.curdir)) == path :
                 continue
         #Sometimes the current path doesn't exist anymore.
         #In that case, jump if possible.
@@ -197,13 +218,13 @@ def shell_utility():
         # The home dir can be reached quickly by "cd"
         # and may interfere with other directories
         if(args[-1] != os.path.expanduser("~")): 
-            dicadd(path_dict, args[-1])
+            dicadd(path_dict, decode(args[-1]))
             save(path_dict, dic_file)
     elif ('--stat', '') in optlist:
         paths = list(path_dict.items())
         paths.sort(key=itemgetter(1))
         for path, count in paths[-100:]:
-            print("%.1f:\t%s" % (count, path))
+            output(u"%.1f:\t%s" % (count, path))
         print("Total key weight: %d. Number of stored paths: %d" %
                 (sum(path_dict.values()), len(paths)))
     else:
@@ -216,8 +237,8 @@ def shell_utility():
             completion = True
         else:
             forget(path_dict, dic_file) #gradually forget about old directories
-        if not args: patterns = [""]
-        else: patterns = args
+        if not args: patterns = [u""]
+        else: patterns = [decode(a) for a in args]
 
         # If the last pattern contains a full path, jump there
         # The regexp is because we need to support stuff like
@@ -226,7 +247,7 @@ def shell_utility():
         if (len(last_pattern_path)>0 and
               last_pattern_path[0] == "/" and
               os.path.exists(last_pattern_path)):
-            if not completion: print(last_pattern_path)
+            if not completion: output(last_pattern_path)
         else:
             #check for ongoing completion, and act accordingly
             endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
@@ -259,12 +280,13 @@ def shell_utility():
 
             if userchoice != -1:
                 if len(results) > userchoice-1 : 
+                    output(u"%s%s%s" % (quotes,results[userchoice-1],quotes))
                     print(quotes+results[userchoice-1]+quotes)
             elif len(results) > 1 and completion:
-                print("\n".join(("%s%s%d%s%s" % (patterns[-1],
+                output("\n".join(("%s%s%d%s%s" % (patterns[-1],
                     COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
                     for n, r in enumerate(results[:8]))))
-            elif results: print(quotes+results[0]+quotes)
+            elif results: output(u"%s%s%s"%(quotes,results[0],quotes))
             else:
                 return False
             return True
