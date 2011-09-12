@@ -50,9 +50,12 @@ def dicadd(dic, key, increment=1):
 def output(unicode_text,encoding=None):
     """Wrapper for the print function, using the filesystem encoding by default
     to minimize encoding mismatch problems in directory names"""
-    if encoding is None:
-        encoding = getfilesystemencoding()
-    print(unicode_text.encode(encoding))
+    if version_info[0] > 2:
+        print(unicode_text)
+    else:
+        if encoding is None:
+            encoding = getfilesystemencoding()
+        print(unicode_text.encode(encoding))
 
 def decode(text,encoding=None,errors="strict"):
     """Decoding step for python2.x which does not default to unicode"""
@@ -63,6 +66,13 @@ def decode(text,encoding=None,errors="strict"):
             encoding = getfilesystemencoding()
         return text.decode(encoding,errors)
 
+def unico(text):
+    """if python2, convert to a unicode object"""
+    if version_info[0] > 2:
+        return text
+    else:
+        return unicode(text)
+
 def save(path_dict, dic_file):
     """Save the database in an atomic way, and preserve
        a backup file."""
@@ -72,7 +82,7 @@ def save(path_dict, dic_file):
         temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
         for path in path_dict:
             # the db is stored in utf-8
-            temp.write((u"%s\t%s\n" %(path_dict[path],path)).encode("utf-8"))
+            temp.write((unico("%s\t%s\n")%(path_dict[path],path)).encode("utf-8"))
         temp.flush()
         os.fsync(temp)
         temp.close()
@@ -224,7 +234,7 @@ def shell_utility():
         paths = list(path_dict.items())
         paths.sort(key=itemgetter(1))
         for path, count in paths[-100:]:
-            output(u"%.1f:\t%s" % (count, path))
+            output(unico("%.1f:\t%s") % (count, path))
         print("Total key weight: %d. Number of stored paths: %d" %
                 (sum(path_dict.values()), len(paths)))
     else:
@@ -237,7 +247,7 @@ def shell_utility():
             completion = True
         else:
             forget(path_dict, dic_file) #gradually forget about old directories
-        if not args: patterns = [u""]
+        if not args: patterns = [unico("")]
         else: patterns = [decode(a) for a in args]
 
         # If the last pattern contains a full path, jump there
@@ -280,13 +290,12 @@ def shell_utility():
 
             if userchoice != -1:
                 if len(results) > userchoice-1 : 
-                    output(u"%s%s%s" % (quotes,results[userchoice-1],quotes))
-                    print(quotes+results[userchoice-1]+quotes)
+                    output(unico("%s%s%s") % (quotes,results[userchoice-1],quotes))
             elif len(results) > 1 and completion:
                 output("\n".join(("%s%s%d%s%s" % (patterns[-1],
                     COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
                     for n, r in enumerate(results[:8]))))
-            elif results: output(u"%s%s%s"%(quotes,results[0],quotes))
+            elif results: output(unico("%s%s%s")%(quotes,results[0],quotes))
             else:
                 return False
             return True
