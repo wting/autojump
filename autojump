@@ -80,9 +80,9 @@ def save(path_dict, dic_file):
     # Otherwise, fail quietly
     if (not os.path.exists(dic_file)) or os.getuid() == os.stat(dic_file)[4]:
         temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
-        for path in path_dict:
+        for path,weight in sorted(path_dict.items(),key=itemgetter(1),reverse=True):
             # the db is stored in utf-8
-            temp.write((unico("%s\t%s\n")%(path_dict[path],path)).encode("utf-8"))
+            temp.write((unico("%s\t%s\n")%(weight,path)).encode("utf-8"))
         temp.flush()
         os.fsync(temp)
         temp.close()
