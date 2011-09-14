@@ -55,23 +55,24 @@ def save(path_dict, dic_file):
        a backup file."""
     # If the dic_file exists, check that it belongs to us
     # Otherwise, fail quietly
-    if (not os.path.exists(dic_file)) or os.getuid() == os.stat(dic_file)[4]:
-        temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
-        pickle.dump(path_dict, temp, 2)
-        temp.flush()
-        os.fsync(temp)
-        temp.close()
-        #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
-        os.rename(temp.name, dic_file) 
-        try: #backup file
-            import time 
-            if (not os.path.exists(dic_file+".bak") or
-                    time.time()-os.path.getmtime(dic_file+".bak")>86400):
-                import shutil
-                shutil.copy(dic_file, dic_file+".bak")
-        except OSError as ex:
-            print("Error while creating backup autojump file. (%s)" %
-                    ex, file=stderr)
+    temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
+    pickle.dump(path_dict, temp, 2)
+    temp.flush()
+    os.fsync(temp)
+    temp.close()
+    #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
+    #os.rename(temp.name, dic_file) 
+    import shutil
+    shutil.copy(temp.name, dic_file)
+    try: #backup file
+        import time 
+        if (not os.path.exists(dic_file+".bak") or
+                time.time()-os.path.getmtime(dic_file+".bak")>86400):
+            import shutil
+            shutil.copy(dic_file, dic_file+".bak")
+    except OSError as ex:
+        print("Error while creating backup autojump file. (%s)" %
+                ex, file=stderr)
 
 def forget(path_dict, dic_file):
     """Gradually forget about directories. Only call
