@@ -180,28 +180,21 @@ def match(path, pattern, ignore_case=False, only_end=False):
         eaten_path = path
     return (does_match, eaten_path)
 
-def find_matches(dirs, patterns, result_list, ignore_case, max_matches):
+def find_matches(dirs, patterns, result_list, ignore_case, max_matches, current_dir):
     """Find max_matches paths that match the pattern, 
     and add them to the result_list"""
     for path, count in dirs:
         # Don't jump to where we alread are
-        try:
-            if decode(os.path.realpath(os.curdir)) == path :
-                continue
-        #Sometimes the current path doesn't exist anymore.
-        #In that case, jump if possible.
-        except OSError:
-            pass
-        #If a path doesn't exist, don't jump there
-        #We still keep it in db in case it's from a removable drive
-        if not os.path.exists(path):
+        if current_dir == path :
             continue
         does_match, eaten_path = True, path
         for n,p in enumerate(patterns):
             #For the last pattern, only match the end of the pattern
             does_match, eaten_path = match(eaten_path, p, ignore_case, only_end=(n == len(patterns)-1))
             if not does_match: break
-        if does_match:
+        #If a path doesn't exist, don't jump there
+        #We still keep it in db in case it's from a removable drive
+        if does_match and os.path.exists(path):
             uniqadd(result_list, path)
             if len(result_list) >= max_matches :
                 break
@@ -275,12 +268,21 @@ def shell_utility():
                 max_matches = 9
             else:
                 max_matches = 1
-            find_matches(dirs, patterns, results, False, max_matches)
+
+            # Don't jump to the current directory
+            try:
+                current_dir = decode(os.path.realpath(os.curdir))
+            #Sometimes the current path doesn't exist anymore.
+            #In that case, jump if possible.
+            except OSError:
+                current_dir = None
+            find_matches(dirs, patterns, results, False, max_matches, current_dir)
             # If not found, try ignoring case.
             # On completion always show all results
             if completion or not results: 
                 find_matches(dirs, patterns, results,
-                        ignore_case=True, max_matches=max_matches) 
+                        ignore_case=True,
+                        max_matches=max_matches, current_dir=current_dir) 
             # Keep the database to a reasonable size
             if not completion and clean_dict(dirs, path_dict):
                 save(path_dict, dic_file)
