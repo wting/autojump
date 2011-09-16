@@ -31,6 +31,7 @@ from sys import argv, stderr, version_info, exit
 from tempfile import NamedTemporaryFile
 from operator import itemgetter
 import os
+AUTOJUMP_VERSION = "release v17"
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 600
 COMPLETION_SEPARATOR = '__'
@@ -156,7 +157,7 @@ def shell_utility():
     """Run this when autojump is called as a shell utility"""
     try:
         optlist, args = getopt.getopt(argv[1:], 'a',
-                ['stat', 'import', 'completion', 'bash']) 
+                ['stat', 'import', 'completion', 'bash', 'version', 'help'])
     except getopt.GetoptError as ex:
         print("Unknown command line argument: %s" % ex)
         exit(1)
@@ -176,6 +177,11 @@ def shell_utility():
             print("%.1f:\t%s" % (count, path))
         print("Total key weight: %d. Number of stored paths: %d" %
                 (sum(path_dict.values()), len(paths)))
+    elif ('--version', '') in optlist:
+        print("autojump %s" % AUTOJUMP_VERSION)
+    elif ('--help', '') in optlist:
+        print("usage: j <dirspec>")
+        print("where dirspec is a few characters of the directory you want to jump to.")
     else:
         import re
         completion = False
