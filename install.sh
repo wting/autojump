@@ -16,7 +16,7 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 function show_help {
-        echo " ./install.sh [--prefix /usr/local]"
+        echo "sudo ./install.sh [--prefix /usr/local]"
 }
 
 # Default install directory.
@@ -56,8 +56,8 @@ $SUDO cp autojump ${prefix}/bin/
 $SUDO cp autojump.1 ${prefix}/share/man/man1/
 
 if [ -d "/etc/profile.d" ]; then
-     cp autojump.bash /etc/profile.d/
-     cp autojump.sh /etc/profile.d/
+    $SUDO cp autojump.bash /etc/profile.d/
+    $SUDO cp autojump.sh /etc/profile.d/
 
     # Make sure that the code we just copied has been sourced.
     # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
