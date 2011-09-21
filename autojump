@@ -76,7 +76,7 @@ def unico(text):
 def save(path_dict, dic_file):
     """Save the database in an atomic way, and preserve
        a backup file."""
-    # If the dic_file exists, check that it belongs to us
+    # If the dic_file exists and os is not windows, check that it belongs to us
     # Otherwise, fail quietly
     if (not os.path.exists(dic_file)) or os.name == 'nt' or os.getuid() == os.stat(dic_file)[4]:
         temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)

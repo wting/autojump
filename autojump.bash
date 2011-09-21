@@ -20,10 +20,12 @@ _autojump()
         local cur
         cur=${COMP_WORDS[*]:1}
         comps=$(autojump --bash --completion $cur)
-        for i in $comps
+        while read i
         do
             COMPREPLY=("${COMPREPLY[@]}" "${i}")
-        done
+        done <<EOF
+        $comps
+EOF
 }
 complete -F _autojump j
 
