@@ -41,23 +41,17 @@ done
 echo "Installing to ${prefix} ..."
 
 # INSTALL AUTOJUMP
-SUDO="sudo"
-case "${OSTYPE}" in
-    *cygwin*|*msys*)
-        SUDO="";;
-    *);;
-esac
-$SUDO mkdir -p ${prefix}/share/autojump/
-$SUDO mkdir -p ${prefix}/bin/
-$SUDO mkdir -p ${prefix}/share/man/man1/
-$SUDO cp icon.png ${prefix}/share/autojump/
-$SUDO cp jumpapplet ${prefix}/bin/
-$SUDO cp autojump ${prefix}/bin/
-$SUDO cp autojump.1 ${prefix}/share/man/man1/
+mkdir -p ${prefix}/share/autojump/
+mkdir -p ${prefix}/bin/
+mkdir -p ${prefix}/share/man/man1/
+cp icon.png ${prefix}/share/autojump/
+cp jumpapplet ${prefix}/bin/
+cp autojump ${prefix}/bin/
+cp autojump.1 ${prefix}/share/man/man1/
 
 if [ -d "/etc/profile.d" ]; then
-    $SUDO cp autojump.bash /etc/profile.d/
-    $SUDO cp autojump.sh /etc/profile.d/
+    cp autojump.bash /etc/profile.d/
+    cp autojump.sh /etc/profile.d/
 
     # Make sure that the code we just copied has been sourced.
     # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
