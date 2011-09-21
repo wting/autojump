@@ -88,7 +88,7 @@ def save(path_dict, dic_file):
         temp.close()
         #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
         import shutil
-        shutil.copy(temp.name, dic_file)
+        shutil.move(temp.name, dic_file)
         try: #backup file
             import time 
             if (not os.path.exists(dic_file+".bak") or
