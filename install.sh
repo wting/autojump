@@ -44,13 +44,13 @@ echo "Installing to ${prefix} ..."
 make autojump
 
 # INSTALL AUTOJUMP
-sudo mkdir -p ${prefix}/share/autojump/
-sudo mkdir -p ${prefix}/bin/
-sudo mkdir -p ${prefix}/share/man/man1/
-sudo cp icon.png ${prefix}/share/autojump/
-sudo cp jumpapplet ${prefix}/bin/
-sudo cp autojump ${prefix}/bin/
-sudo cp autojump.1 ${prefix}/share/man/man1/
+mkdir -p ${prefix}/share/autojump/
+mkdir -p ${prefix}/bin/
+mkdir -p ${prefix}/share/man/man1/
+cp icon.png ${prefix}/share/autojump/
+cp jumpapplet ${prefix}/bin/
+cp autojump ${prefix}/bin/
+cp autojump.1 ${prefix}/share/man/man1/
 
 if [ -d "/etc/profile.d" ]; then
     sudo cp autojump.bash /etc/profile.d/
