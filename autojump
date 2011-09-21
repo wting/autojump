@@ -31,7 +31,7 @@ from sys import argv, stderr, version_info, exit
 from tempfile import NamedTemporaryFile
 from operator import itemgetter
 import os
-AUTOJUMP_VERSION = "release v17"
+AUTOJUMP_VERSION = "git revision release-v17-3-gf75b11d-dirty"
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 600
 COMPLETION_SEPARATOR = '__'

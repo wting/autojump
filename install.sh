@@ -41,7 +41,7 @@ done
 echo "Installing to ${prefix} ..."
 
 # add git revision to autojump
-./git-version.sh
+make autojump
 
 # INSTALL AUTOJUMP
 sudo mkdir -p ${prefix}/share/autojump/
