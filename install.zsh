@@ -39,6 +39,9 @@ done
 
 echo "Installing main files to ${prefix} ..."
 
+# add git revision to autojump
+./git-version.sh
+
 sudo mkdir -p ${prefix}/share/autojump/
 sudo mkdir -p ${prefix}/bin/
 sudo mkdir -p ${prefix}/share/man/man1/
