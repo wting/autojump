@@ -26,6 +26,7 @@ from sys import argv, stderr, version_info, exit, getfilesystemencoding
 from tempfile import NamedTemporaryFile
 from operator import itemgetter
 import os
+import shutil
 
 AUTOJUMP_VERSION = "release v17"
 MAX_KEYWEIGHT = 1000
@@ -77,24 +78,24 @@ def unico(text):
 def save(path_dict, dic_file):
     """Save the database in an atomic way, and preserve
        a backup file."""
-    # If the dic_file exists and os is not windows, check that it belongs to us
+    # If the dic_file exists and os supports permissions, check that dic_file belongs to us
     # Otherwise, fail quietly
     if (not os.path.exists(dic_file)) or os.name == 'nt' or os.getuid() == os.stat(dic_file)[4]:
         temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
         for path,weight in sorted(path_dict.items(),key=itemgetter(1),reverse=True):
             # the db is stored in utf-8
             temp.write((unico("%s\t%s\n")%(weight,path)).encode("utf-8"))
+        #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
         temp.flush()
         os.fsync(temp)
         temp.close()
-        #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
-        import shutil
+        # Use shutil.move instead of os.rename because windows doesn't support
+        # using rename to overwrite files
         shutil.move(temp.name, dic_file)
         try: #backup file
             import time 
             if (not os.path.exists(dic_file+".bak") or
                     time.time()-os.path.getmtime(dic_file+".bak")>86400):
-                import shutil
                 shutil.copy(dic_file, dic_file+".bak")
         except OSError as ex:
             print("Error while creating backup autojump file. (%s)" %
@@ -116,7 +117,6 @@ def open_dic(dic_file, error_recovery=False):
         if not error_recovery and os.path.exists(dic_file+".bak"):
             print('Problem with autojump database,\
                     trying to recover from backup...', file=stderr)
-            import shutil
             shutil.copy(dic_file+".bak", dic_file)
             return open_dic(dic_file, True)
         else:
