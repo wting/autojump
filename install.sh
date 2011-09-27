@@ -22,6 +22,10 @@ function show_help {
 # Default install directory.
 prefix=/usr
 
+user=${SUDO_USER:-${USER}}
+user_home=$(getent passwd ${user} | cut -d: -f6)
+bashrc_file=${user_home}/.bashrc
+
 # Command line parsing
 while true; do
     case "$1" in
@@ -58,12 +62,12 @@ if [ -d "/etc/profile.d" ]; then
 
     # Make sure that the code we just copied has been sourced.
     # check if .bashrc has sourced /etc/profile or /etc/profile.d/autojump.bash
-    if [ `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ~/.bashrc` -eq 0 ]; then
+    if [ `grep -c "^[[:space:]]*\(source\|\.\) /etc/profile\(\.d/autojump\.bash\)[[:space:]]*$" ${bashrc_file}` -eq 0 ]; then
         echo "Your .bashrc doesn't seem to source /etc/profile or /etc/profile.d/autojump.bash"
         echo "Adding the /etc/profile.d/autojump.bash to your .bashrc"
-        echo "" >> ~/.bashrc
-        echo "# Added by autojump install.sh" >> ~/.bashrc
-        echo "source /etc/profile.d/autojump.bash" >> ~/.bashrc
+        echo "" >> ${bashrc_file}
+        echo "# Added by autojump install.sh" >> ${bashrc_file}
+        echo "source /etc/profile.d/autojump.bash" >> ${bashrc_file}
     fi
     echo "Done!"
     echo
@@ -75,9 +79,9 @@ else
 	     if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
 
                 # Answered yes. Go ahead and add the autojump code
-	        echo "" >> ~/.bashrc
-	        echo "#autojump" >> ~/.bashrc
-	        cat autojump.bash | grep -v "^#" >> ~/.bashrc
+	        echo "" >> ${bashrc_file}
+	        echo "#autojump" >> ${bashrc_file}
+	        cat autojump.bash | grep -v "^#" >> ${bashrc_file}
 
                 # Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
                 # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
@@ -87,7 +91,7 @@ else
                     echo "You are using OSX and your .bash_profile doesn't seem to be sourcing .bashrc"
                     echo "Adding source ~/.bashrc to your bashrc"
                     echo -e "\n# Get the aliases and functions" >> ~/.bash_profile
-                    echo -e "if [ -f ~/.bashrc ]; then\n  . ~/.bashrc\nfi" >> ~/.bash_profile
+                    echo -e "if [ -f ${bashrc_file} ]; then\n  . ${bashrc_file}\nfi" >> ~/.bash_profile
                 fi
                 echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
 	     else
