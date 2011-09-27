@@ -77,9 +77,9 @@ def unico(text):
 def save(path_dict, dic_file):
     """Save the database in an atomic way, and preserve
        a backup file."""
-    # If the dic_file exists, check that it belongs to us
+    # If the dic_file exists and os is not windows, check that it belongs to us
     # Otherwise, fail quietly
-    if (not os.path.exists(dic_file)) or os.getuid() == os.stat(dic_file)[4]:
+    if (not os.path.exists(dic_file)) or os.name == 'nt' or os.getuid() == os.stat(dic_file)[4]:
         temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
         for path,weight in sorted(path_dict.items(),key=itemgetter(1),reverse=True):
             # the db is stored in utf-8
@@ -88,7 +88,8 @@ def save(path_dict, dic_file):
         os.fsync(temp)
         temp.close()
         #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
-        os.rename(temp.name, dic_file)
+        import shutil
+        shutil.move(temp.name, dic_file)
         try: #backup file
             import time 
             if (not os.path.exists(dic_file+".bak") or
