@@ -12,7 +12,7 @@ tagname=release-${version}
 ./git-version.sh ${tagname}
 
 # Commit the version change
-git commit autojump
+git commit -m "version numbering" autojump
 
 #Create tag
 git tag -a ${tagname}
