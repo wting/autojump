@@ -7,8 +7,14 @@ then
     exit
 fi
 
-gitrevision=`git describe`
-if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then
-    gitrevision=$gitrevision"-dirty"
+if [ -z "$1" ]
+then
+    gitrevision=`git describe`
+    if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then
+        gitrevision=$gitrevision"-dirty"
+    fi
+else
+    gitrevision="$1"
 fi
+
 sed -i "s/^AUTOJUMP_VERSION = \".*\"$/AUTOJUMP_VERSION = \"$gitrevision\"/" autojump
