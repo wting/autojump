@@ -119,7 +119,7 @@ For now gcarrier and I have packaged autojump for Arch Linux. It is available in
 
  pacman -S autojump
 
-Tanguy Ortolo packaged autojump for Debian testing/unstable. It will eventually reach Ubuntu. To install, type::
+Autojump is now officially a part of Debian Sid, thanks to Tanguy Ortolo’s work (for policy reasons, it requires manual activation after installing, see /usr/share/doc/autojump/README.Debian). To install, type::
 
  apt-get install autojump
  
@@ -127,7 +127,7 @@ Autojump is also available on the OSX Homebrew package manager::
 
  brew install autojump
 
-I would be very interested by packages for other distros. If you think you can help me with the packaging, please contact me!
+Autojump is also packaged for a number of other distros. Check the wiki for an up-to-date list! I would be very interested by packages for other distros. If you think you can help with the packaging, please contact me!
 
 Uninstallation
 ==============
