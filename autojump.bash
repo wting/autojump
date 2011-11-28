@@ -29,6 +29,26 @@ EOF
 }
 complete -F _autojump j
 
+_autojump_files() 
+{
+    if [[ ${COMP_WORDS[COMP_CWORD]} == *__* ]]
+    then
+        local cur
+        #cur=${COMP_WORDS[*]:1}
+        cur=${COMP_WORDS[COMP_CWORD]}
+        comps=$(autojump --bash --completion $cur)
+        while read i
+        do
+            #COMPREPLY=("${COMPREPLY[@]}" "${COMP_WORDS[@]:1:$(( ${#COMP_WORDS[@]} - 1 ))}${i}")
+            COMPREPLY=("${COMPREPLY[@]}" "${i}")
+        done <<EOF
+        $comps
+EOF
+    fi
+}
+complete -o default -o bashdefault -F _autojump_files cp
+complete -o default -o bashdefault -F _autojump_files mv
+
 #determine the data directory according to the XDG Base Directory Specification
 if [ -n "$XDG_DATA_HOME" ]
 then
