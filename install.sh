@@ -24,12 +24,13 @@ prefix=/usr
 
 user=${SUDO_USER:-${USER}}
 OS=`uname`
+
 if [ $OS == 'Darwin' ]; then
-user_home=$(dscl . -search /Users UniqueID ${user} | cut -d: -f6)
+    user_home=$(dscl . -search /Users UniqueID ${user} | cut -d: -f6)
 else
-user_home=$(getent passwd ${user} | cut -d: -f6)
+    user_home=$(getent passwd ${user} | cut -d: -f6)
 fi
-bashrc_file=${user_home}/.bashrc
+    bashrc_file=${user_home}/.bashrc
 
 # Command line parsing
 while true; do
@@ -91,7 +92,6 @@ else
                 # Since OSX uses .bash_profile, we need to make sure that .bashrc is properly sourced.
                 # Makes the assumption that if they have a line: source ~/.bashrc or . ~/.bashrc, that
                 # .bashrc has been properly sourced and you don't need to add it.
-                OS=`uname`
                 if [ $OS == 'Darwin' -a x`grep -c "^[[:space:]]*\(source\|\.\) ~/\.bashrc[[:space:]]*$" ~/.bash_profile` == x0 ]; then
                     echo "You are using OSX and your .bash_profile doesn't seem to be sourcing .bashrc"
                     echo "Adding source ~/.bashrc to your bashrc"
