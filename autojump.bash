@@ -39,15 +39,13 @@ _autojump_files()
         comps=$(autojump --bash --completion $cur)
         while read i
         do
-            #COMPREPLY=("${COMPREPLY[@]}" "${COMP_WORDS[@]:1:$(( ${#COMP_WORDS[@]} - 1 ))}${i}")
             COMPREPLY=("${COMPREPLY[@]}" "${i}")
         done <<EOF
         $comps
 EOF
     fi
 }
-complete -o default -o bashdefault -F _autojump_files cp
-complete -o default -o bashdefault -F _autojump_files mv
+complete -o default -o bashdefault -F _autojump_files cp mv meld diff kdiff3
 
 #determine the data directory according to the XDG Base Directory Specification
 if [ -n "$XDG_DATA_HOME" ]
