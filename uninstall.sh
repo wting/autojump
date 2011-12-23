@@ -16,7 +16,7 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 function show_help {
-        echo "sudo ./install.sh [--prefix /usr/local]"
+        echo "sudo ./uninstall.sh [--prefix /usr/local]"
 }
 
 # Default install directory.
