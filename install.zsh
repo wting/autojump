@@ -16,7 +16,7 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 function show_help {
-        echo "sudo ./install.sh [--prefix /usr/local]"
+        echo "sudo ./install.zsh [--prefix /usr/local]"
 }
 
 prefix=/usr
@@ -27,7 +27,7 @@ while true; do
       -h|--help|-\?) show_help; exit 0;;
       -p|--prefix) if [ $# -gt 1 ]; then
             prefix=$2; shift 2
-          else 
+          else
             echo "--prefix or -p require an argument" 1>&2
             exit 1
           fi ;;
@@ -67,7 +67,7 @@ fi
 if [ -d "/etc/profile.d" ]; then
     sudo cp autojump.zsh /etc/profile.d/
     sudo cp autojump.sh /etc/profile.d/
-    echo "Remember to add the line" 
+    echo "Remember to add the line"
     echo "    source /etc/profile.d/autojump.zsh"
     echo "or"
     echo "    source /etc/profile"
@@ -78,17 +78,17 @@ else
     echo "Your distribution does not have a /etc/profile.d directory, the default that we install one of the scripts to. Would you like us to copy it into your ~/.zshrc file to make it work? (If you have done this once before, delete the old version before doing it again.) [y/n]"
     read ans
     if [ ${#ans} -gt 0 ]; then
-	if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
-	    echo "" >> ~/.zshrc
-	    echo "#autojump" >> ~/.zshrc
-	    cat autojump.zsh >> ~/.zshrc
+    if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
+        echo "" >> ~/.zshrc
+        echo "#autojump" >> ~/.zshrc
+        cat autojump.zsh >> ~/.zshrc
             echo "Done!"
             echo
             echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
-	else
-	    echo "Then you need to put autojump.zsh, or the code from it, somewhere where it will get read. Good luck!"
-	fi
     else
-    	    echo "Then you need to put autojump.zsh, or the code from it, somewhere where it will get read. Good luck!"
+        echo "Then you need to put autojump.zsh, or the code from it, somewhere where it will get read. Good luck!"
+    fi
+    else
+            echo "Then you need to put autojump.zsh, or the code from it, somewhere where it will get read. Good luck!"
     fi
 fi
