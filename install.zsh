@@ -16,33 +16,51 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 function show_help {
-        echo "sudo ./install.sh [--prefix /usr/local]"
+	echo "sudo ./install.zsh [--local] [--prefix /usr/local]"
 }
 
 prefix=/usr
-local_install=false
+local=false
 
 #command line parsing
 while true; do
-    case "$1" in
-      -h|--help|-\?) show_help; exit 0;;
-	  -l|--local);
-	 	local_install=true
-	 	prefix=~/.autojump
-		shift
-		;;
-      -p|--prefix)
-	 	if [ $# -gt 1 ]; then
-			prefix=$2; shift 2
-		else
-			echo "--prefix or -p require an argument" 1>&2
+	case "$1" in
+		-h|--help|-\?)
+			show_help
+			exit 0
+			;;
+		-l|--local)
+			local=true
+			prefix=~/.autojump
+			shift
+			;;
+		-p|--prefix)
+			if [ $# -gt 1 ]; then
+				prefix=$2; shift 2
+			else
+				echo "--prefix or -p require an argument" 1>&2
+				exit 1
+			fi
+			;;
+		--)
+			shift
+			break
+			;;
+		-*)
+			echo "invalid option: $1" 1>&2
+			show_help
 			exit 1
-		fi ;;
-      --) shift; break;;
-      -*) echo "invalid option: $1" 1>&2; show_help; exit 1;;
-      *)  break;;
-    esac
+			;;
+		*)
+			break
+			;;
+	esac
 done
+
+if [[ $(whoami) != "root" ]] && ! ${local}; then
+	echo "Please rerun as root or use the --local option."
+	exit 1
+fi
 
 echo "Installing main files to ${prefix} ..."
 
@@ -58,44 +76,43 @@ cp autojump ${prefix}/bin/
 cp autojump.1 ${prefix}/share/man/man1/
 
 # autocompletion file in the first directory of the FPATH variable
-if ( ! ${local_install} ); then
+if ( ! ${local} ); then
 	fail=true
 	for f in $fpath
 	do
-		sudo cp _j $f && fail=false && break
+		cp _j $f && fail=false && break
 	done
 	if $fail
 	then
-		echo "Couldn't find a place to put the autocompletion file :-("
+		echo "Couldn't find a place to put the autocompletion file, please copy _j into your \$fpath"
 		echo "Still trying to install the rest of autojump..."
 	else
 		echo "Installed autocompletion file to $f"
 	fi
 
 	if [ -d "/etc/profile.d" ]; then
-		sudo cp autojump.zsh /etc/profile.d/
-		sudo cp autojump.sh /etc/profile.d/
-		echo "Remember to add the line"
-		echo "    source /etc/profile.d/autojump.zsh"
-		echo "or"
-		echo "    source /etc/profile"
-		echo "to your ~/.zshrc if it's not there already"
+		cp -v autojump.zsh /etc/profile.d/
+		cp -v autojump.sh /etc/profile.d/
+		echo
+		echo "Add the following line to your ~/.zshrc:"
+		echo
+		echo -e "\tsource /etc/profile.d/autojump.zsh"
 		echo
 		echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
 	else
 		echo "Your distribution does not have a /etc/profile.d directory, the default that we install one of the scripts to. Would you like us to copy it into your ~/.zshrc file to make it work? (If you have done this once before, delete the old version before doing it again.) [y/n]"
 		read ans
 		if [ ${#ans} -gt 0 ]; then
-		if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
-			echo "" >> ~/.zshrc
-			echo "#autojump" >> ~/.zshrc
-			cat autojump.zsh >> ~/.zshrc
-				echo "Done!"
-				echo
-				echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
-		else
-			echo "Then you need to put autojump.zsh, or the code from it, somewhere where it will get read. Good luck!"
-		fi
+			if [ $ans = "y" -o $ans = "Y" -o $ans = "yes" -o $ans = "Yes" ]; then
+				echo "" >> ~/.zshrc
+				echo "#autojump" >> ~/.zshrc
+				cat autojump.zsh >> ~/.zshrc
+					echo "Done!"
+					echo
+					echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
+			else
+				echo "Then you need to put autojump.zsh, or the code from it, somewhere where it will get read. Good luck!"
+			fi
 		else
 			echo "Then you need to put autojump.zsh, or the code from it, somewhere where it will get read. Good luck!"
 		fi
@@ -108,11 +125,12 @@ else
 	cp autojump.zsh ${prefix}/etc/profile.d/
 	cp autojump.sh ${prefix}/etc/profile.d/
 
+	echo
 	echo "Add the following lines to your ~/.zshrc:"
 	echo
-	echo "    path=(${prefix}/bin \${path})"
-	echo "    fpath=(${prefix}/functions \${fpath})"
-	echo "    source ${prefix}/etc/profile.d/autojump.zsh"
+	echo -e "\tpath=(${prefix}/bin \${path})"
+	echo -e "\tfpath=(${prefix}/functions \${fpath})"
+	echo -e "\tsource ${prefix}/etc/profile.d/autojump.zsh"
 	echo
 	echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
 	echo
