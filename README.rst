@@ -30,9 +30,13 @@ Examples
 
 could jump to ``/home/gwb/my mp3 collection``, if that is the directory in which you keep your mp3s. ::
 
+ autojump mp3
+
+prints out something like ``/home/gwb/my\ mp3\ collection'', but does not jump to that directory. ::
+
  jumpstat
 
-will print out something in the lines of::
+will print out something along the lines of::
 
  ...
  54.5:	/home/shared/musique
