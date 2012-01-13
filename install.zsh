@@ -57,7 +57,7 @@ while true; do
 	esac
 done
 
-if [[ $(whoami) != "root" ]] && ! ${local}; then
+if [[ ${UID} != 0 ]] && ! ${local}; then
 	echo "Please rerun as root or use the --local option."
 	exit 1
 fi
