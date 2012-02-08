@@ -117,7 +117,7 @@ if [ ! ${local} ]; then
     # install _j to the first accessible directory
     if [ ${shell} == "zsh" ]; then
         success=
-        cp -v _j /usr/local/share/zsh/site-functions/ $f && success=true
+        cp -v _j /usr/local/share/zsh/site-functions/ && success=true
 
         if [ ! ${success} ]; then
             echo
