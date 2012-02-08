@@ -15,12 +15,31 @@
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
-function show_help {
+function add_msg {
+    echo
+    echo "Please add the line to ~/.${2}rc :"
+    echo
+
+    if [ "${1}" == "global" ]; then
+        echo -e "\tsource /etc/profile.d/autojump.${2}"
+    elif [ "${1}" == "local" ]; then
+        echo -e "\tsource ~/etc/profile.d/autojump.${2}"
+    fi
+
+    echo
+    echo "You need to 'source ~/.${2}rc' before you can start using autojump."
+    echo
+    echo "To remove autojump, run './uninstall.sh'"
+    echo
+}
+
+function help_msg {
     echo "sudo ./install.sh [--local] [--prefix /usr/local]"
 }
 
 # Default install directory.
 prefix=/usr
+shell="bash"
 local=
 
 user=${SUDO_USER:-${USER}}
@@ -37,7 +56,7 @@ bashrc_file=${user_home}/.bashrc
 while true; do
     case "$1" in
         -h|--help|-\?)
-            show_help;
+            help_msg;
             exit 0
             ;;
         -l|--local)
@@ -53,13 +72,17 @@ while true; do
                 exit 1
             fi
             ;;
+        -z|--zsh)
+            shell="zsh"
+            shift
+            ;;
         --)
             shift
             break
             ;;
         -*)
             echo "invalid option: $1" 1>&2;
-            show_help;
+            help_msg;
             exit 1
             ;;
         *)
@@ -87,35 +110,40 @@ cp -v jumpapplet ${prefix}/bin/
 cp -v autojump ${prefix}/bin/
 cp -v autojump.1 ${prefix}/share/man/man1/
 
+# global installation
 if [ ! ${local} ]; then
-    if [ -d "/etc/profile.d" ]; then
-        cp -v autojump.bash /etc/profile.d/
-        cp -v autojump.sh /etc/profile.d/
+    # install _j to the first accessible directory
+    if [ ${shell} == "zsh" ]; then
+        success=
+        for f in ${fpath}
+        do
+            cp _j $f && success=true && break
+        done
 
-        echo
-        echo "Add the following lines to your ~/.bashrc:"
-        echo
-        echo -e "\tsource ${prefix}/etc/profile.d/autojump.bash"
-        echo
-        echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
-        echo
-        echo "To remove autojump, delete the ${prefix} directory and relevant lines from ~/.bashrc."
-        echo
+        if [ ${success} ]; then
+            echo "Installed autocompletion file to ${f}"
+        else
+            echo "Couldn't find a place to put the autocompletion file, please copy _j into your \$fpath"
+            echo "Still trying to install the rest of autojump..."
+        fi
+    fi
+
+    if [ -d "/etc/profile.d" ]; then
+        cp -v autojump.sh /etc/profile.d/
+        cp -v autojump.${shell} /etc/profile.d/
+        add_msg "global" ${shell}
     else
         echo "Your distribution does not have a '/etc/profile.d/' directory, please create it manually or use the local install option."
     fi
-else
+else # local installation
     mkdir -p ${prefix}/etc/profile.d/
-    cp -v autojump.bash ${prefix}/etc/profile.d/
     cp -v autojump.sh ${prefix}/etc/profile.d/
+    cp -v autojump.${shell} ${prefix}/etc/profile.d/
 
-    echo
-    echo "Add the following lines to your ~/.bashrc:"
-    echo
-    echo -e "\tsource ${prefix}/etc/profile.d/autojump.bash"
-    echo
-    echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
-    echo
-    echo "To remove autojump, delete the ${prefix} directory and relevant lines from ~/.bashrc."
-    echo
+    if [ ${shell} == "zsh" ]; then
+        mkdir -p ${prefix}/functions/
+        cp _j ${prefix}/functions/
+    fi
+
+    add_msg "local" ${shell}
 fi
