@@ -15,8 +15,45 @@
 #You should have received a copy of the GNU General Public License
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
-function show_help {
-        echo "sudo ./uninstall.sh [--prefix /usr/local]"
+function help_msg {
+    echo "sudo ./uninstall.sh [--prefix /usr/local]"
+}
+
+# zsh: remove _j from fpath
+function remove_j {
+    # autocompletion file in the first directory of the FPATH variable
+    fail=true
+    for f in $fpath
+    do
+        if [ -f ${f}/_j ]; then
+            rm -v ${f}/_j || sudo rm -v ${f}/_j
+            break
+        fi
+    done
+}
+
+function remove_msg {
+    if [ "${2}" == "bash" ]; then
+        echo
+        echo "Please remove the line from ${bashrc_file} :"
+        echo
+        if [ "${1}" == "global" ]; then
+            echo -e "\tsource /etc/profile.d/autojump.bash"
+        elif [ "${1}" == "local" ]; then
+            echo -e "\tsource ~/etc/profile.d/autojump.bash"
+        fi
+        echo
+    elif [ "${2}" == "zsh" ]; then
+        echo
+        echo "Please remove the line from ~/.zshrc :"
+        echo
+        if [ "${1}" == "global" ]; then
+            echo -e "\tsource /etc/profile.d/autojump.zsh"
+        elif [ "${1}" == "local" ]; then
+            echo -e "\tsource ~/etc/profile.d/autojump.zsh"
+        fi
+        echo
+    fi
 }
 
 # Default install directory.
@@ -35,7 +72,7 @@ bashrc_file=${user_home}/.bashrc
 # Command line parsing
 while true; do
     case "$1" in
-        -h|--help|-\?) show_help; exit 0;;
+        -h|--help|-\?) help_msg; exit 0;;
         -p|--prefix)
             if [ $# -gt 1 ]; then
                 prefix=$2; shift 2
@@ -45,7 +82,7 @@ while true; do
             fi
             ;;
         --) shift; break;;
-        -*) echo "invalid option: $1" 1>&2; show_help; exit 1;;
+        -*) echo "invalid option: $1" 1>&2; help_msg; exit 1;;
         *)  break;;
     esac
 done
@@ -53,19 +90,22 @@ done
 # UNINSTALL AUTOJUMP
 # global / custom location installations
 if [ -d "${prefix}/share/autojump/" ]; then
-    echo -e "\nUninstalling from ${prefix} ...\n"
+    echo
+    echo "Uninstalling from ${prefix} ..."
+    echo
     sudo rm -rv ${prefix}/share/autojump/
     sudo rm -v ${prefix}/bin/jumpapplet
     sudo rm -v ${prefix}/bin/autojump
     sudo rm -v ${prefix}/share/man/man1/autojump.1
-    sudo rm -v /etc/profile.d/autojump.bash
     sudo rm -v /etc/profile.d/autojump.sh
-
-    echo
-    echo "Please remove the line from ${bashrc_file} :"
-    echo
-    echo -e "\tsource /etc/profile.d/autojump.bash"
-    echo
+    if [ -f /etc/profile.d/autojump.bash ]; then
+        sudo rm -v /etc/profile.d/autojump.bash
+        remove_msg "global" "bash"
+    fi
+    if [ -f /etc/profile.d/autojump.zsh ]; then
+        sudo rm -v /etc/profile.d/autojump.zsh
+        remove_msg "global" "zsh"
+    fi
 fi
 
 # local installations
@@ -73,11 +113,13 @@ if [ -d ~/.autojump/ ]; then
     echo
     echo "Uninstalling from ~/.autojump/ ..."
     echo
-    rm -rv ~/.autojump/
 
-    echo
-    echo "Please remove the line from ${bashrc_file} :"
-    echo
-    echo -e "\tsource ~/.autojump/profile.d/autojump.bash"
-    echo
+    if [ -f ~/.autojump/etc/profile.d/autojump.bash ]; then
+        rm -rv ~/.autojump/
+        remove_msg "local" "bash"
+    fi
+    if [ -f ~/.autojump/etc/profile.d/autojump.zsh ]; then
+        rm -rv ~/.autojump/
+        remove_msg "local" "zsh"
+    fi
 fi
