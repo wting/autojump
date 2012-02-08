@@ -21,7 +21,7 @@ function show_help {
 
 # Default install directory.
 prefix=/usr
-local=false
+local=0
 
 user=${SUDO_USER:-${USER}}
 OS=`uname`
@@ -41,7 +41,7 @@ while true; do
             exit 0
             ;;
         -l|--local)
-            local=true
+            local=1
             prefix=~/.autojump
             shift
             ;;
@@ -68,7 +68,7 @@ while true; do
     esac
 done
 
-if [[ ${UID} != 0 ]] && ! ${local}; then
+if [[ ${UID} != 0 ]] && [ ! ${local} ]; then
     echo "Please rerun as root or use the --local option."
     exit 1
 fi
@@ -82,12 +82,12 @@ echo "Installing main files to ${prefix} ..."
 mkdir -p ${prefix}/share/autojump/
 mkdir -p ${prefix}/bin/
 mkdir -p ${prefix}/share/man/man1/
-cp icon.png ${prefix}/share/autojump/
-cp jumpapplet ${prefix}/bin/
-cp autojump ${prefix}/bin/
-cp autojump.1 ${prefix}/share/man/man1/
+cp -v icon.png ${prefix}/share/autojump/
+cp -v jumpapplet ${prefix}/bin/
+cp -v autojump ${prefix}/bin/
+cp -v autojump.1 ${prefix}/share/man/man1/
 
-if ( ! ${local} ); then
+if [ ! ${local} ]; then
     if [ -d "/etc/profile.d" ]; then
         cp -v autojump.bash /etc/profile.d/
         cp -v autojump.sh /etc/profile.d/
@@ -133,8 +133,8 @@ if ( ! ${local} ); then
     fi
 else
     mkdir -p ${prefix}/etc/profile.d/
-    cp autojump.bash ${prefix}/etc/profile.d/
-    cp autojump.sh ${prefix}/etc/profile.d/
+    cp -v autojump.bash ${prefix}/etc/profile.d/
+    cp -v autojump.sh ${prefix}/etc/profile.d/
 
     echo
     echo "Add the following lines to your ~/.bashrc:"
@@ -143,6 +143,6 @@ else
     echo
     echo "You need to source your ~/.bashrc (source ~/.bashrc) before you can start using autojump."
     echo
-    echo "To remove autojump, delete the ${prefix} directory and relevant lines from ~/.zshrc."
+    echo "To remove autojump, delete the ${prefix} directory and relevant lines from ~/.bashrc."
 fi
 
