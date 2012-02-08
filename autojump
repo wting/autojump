@@ -93,7 +93,7 @@ def save(path_dict, dic_file):
             os.fsync(temp)
             temp.close()
         except IOError as ex:
-            print("I/O error writing to temporary file. (%s)" %
+            print("Error while saving autojump database (disk full?)" %
                     ex, file=stderr)
             return
 
