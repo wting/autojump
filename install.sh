@@ -96,7 +96,9 @@ if [[ ${UID} != 0 ]] && [ ! ${local} ]; then
     exit 1
 fi
 
-echo -e "Installing files to ${prefix} ...\n"
+echo
+echo "Installing files to ${prefix} ..."
+echo
 
 # add git revision to autojump
 ./git-version.sh
