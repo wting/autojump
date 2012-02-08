@@ -23,7 +23,7 @@ function add_msg {
     if [ "${1}" == "global" ]; then
         echo -e "\tsource /etc/profile.d/autojump.${2}"
     elif [ "${1}" == "local" ]; then
-        echo -e "\tsource ~/etc/profile.d/autojump.${2}"
+        echo -e "\tsource ~/.autojump/etc/profile.d/autojump.${2}"
     fi
 
     echo
