@@ -49,7 +49,8 @@ while true; do
             if [ $# -gt 1 ]; then
                 prefix=$2; shift 2
             else
-                die "--prefix or -p require an argument"
+                echo "--prefix or -p require an argument" 1>&2
+                exit 1
             fi
             ;;
         --)
