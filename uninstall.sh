@@ -58,18 +58,26 @@ if [ -d "${prefix}/share/autojump/" ]; then
     sudo rm -v ${prefix}/bin/jumpapplet
     sudo rm -v ${prefix}/bin/autojump
     sudo rm -v ${prefix}/share/man/man1/autojump.1
-    sudo rm -v /etc/profile.d/autojump.zsh
+    sudo rm -v /etc/profile.d/autojump.bash
     sudo rm -v /etc/profile.d/autojump.sh
 
-    echo -e "\nPlease remove the line from ${bashrc_file} :\n"
+    echo
+    echo "Please remove the line from ${bashrc_file} :"
+    echo
     echo -e "\tsource /etc/profile.d/autojump.bash"
+    echo
 fi
 
 # local installations
 if [ -d ~/.autojump/ ]; then
-    echo -e "\nUninstalling from ~/.autojump/ ...\n"
+    echo
+    echo "Uninstalling from ~/.autojump/ ..."
+    echo
     rm -rv ~/.autojump/
 
-    echo -e "\nPlease remove the line from ${bashrc_file} :\n"
+    echo
+    echo "Please remove the line from ${bashrc_file} :"
+    echo
     echo -e "\tsource ~/.autojump/profile.d/autojump.bash"
+    echo
 fi
