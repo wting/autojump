@@ -16,7 +16,7 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 function show_help {
-        echo "sudo ./uninstall.zsh [--prefix /usr/local]"
+	echo "sudo ./uninstall.zsh [--prefix /usr/local]"
 }
 
 # Default install directory.
@@ -24,29 +24,38 @@ prefix=/usr
 
 # Command line parsing
 while true; do
-    case "$1" in
-      -h|--help|-\?) show_help; exit 0;;
-      -p|--prefix) if [ $# -gt 1 ]; then
-            prefix=$2; shift 2
-          else
-            echo "--prefix or -p require an argument" 1>&2
-            exit 1
-          fi ;;
-      --) shift; break;;
-      -*) echo "invalid option: $1" 1>&2; show_help; exit 1;;
-      *)  break;;
-    esac
+	case "$1" in
+		-h|--help|-\?) show_help; exit 0;;
+		-p|--prefix) if [ $# -gt 1 ]; then
+				prefix=$2; shift 2
+			else
+				echo "--prefix or -p require an argument" 1>&2
+				exit 1
+			fi ;;
+		--) shift; break;;
+		-*) echo "invalid option: $1" 1>&2; show_help; exit 1;;
+		*)  break;;
+	esac
 done
 
-echo -e "Uninstalling from ${prefix} ...\n"
 
 # UNINSTALL AUTOJUMP
-sudo rm -rv ${prefix}/share/autojump/
-sudo rm -v ${prefix}/bin/jumpapplet
-sudo rm -v ${prefix}/bin/autojump
-sudo rm -v ${prefix}/share/man/man1/autojump.1
-sudo rm -v /etc/profile.d/autojump.zsh
-sudo rm -v /etc/profile.d/autojump.sh
+# global / custom location installations
+if [[ -d "${prefix}/share/autojump/" ]]; then
+	echo -e "\nUninstalling from ${prefix} ...\n"
+	sudo rm -rv ${prefix}/share/autojump/
+	sudo rm -v ${prefix}/bin/jumpapplet
+	sudo rm -v ${prefix}/bin/autojump
+	sudo rm -v ${prefix}/share/man/man1/autojump.1
+	sudo rm -v /etc/profile.d/autojump.zsh
+	sudo rm -v /etc/profile.d/autojump.sh
+fi
+
+# local installations
+if [[ -d ~/.autojump/ ]]; then
+	echo -e "\nUninstalling from ~/.autojump/ ...\n"
+	rm -rv ~/.autojump/
+fi
 
 # autocompletion file in the first directory of the FPATH variable
 fail=true
