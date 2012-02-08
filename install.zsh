@@ -128,8 +128,6 @@ else
 	echo
 	echo "Add the following lines to your ~/.zshrc:"
 	echo
-	echo -e "\tpath=(${prefix}/bin \${path})"
-	echo -e "\tfpath=(${prefix}/functions \${fpath})"
 	echo -e "\tsource ${prefix}/etc/profile.d/autojump.zsh"
 	echo
 	echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
