@@ -79,42 +79,24 @@ Installation
 Auto Installation
 -----------------
 
-run:: 
+run::
 
- ./install.sh 
+ ./install.sh [ --local ] [ --zsh ]
 
-or::
- 
- ./install.zsh
+and follow on screen instructions.
 
-depending on your shell.
-Enter your root password if it asks. 
+Use --local to install into current user's home directory.
 
-Add the line::
-
- source /etc/profile
-
-to ``~/.bashrc`` or ``~/.zshrc`` if it isn't already there. 
+Use --zsh to install for Z shell.
 
 Troubleshoot
 ------------
 
 If the script fails, you may need to do::
 
- chmod +x install.(z)sh
+ chmod +x install.sh
 
-before the first step. 
-
-
-Manual installation of autojump is very simple: copy
-
-- autojump to /usr/bin,
-- autojump.sh to /etc/profile.d,
-- autojump.1 to /usr/share/man/man1.
-
-Make sure to source ``/etc/profile`` in your ``.bashrc`` or ``.zshrc`` ::
-
- source /etc/profile
+before the first step.
 
 Packaging
 =========
@@ -126,7 +108,7 @@ For now gcarrier and I have packaged autojump for Arch Linux. It is available in
 Autojump is now officially a part of Debian Sid, thanks to Tanguy Ortolo’s work (for policy reasons, it requires manual activation after installing, see /usr/share/doc/autojump/README.Debian). To install, type::
 
  apt-get install autojump
- 
+
 Autojump is also available on the OSX Homebrew package manager::
 
  brew install autojump
@@ -136,24 +118,10 @@ Autojump is also packaged for a number of other distros. Check the wiki for an u
 Uninstallation
 ==============
 
-To completely remove autojump you should remove these files:
+run::
 
-``/etc/profile.d/autojump.bash``
+ ./uninstall.sh
 
-``/etc/profile.d/autojump.sh``
-
-``/etc/profile.d/autojump.zsh``
-
-``/usr/bin/autojump``
-
-``/usr/bin/jumpapplet``
-
-``/usr/share/autojump/icon.png``
-
-``/usr/share/autojump/``
-
-``/usr/share/man/man1/autojump.1``
-
-Remove any mention of autojump in your ``.bashrc`` or ``.zshrc``, then in currently running shells do:``source /etc/profile``.
+and follow on screen instructions.
 
 If you keep getting ``autojump: command not found`` at the Bash prompt, do:``unset PROMPT_COMMAND``. You can also restart your shell.
