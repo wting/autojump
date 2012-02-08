@@ -27,7 +27,7 @@ function add_msg {
     fi
 
     echo
-    echo "You need to 'source ~/.${2}rc' before you can start using autojump."
+    echo "You need to run 'source ~/.${2}rc' before you can start using autojump."
     echo
     echo "To remove autojump, run './uninstall.sh'"
     echo
@@ -115,16 +115,13 @@ if [ ! ${local} ]; then
     # install _j to the first accessible directory
     if [ ${shell} == "zsh" ]; then
         success=
-        for f in ${fpath}
-        do
-            cp _j $f && success=true && break
-        done
+        cp -v _j /usr/local/share/zsh/site-functions/ $f && success=true
 
-        if [ ${success} ]; then
-            echo "Installed autocompletion file to ${f}"
-        else
+        if [ ! ${success} ]; then
+            echo
             echo "Couldn't find a place to put the autocompletion file, please copy _j into your \$fpath"
-            echo "Still trying to install the rest of autojump..."
+            echo "Installing the rest of autojump ..."
+            echo
         fi
     fi
 

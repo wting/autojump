@@ -19,17 +19,18 @@ function help_msg {
     echo "sudo ./uninstall.sh [--prefix /usr/local]"
 }
 
-# zsh: remove _j from fpath
 function remove_j {
+    # zsh: remove _j from fpath, only works within zsh
     # autocompletion file in the first directory of the FPATH variable
-    fail=true
-    for f in $fpath
-    do
-        if [ -f ${f}/_j ]; then
-            rm -v ${f}/_j || sudo rm -v ${f}/_j
-            break
-        fi
-    done
+    #fail=true
+    #for f in $fpath
+    #do
+        #if [ -f ${f}/_j ]; then
+            #rm -v ${f}/_j || sudo rm -v ${f}/_j
+            #break
+        #fi
+    #done
+    sudo rm -v /usr/local/share/zsh/site-functions/_j
 }
 
 function remove_msg {
