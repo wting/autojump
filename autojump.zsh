@@ -31,7 +31,7 @@ fi
 # set paths if necessary for local installations
 if [[ -d ~/.autojump/ ]]; then
     path=(~/.autojump/bin $path)
-    fpath=(/home/ting/.autojump/functions/ $fpath)
+    fpath=(~/.autojump/functions/ $fpath)
 fi
 
 function autojump_preexec() {
