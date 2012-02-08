@@ -34,7 +34,7 @@ function add_msg {
 }
 
 function help_msg {
-    echo "sudo ./install.sh [--local] [--prefix /usr/local]"
+    echo "sudo ./install.sh [--local] [--prefix /usr/local] [--zsh]"
 }
 
 # Default install directory.

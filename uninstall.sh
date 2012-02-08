@@ -19,42 +19,16 @@ function help_msg {
     echo "sudo ./uninstall.sh [--prefix /usr/local]"
 }
 
-function remove_j {
-    # zsh: remove _j from fpath, only works within zsh
-    # autocompletion file in the first directory of the FPATH variable
-    #fail=true
-    #for f in $fpath
-    #do
-        #if [ -f ${f}/_j ]; then
-            #rm -v ${f}/_j || sudo rm -v ${f}/_j
-            #break
-        #fi
-    #done
-    sudo rm -v /usr/local/share/zsh/site-functions/_j
-}
-
 function remove_msg {
-    if [ "${2}" == "bash" ]; then
-        echo
-        echo "Please remove the line from ${bashrc_file} :"
-        echo
-        if [ "${1}" == "global" ]; then
-            echo -e "\tsource /etc/profile.d/autojump.bash"
-        elif [ "${1}" == "local" ]; then
-            echo -e "\tsource ~/etc/profile.d/autojump.bash"
-        fi
-        echo
-    elif [ "${2}" == "zsh" ]; then
-        echo
-        echo "Please remove the line from ~/.zshrc :"
-        echo
-        if [ "${1}" == "global" ]; then
-            echo -e "\tsource /etc/profile.d/autojump.zsh"
-        elif [ "${1}" == "local" ]; then
-            echo -e "\tsource ~/etc/profile.d/autojump.zsh"
-        fi
-        echo
+    echo
+    echo "Please remove the line from .${2}rc :"
+    echo
+    if [ "${1}" == "global" ]; then
+        echo -e "\tsource /etc/profile.d/autojump.${2}"
+    elif [ "${1}" == "local" ]; then
+        echo -e "\tsource ~/etc/profile.d/autojump.${2}"
     fi
+    echo
 }
 
 # Default install directory.
@@ -99,6 +73,8 @@ if [ -d "${prefix}/share/autojump/" ]; then
     sudo rm -v ${prefix}/bin/autojump
     sudo rm -v ${prefix}/share/man/man1/autojump.1
     sudo rm -v /etc/profile.d/autojump.sh
+    sudo rm -v /usr/local/share/zsh/site-functions/_j
+
     if [ -f /etc/profile.d/autojump.bash ]; then
         sudo rm -v /etc/profile.d/autojump.bash
         remove_msg "global" "bash"
