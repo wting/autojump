@@ -85,10 +85,18 @@ def save(path_dict, dic_file):
         for path,weight in sorted(path_dict.items(),key=itemgetter(1),reverse=True):
             # the db is stored in utf-8
             temp.write((unico("%s\t%s\n")%(weight,path)).encode("utf-8"))
-        #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
-        temp.flush()
-        os.fsync(temp)
-        temp.close()
+
+        # Catching disk errors and skipping save since file handle can't be closed.
+        try:
+            #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
+            temp.flush()
+            os.fsync(temp)
+            temp.close()
+        except IOError as ex:
+            print("I/O error writing to temporary file. (%s)" %
+                    ex, file=stderr)
+            return
+
         # Use shutil.move instead of os.rename because windows doesn't support
         # using rename to overwrite files
         shutil.move(temp.name, dic_file)
