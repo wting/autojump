@@ -99,6 +99,12 @@ if ( ! ${local} ); then
         echo -e "\tsource /etc/profile.d/autojump.zsh"
         echo
         echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
+        echo
+        if [[ ${prefix} != "/usr" ]]; then
+            echo "To remove autojump, run ./uninstall.zsh --prefix ${prefix}"
+        else
+            echo "To remove autojump, run ./uninstall.zsh"
+        fi
     else
         echo "Your distribution does not have a /etc/profile.d directory, the default that we install one of the scripts to. Would you like us to copy it into your ~/.zshrc file to make it work? (If you have done this once before, delete the old version before doing it again.) [y/n]"
         read ans
@@ -132,5 +138,5 @@ else
     echo
     echo "You need to source your ~/.zshrc (source ~/.zshrc) before you can start using autojump."
     echo
-    echo "To remove autojump, delete the ${prefix} directory and relevant lines from ~/.zshrc."
+    echo "To remove autojump, run ./uninstall.zsh"
 fi
