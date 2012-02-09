@@ -73,6 +73,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
+Requirements
+============
+
+Python v2.6+ or 3.0+
+
 Installation
 ============
 
