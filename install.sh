@@ -91,8 +91,18 @@ while true; do
     esac
 done
 
+# check Python version
+python_version=`python -c 'import sys; print(sys.version_info[:])'`
+if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 6 ]]; then
+    echo
+    echo "Incompatible Python version, please upgrade Python to v2.6+"
+fi
+
+# check for valid options
 if [[ ${UID} != 0 ]] && [ ! ${local} ]; then
+    echo
     echo "Please rerun as root or use the --local option."
+    echo
     exit 1
 fi
 
