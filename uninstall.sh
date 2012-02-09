@@ -73,14 +73,22 @@ if [ -d "${prefix}/share/autojump/" ]; then
     sudo rm -v ${prefix}/bin/autojump
     sudo rm -v ${prefix}/share/man/man1/autojump.1
     sudo rm -v /etc/profile.d/autojump.sh
-    sudo rm -v /usr/local/share/zsh/site-functions/_j
 
     if [ -f /etc/profile.d/autojump.bash ]; then
         sudo rm -v /etc/profile.d/autojump.bash
         remove_msg "global" "bash"
     fi
+
     if [ -f /etc/profile.d/autojump.zsh ]; then
         sudo rm -v /etc/profile.d/autojump.zsh
+
+        fpath=`/usr/bin/env zsh -c 'echo $fpath'`
+        for f in ${fpath}; do
+            if [[ -f ${f}/_j ]]; then
+                sudo rm -v ${f}/_j
+            fi
+        done
+
         remove_msg "global" "zsh"
     fi
 fi
