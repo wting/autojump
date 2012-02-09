@@ -15,7 +15,7 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 #This shell snippet sets the prompt command and the necessary aliases
-_autojump() 
+_autojump()
 {
         local cur
         cur=${COMP_WORDS[*]:1}
@@ -29,10 +29,9 @@ EOF
 }
 complete -F _autojump j
 
-_autojump_files() 
+_autojump_files()
 {
-    if [[ ${COMP_WORDS[COMP_CWORD]} == *__* ]]
-    then
+    if [[ ${COMP_WORDS[COMP_CWORD]} == *__* ]]; then
         local cur
         #cur=${COMP_WORDS[*]:1}
         cur=${COMP_WORDS[COMP_CWORD]}
@@ -48,19 +47,22 @@ EOF
 complete -o default -o bashdefault -F _autojump_files cp mv meld diff kdiff3
 
 #determine the data directory according to the XDG Base Directory Specification
-if [ -n "$XDG_DATA_HOME" ]
-then
+if [ -n "$XDG_DATA_HOME" ]; then
     export AUTOJUMP_DATA_DIR="$XDG_DATA_HOME/autojump"
 else
     export AUTOJUMP_DATA_DIR=~/.local/share/autojump
 fi
 
-if [ ! -e "${AUTOJUMP_DATA_DIR}" ]
-then
+if [ ! -e "${AUTOJUMP_DATA_DIR}" ]; then
     mkdir -p "${AUTOJUMP_DATA_DIR}"
     mv ~/.autojump_py "${AUTOJUMP_DATA_DIR}/autojump_py" 2>>/dev/null #migration
     mv ~/.autojump_py.bak "${AUTOJUMP_DATA_DIR}/autojump_py.bak" 2>>/dev/null
     mv ~/.autojump_errors "${AUTOJUMP_DATA_DIR}/autojump_errors" 2>>/dev/null
+fi
+
+# set paths if necessary for local installations
+if [ -d ~/.autojump/ ]; then
+    export PATH=~/.autojump/bin:"${PATH}"
 fi
 
 export AUTOJUMP_HOME=${HOME}
