@@ -95,7 +95,15 @@ done
 python_version=`python -c 'import sys; print(sys.version_info[:])'`
 if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 6 ]]; then
     echo
-    echo "Incompatible Python version, please upgrade Python to v2.6+"
+    echo "Incompatible Python version, please upgrade to v2.6+ or v3.0+."
+    if [[ ${python_version:4:1} -gt 3 ]]; then
+        echo
+        echo "Alternatively, you can download v12 that supports Python v2.4+ from:"
+        echo
+        echo -e "\thttps://github.com/joelthelion/autojump/tags"
+        echo
+    fi
+    exit 1
 fi
 
 # check for valid options
