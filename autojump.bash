@@ -66,7 +66,13 @@ if [ -d ~/.autojump/ ]; then
 fi
 
 export AUTOJUMP_HOME=${HOME}
-AUTOJUMP='{ [[ "$AUTOJUMP_HOME" == "$HOME" ]] && (autojump -a "$(pwd -P)"&)>/dev/null 2>>"${AUTOJUMP_DATA_DIR}/.autojump_errors";} 2>/dev/null'
+if [ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]
+then
+    _PWD_ARGS=""
+else
+    _PWD_ARGS="-P"
+fi
+AUTOJUMP='{ [[ "$AUTOJUMP_HOME" == "$HOME" ]] && (autojump -a "$(pwd ${_PWD_ARGS})"&)>/dev/null 2>>"${AUTOJUMP_DATA_DIR}/.autojump_errors";} 2>/dev/null'
 
 case $PROMPT_COMMAND in
     *autojump*)    ;;
@@ -75,3 +81,5 @@ esac
 
 alias jumpstat="autojump --stat"
 function j { new_path="$(autojump $@)";if [ -n "$new_path" ]; then echo -e "\\033[31m${new_path}\\033[0m"; cd "$new_path";else false; fi }
+function s { j $PWD $@ ; }
+
