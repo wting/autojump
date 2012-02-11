@@ -35,7 +35,13 @@ if [[ -d ~/.autojump/ ]]; then
 fi
 
 function autojump_preexec() {
-    { (autojump -a "$(pwd -P)"&)>/dev/null 2>>|${AUTOJUMP_DATA_DIR}/.autojump_errors ; } 2>/dev/null
+    if [[ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]]
+    then
+        _PWD_ARGS=""
+    else
+        _PWD_ARGS="-P"
+    fi
+    { (autojump -a "$(pwd ${_PWD_ARGS})"&)>/dev/null 2>>|${AUTOJUMP_DATA_DIR}/.autojump_errors ; } 2>/dev/null
 }
 
 typeset -ga preexec_functions
