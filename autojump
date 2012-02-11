@@ -28,7 +28,7 @@ from operator import itemgetter
 import os
 import shutil
 
-AUTOJUMP_VERSION = "release-v19-49-g8e86f08-dirty"
+AUTOJUMP_VERSION = "release-v19"
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 600
 COMPLETION_SEPARATOR = '__'
