@@ -33,6 +33,10 @@ if [[ -d ~/.autojump/ ]]; then
     path=(~/.autojump/bin $path)
     fpath=(~/.autojump/functions/ $fpath)
 fi
+# set fpath if necessary for homebrew installation
+if [[ -n "`which brew`" && -d `brew --prefix`/share/zsh/functions ]]; then
+    fpath=(`brew --prefix`/share/zsh/functions $fpath)
+fi
 
 function autojump_preexec() {
     if [[ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]]
