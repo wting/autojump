@@ -1,0 +1,13 @@
+
+See commit history for detailed changes:
+
+https://github.com/joelthelion/autojump/commits/master/
+
+2011-12-11  Joël Schaerer  <joel.schaerer@gmail.com>
+
+	* Add code clean up, Debian post-installation instructions.
+
+2011-11-18  Joël Schaerer  <joel.schaerer@gmail.com>
+
+	* Add automated version numbering, add local installation option.
+
