@@ -8,70 +8,60 @@ A ``cd`` command that learns
 
 One of the most used shell commands is ``cd``. A quick survey among my friends revealed that between 10 and 20% of all commands they type are actually ``cd`` commands! Unfortunately, jumping from one part of your system to another with ``cd`` requires to enter almost the full path, which isn't very practical and requires a lot of keystrokes.
 
-autojump is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line. The jumpstat command shows you the current contents of the database. You need to work a little bit before the database becomes usable. Once your database is reasonably complete, you can "jump" to a commonly "cd"ed directory by typing:
+autojump is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line. The jumpstat command shows you the current contents of the database. You need to work a little bit before the database becomes usable. Once your database is reasonably complete, you can "jump" to a commonly used directory by typing:
 
- j dirspec
+ j <dir>
 
-where dirspec is a few characters of the directory you want to jump to. It will jump to the most used  directory  whose
-name matches the pattern given in dirspec. Note that autojump isn't meant to be a drop-in replacement for cd, but rather a complement. Cd is fine when staying in the same area of the filesystem; autojump is there to help when you need to jump far away from your current location.
+where <dir> is a few characters of the directory you want to jump to. It will jump to the most used  directory whose name matches the pattern given in dirspec. Note that autojump isn't meant to be a drop-in replacement for cd, but rather a complement. Cd is fine when staying in the same area of the filesystem; autojump is there to help when you need to jump far away from your current location.
 
-Autojump supports tab completion. Try it! Autojump should be compatible with bash 4. Please report any problems!
+Autojump supports tab completion starting with bash v4.0+.
 
 Pierre Gueth contributed a very nice applet for freedesktop desktops (Gnome/KDE/...). It is called "jumpapplet", try it!
 
 Thanks to Simon Marache-Francisco's outstanding work, autojump now works perfectly with zsh.
 
-Examples
-========
+Usage Examples
+==============
 
 ::
 
- j mp3
+ j music
 
-could jump to ``/home/gwb/my mp3 collection``, if that is the directory in which you keep your mp3s. ::
+would jump to ``/home/user/music/``, if that's a commonly directory traversed by command line. ::
 
- autojump mp3
+ autojump music
 
-prints out something like ``/home/gwb/my\ mp3\ collection'', but does not jump to that directory. ::
+displays the directory autojump would jump to if invoked. ::
 
  jumpstat
 
-will print out something along the lines of::
+displays a listing of tracked directories and their respective weights. For example: ::
 
  ...
- 54.5:	/home/shared/musique
- 60.0:	/home/joel/workspace/coolstuff/glandu
- 83.0:	/home/joel/workspace/abs_user/autojump
- 96.9:	/home/joel/workspace/autojump
- 141.8:	/home/joel/workspace/vv
- 161.7:	/home/joel
+ 54.5:	/home/shared/misc
+ 60.0:	/home/user/Dropbox
+ 96.9:	/home/user/code/autojump
+ 161.7:	/home/user
  Total key weight: 1077
 
 The "key weight" reflects the amount of time you spend in a directory.
 
-Author
-======
+Authors
+=======
 
-Joel Schaerer (joel.schaerer (at) laposte.net)
-Autojump applet written by Pierre Gueth
-Zsh support: Simon Marache-Francisco
-Install script written by Daniel Jackoway and others.
+- Joel Schaerer (joel.schaerer (at) laposte.net)
+- autojump applet: Pierre Gueth
+- zsh support: Simon Marache-Francisco, William Ting
+- installation: Daniel Jackoway, William Ting, and others.
 
 License
 =======
 
-autojump is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+autojump is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-autojump is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+autojump is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with autojump.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 Requirements
 ============
@@ -81,11 +71,41 @@ Python v2.6+ or 3.0+
 Installation
 ============
 
-Auto Installation
------------------
+Automatic Installation
+----------------------
 
-run::
+**Linux**
 
+autojump is included in the following distro repositories, please use relevant package management utilities to install (e.g. yum, apt-get, etc):
+
+- Debian testing/unstable, Ubuntu, Linux Mint
+
+  On Debian only, autojump requires manual activation for policy reasons. Please see ``/usr/share/doc/autojump/README.Debian``.
+
+- RedHat, Fedora, CentOS
+- ArchLinux
+- Gentoo
+- Frugalware
+- Slackware
+
+**Mac**
+
+- Homebrew
+
+ ``brew install autojump``
+
+- `Macports <https://trac.macports.org/browser/trunk/dports/sysutils/autojump/Portfile>`_
+
+Manual Installation
+-------------------
+
+Grab a copy of autojump::
+
+ git clone git://github.com/joelthelion/autojump.git
+
+Run the installation script::
+
+ cd autojump
  ./install.sh [ --local ] [ --zsh ]
 
 and follow on screen instructions.
@@ -94,37 +114,18 @@ Use --local to install into current user's home directory.
 
 Use --zsh to install for Z shell.
 
-Troubleshoot
-------------
+Manual Uninstallation
+=====================
 
-If the script fails, you may need to do::
+It is recommended to use your distribution's relevant package management utilities, unless you installed manually or ran into uninstallation issues.
 
- chmod +x install.sh
+Grab a copy of autojump::
 
-before the first step.
+ git clone git://github.com/joelthelion/autojump.git
 
-Packaging
-=========
+Run the uninstallation script::
 
-For now gcarrier and I have packaged autojump for Arch Linux. It is available in [community]. To install, type::
-
- pacman -S autojump
-
-Autojump is now officially a part of Debian Sid, thanks to Tanguy Ortolo’s work (for policy reasons, it requires manual activation after installing, see /usr/share/doc/autojump/README.Debian). To install, type::
-
- apt-get install autojump
-
-Autojump is also available on the OSX Homebrew package manager::
-
- brew install autojump
-
-Autojump is also packaged for a number of other distros. Check the wiki for an up-to-date list! I would be very interested by packages for other distros. If you think you can help with the packaging, please contact me!
-
-Uninstallation
-==============
-
-run::
-
+ cd autojump
  ./uninstall.sh
 
 and follow on screen instructions.
