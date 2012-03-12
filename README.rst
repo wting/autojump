@@ -90,11 +90,15 @@ autojump is included in the following distro repositories, please use relevant p
 
 **Mac**
 
-- Homebrew
+Homebrew is the recommended installation method for Mac OS X::
 
- ``brew install autojump``
+ brew install autojump
 
-- `Macports <https://trac.macports.org/browser/trunk/dports/sysutils/autojump/Portfile>`_
+A MacPorts installation method is also `available <https://trac.macports.org/browser/trunk/dports/sysutils/autojump/Portfile>`_.
+
+**Other**
+
+Please check the wiki for an up to date listing of installation methods.
 
 Manual Installation
 -------------------
@@ -115,7 +119,7 @@ Use --local to install into current user's home directory.
 Use --zsh to install for Z shell.
 
 Manual Uninstallation
-=====================
+---------------------
 
 It is recommended to use your distribution's relevant package management utilities, unless you installed manually or ran into uninstallation issues.
 
