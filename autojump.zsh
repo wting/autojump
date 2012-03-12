@@ -15,8 +15,8 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 # determine the data directory according to the XDG Base Directory Specification
-if [ -n "$XDG_DATA_HOME" ]; then
-    export AUTOJUMP_DATA_DIR="$XDG_DATA_HOME/autojump"
+if [ -n "${XDG_DATA_HOME}" ]; then
+    export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
 else
     export AUTOJUMP_DATA_DIR=~/.local/share/autojump
 fi
@@ -29,12 +29,12 @@ if [ ! -e "${AUTOJUMP_DATA_DIR}" ]; then
 fi
 
 # set paths if necessary for local installations
-if [[ -d ~/.autojump/ ]]; then
+if [[ -d "~/.autojump/" ]]; then
     path=(~/.autojump/bin $path)
     fpath=(~/.autojump/functions/ $fpath)
 fi
 # set fpath if necessary for homebrew installation
-if [[ -n "`which brew`" && -d `brew --prefix`/share/zsh/functions ]]; then
+if [ -d "`brew --prefix 2>/dev/null`/share/zsh/functions" ]; then
     fpath=(`brew --prefix`/share/zsh/functions $fpath)
 fi
 
@@ -53,4 +53,4 @@ preexec_functions+=autojump_preexec
 
 alias jumpstat="autojump --stat"
 
-function j { local new_path="$(autojump $@)";if [ -n "$new_path" ]; then echo -e "\\033[31m${new_path}\\033[0m"; cd "$new_path";else false; fi }
+function j { local new_path="$(autojump $@)";if [ -n "${new_path}" ]; then echo -e "\\033[31m${new_path}\\033[0m"; cd "${new_path}";else false; fi }
