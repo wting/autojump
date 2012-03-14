@@ -1,0 +1,20 @@
+
+# See commit history for detailed changes:
+# https://github.com/joelthelion/autojump/commits/master/
+
+2011-12-11  Joël Schaerer  <joel.schaerer@gmail.com>
+
+	* Release v19
+	* prototype `cp` and `mv` directory tab completion
+	* Debian post-installation instructions
+	* minor Mac OS X fixes
+
+2011-11-18  Joël Schaerer  <joel.schaerer@gmail.com>
+
+	* Release v18
+	* add automated version numbering
+	* performance tweaks to reduce filesystem checks
+	* add local installation option
+	* unicode fixes
+	* (ugly) fixes for Python 3
+	* migrate to new database format
