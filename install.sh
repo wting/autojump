@@ -39,7 +39,7 @@ function help_msg {
 
 # Default install directory.
 prefix=/usr
-shell="bash"
+shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
 local=
 
 user=${SUDO_USER:-${USER}}
@@ -55,6 +55,10 @@ bashrc_file=${user_home}/.bashrc
 # Command line parsing
 while true; do
     case "$1" in
+        -b|--bash)
+            shell="bash"
+            shift
+            ;;
         -h|--help|-\?)
             help_msg;
             exit 0
@@ -90,6 +94,15 @@ while true; do
             ;;
     esac
 done
+
+# check shell if supported
+if [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]]; then
+    echo "Unsupported shell (${shell}). Use --bash or --zsh to explicitly define shell."
+    exit 1
+else
+    echo "Installing ${shell} version."
+    exit 0
+fi
 
 # check Python version
 python_version=`python -c 'import sys; print(sys.version_info[:])'`
