@@ -34,13 +34,26 @@ function add_msg {
 }
 
 function help_msg {
-    echo "sudo ./install.sh [--local] [--prefix /usr/local] [--zsh]"
+    echo
+    echo "./install.sh [--global or --local] [--bash or --zsh] [--prefix /usr/] "
+    echo
+    echo "If run without any arguments, the installer will:"
+    echo
+    echo -e "\t- as root install globally into /usr/"
+    echo -e "\t- as non-root install locally to ~/.autojump/"
+    echo -e "\t- version will be based on \$SHELL environmental variable"
+    echo
 }
 
 # Default install directory.
-prefix=/usr
 shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
-local=
+if [[ ${UID} -eq 0 ]]; then
+    local=
+    prefix=/usr
+else
+    local=true
+    prefix=~/.autojump
+fi
 
 user=${SUDO_USER:-${USER}}
 OS=`uname`
@@ -59,6 +72,10 @@ while true; do
             shell="bash"
             shift
             ;;
+        -g|--global)
+            local=
+            shift
+            ;;
         -h|--help|-\?)
             help_msg;
             exit 0
@@ -72,7 +89,7 @@ while true; do
             if [ $# -gt 1 ]; then
                 prefix=$2; shift 2
             else
-                echo "--prefix or -p require an argument" 1>&2
+                echo "--prefix or -p requires an argument" 1>&2
                 exit 1
             fi
             ;;
@@ -95,13 +112,18 @@ while true; do
     esac
 done
 
+# check for valid local install options
+if [[ ${UID} != 0 ]] && [ ! ${local} ]; then
+    echo
+    echo "Please rerun as root or use the --local option."
+    echo
+    exit 1
+fi
+
 # check shell if supported
 if [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]]; then
     echo "Unsupported shell (${shell}). Use --bash or --zsh to explicitly define shell."
     exit 1
-else
-    echo "Installing ${shell} version."
-    exit 0
 fi
 
 # check Python version
@@ -119,16 +141,8 @@ if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 6 ]]; then
     exit 1
 fi
 
-# check for valid options
-if [[ ${UID} != 0 ]] && [ ! ${local} ]; then
-    echo
-    echo "Please rerun as root or use the --local option."
-    echo
-    exit 1
-fi
-
 echo
-echo "Installing files to ${prefix} ..."
+echo "Installing ${shell} version of autojump to ${prefix} ..."
 echo
 
 # add git revision to autojump
