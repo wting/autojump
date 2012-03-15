@@ -15,7 +15,7 @@
 #along with autojump.  If not, see <http://www.gnu.org/licenses/>.
 
 # determine the data directory according to the XDG Base Directory Specification
-if [[ -n ${XDG_DATA_HOME} ]]; then
+if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} =~ ${USER} ]]; then
     export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
 else
     export AUTOJUMP_DATA_DIR=${HOME}/.local/share/autojump
