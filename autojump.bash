@@ -44,11 +44,11 @@ _autojump_files()
 EOF
     fi
 }
-complete -o default -o bashdefault -F _autojump_files cp mv meld diff kdiff3
+complete -o default -o bashdefault -F _autojump_files cp mv meld diff kdiff3 vim emacs
 
 #determine the data directory according to the XDG Base Directory Specification
-if [ -n "$XDG_DATA_HOME" ]; then
-    export AUTOJUMP_DATA_DIR="$XDG_DATA_HOME/autojump"
+if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} =~ ${USER} ]]; then
+    export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
 else
     export AUTOJUMP_DATA_DIR=~/.local/share/autojump
 fi
