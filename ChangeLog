@@ -1,20 +1,36 @@
 
-# See commit history for detailed changes:
+# Summary of significant changes, see commit history for more details:
 # https://github.com/joelthelion/autojump/commits/master/
+
+2011-03-15  Joël Schaerer  <joel.schaerer@gmail.com>
+
+	* autojump.bash:
+	vim and emacs tab completion using autojump's database now supported in bash.
+
+2011-03-15  William Ting  <william.h.ting@gmail.com>
+
+	* install.sh:
+	Default installation behavior now changes dependent on $UID and
+	$SHELL. Root install will copy files into /usr/. Non-root installations
+	will install into current user's home directory. This behavior can be
+	overridden arguments with --global or --local.
+
+	Installation also now checks $SHELL to install the correct version. This
+	behavior can be overridden with --bash or --zsh.
 
 2011-12-11  Joël Schaerer  <joel.schaerer@gmail.com>
 
-	* Release v19
-	* prototype `cp` and `mv` directory tab completion
-	* Debian post-installation instructions
-	* minor Mac OS X fixes
+	* Release v19:
+	- prototype `cp` and `mv` directory tab completion
+	- Debian post-installation instructions
+	- minor Mac OS X fixes
 
 2011-11-18  Joël Schaerer  <joel.schaerer@gmail.com>
 
-	* Release v18
-	* add automated version numbering
-	* performance tweaks to reduce filesystem checks
-	* add local installation option
-	* unicode fixes
-	* (ugly) fixes for Python 3
-	* migrate to new database format
+	* Release v18:
+	- add automated version numbering
+	- performance tweaks to reduce filesystem checks
+	- add local installation option
+	- unicode fixes
+	- ugly fixes for Python 3
+	- migrate to new database format
