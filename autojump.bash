@@ -80,4 +80,16 @@ case $PROMPT_COMMAND in
 esac
 
 alias jumpstat="autojump --stat"
-function j { new_path="$(autojump $@)";if [ -d "${new_path}" ]; then echo -e "\\033[31m${new_path}\\033[0m"; cd "${new_path}";else false; fi }
+
+function j {
+    new_path="$(autojump $@)"
+
+    if [ -d "${new_path}" ]; then
+        echo -e "\\033[31m${new_path}\\033[0m"
+        cd "${new_path}"
+    else
+        echo "autojump: directory '${@}' not found"
+        echo "Try \`autojump --help\` for more information."
+        false
+    fi
+}

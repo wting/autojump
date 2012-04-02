@@ -52,4 +52,15 @@ preexec_functions+=autojump_preexec
 
 alias jumpstat="autojump --stat"
 
-function j { local new_path="$(autojump $@)";if [ -d "${new_path}" ]; then echo -e "\\033[31m${new_path}\\033[0m"; cd "${new_path}";else false; fi }
+function j {
+    local new_path="$(autojump $@)"
+
+    if [ -d "${new_path}" ]; then
+        echo -e "\\033[31m${new_path}\\033[0m"
+        cd "${new_path}"
+    else
+        echo "autojump: directory '${@}' not found"
+        echo "Try \`autojump --help\` for more information."
+        false
+    fi
+}
