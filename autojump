@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Copyright Joel Schaerer 2008-2010
+"""Copyright Joel Schaerer 2008-2012
 This file is part of autojump
 
 autojump is free software: you can redistribute it and/or modify
@@ -223,11 +223,11 @@ def shell_utility():
     parser.add_argument('directory', metavar='DIR', type=unicode, nargs='*', default=u'',
             help='directory to jump to')
     parser.add_argument('-a', '--add', metavar='DIR', type=unicode,
-            help='add path to database')
+            help='manually add path to database')
     parser.add_argument('-b', '--bash', action="store_true", default=False,
             help='')
     parser.add_argument('--completion', action="store_true", default=False,
-            help='remember all entries')
+            help='prevent key weight decay over time')
     parser.add_argument('--stat', action="store_true", default=False,
             help='show database entries and their key weights')
     parser.add_argument('--version', action="version", version="%(prog)s " + AUTOJUMP_VERSION,

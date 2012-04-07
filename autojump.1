@@ -1,76 +1,83 @@
-.\" A sample man page. 
-.\" Contact admin@yourcompany.com to correct errors or omissions. 
-.TH autojump 1 "10 February 2009" "1.0" "A faster way to navigate your filesystem"
-.SH NAME
-autojump \- a faster way to navigate your filesystem
-.SH SYNOPSIS
-.\" Syntax goes here. 
-.B j 
-dirspec
-.P
-.B jumpstat
-.SH DESCRIPTION
-One of the most used shell commands is "cd". A quick survey among my friends revealed that between 10 and 20% of all commands they type are actually cd commands! Unfortunately, jumping from one part of your system to another with cd requires to enter almost the full path, which isn't very practical and requires a lot of keystrokes.
-.P
-.B autojump
-is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line. The 
-.B jumpstat
-command shows you the current contents of the database. You need to work a little bit before the database becomes useable. Once your database is reasonably complete, you can "jump" to a directory by typing:
-.P
-.B j
-dirspec
-.P
-where dirspec is a few characters of the directory you want to jump to. It will jump to the most used directory whose name matches the pattern given in dirspec. Note that autojump isn't meant to be a drop-in replacement for cd, but rather a complement. Cd is fine when staying in the same area of the filesystem; autojump is there to help when you need to jump far away from your current location.
-.P
-Autojump supports autocompletion. Try it!
-.SH EXAMPLES
-.B j
-mp3
-.P
-could jump to "/home/gwb/my\ mp3\ collection", if that is the directory in which you keep your mp3s.
-.P
-.B autojump
-mp3
-.P
-prints out something like "/home/gwb/my\ mp3\ collection", but does not jump to that directory.
-.P
-.B jumpstat
-.P
-will print out something along the lines of:
-.P
-54.5:	/home/shared/musique
-.P
-60.0:	/home/joel/workspace/coolstuff/glandu
-.P
-83.0:	/home/joel/workspace/abs_user/autojump
-.P
-97.9:	/home/joel/workspace/autojump
-.P
-141.8:	/home/joel/workspace/vv
-.P
-161.7:	/home/joel
-.P
-Total key weight: 1079
-.P
-The "key weight" reflects the amount of time you spend in a directory.
-.SH BUGS
-No known bugs at this time. 
-.SH AUTHOR
+.TH autojump 1 "07 April 2012" "release-v19"
+.SS NAME
+.PP
+autojump - a faster way to navigate your filesystem
+.SS SYNOPSIS
+.PP
+Jump to a previously visited directory \[aq]foobar\[aq]:
+.IP
 .nf
-Joel Schaerer (joel.schaerer@laposte.net)
+\f[C]
+j\ foo
+\f[]
 .fi
-.SH LICENSE
-.B autojump
-is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+.PP
+Show all database entries and their respective key weights:
+.IP
+.nf
+\f[C]
+jumpstat
+\f[]
+.fi
+.SS DESCRIPTION
+.PP
+autojump is a faster way to navigate your filesystem.
+It works by maintaining a database of the directories you use the most
+from the command line.
+The jumpstat command shows you the current contents of the database.
+Directories must be visited first before they can be jumped to.
+.PP
+autojump supports tab completion in Bash v4.0+.
+.SS OPTIONS
+.PP
+Below options must be passed to \[aq]autojump\[aq] and not the
+\[aq]j\[aq] wrapper function.
+.IP
+.nf
+\f[C]
+-a,\ --add\ DIR\ \ \ \ \ \ \ manually\ add\ path\ to\ database
 
-autojump is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+--stat\ \ \ \ \ \ \ \ \ \ \ \ \ \ show\ database\ entries\ and\ their\ key\ weights
 
-You should have received a copy of the GNU General Public License
-along with autojump.  If not, see <http://www.gnu.org/licenses/>.
+--version\ \ \ \ \ \ \ \ \ \ \ show\ version\ information\ and\ exit
+\f[]
+.fi
+.SS INTERNAL OPTIONS
+.IP
+.nf
+\f[C]
+-b,\ --bash
 
+--completion\ \ \ \ \ \ \ \ prevent\ key\ weight\ decay\ over\ time
+\f[]
+.fi
+.SS ADVANCED USAGE
+.PP
+To manually change an entry\[aq]s weight, edit the file
+$XDG_DATA_HOME/autojump/autojump.txt.
+.SS FILES
+.PP
+If installed locally, autojump is self-contained in the directory
+~/.autojump/.
+.PP
+The database is stored in $XDG_DATA_HOME/autojump/autojump.txt.
+.SS REPORTING BUGS
+.PP
+For any issues please visit the following URL:
+.PP
+https://github.com/joelthelion/autojump/issues
+.SS THANKS
+.PP
+Special thanks goes out to: Pierre Gueth, Simon Marache-Francisco,
+Daniel Jackoway, and many others.
+.SS AUTHORS
+.PP
+autojump was originally written by Joël Schaerer, and currently
+maintained by William Ting.
+.SS COPYRIGHT
+.PP
+Copyright © 2012 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later
+<http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
