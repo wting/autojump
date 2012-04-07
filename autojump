@@ -22,13 +22,14 @@ frequently used places."""
 from __future__ import division, print_function
 
 import getopt
+import argparse
 from sys import argv, stderr, version_info, exit, getfilesystemencoding
 from tempfile import NamedTemporaryFile
 from operator import itemgetter
 import os
 import shutil
 
-AUTOJUMP_VERSION = "release-v19"
+AUTOJUMP_VERSION = "release-v19-78-gc91843c-dirty"
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 600
 COMPLETION_SEPARATOR = '__'
@@ -218,104 +219,211 @@ def get_dic_file(filename="autojump.txt"):
 
 def shell_utility():
     """Run this when autojump is called as a shell utility"""
-    try:
-        optlist, args = getopt.getopt(argv[1:], 'a',
-                ['stat', 'import', 'completion', 'bash', 'version', 'help'])
-    except getopt.GetoptError as ex:
-        print("Unknown command line argument: %s" % ex, file=stderr)
-        exit(1)
+    parser = argparse.ArgumentParser(description='Automatically jump to directory passed as an argument.',
+            epilog="Please see autojump(1) man pages for full documentation.")
+    parser.add_argument('directory', metavar='DIR', type=unicode, nargs='*', default=None,
+            help='directory to jump to')
+    parser.add_argument('-a', '--add', metavar='DIR', type=unicode,
+            help='add path to database')
+    parser.add_argument('-b', '--bash', action="store_true", default=False,
+            help='')
+    parser.add_argument('--completion', action="store_true", default=False,
+            help='remember all entries')
+    parser.add_argument('--stat', action="store_true", default=False,
+            help='show database entries and their key weights')
+    parser.add_argument('--version', action="version", version="%(prog)s " + AUTOJUMP_VERSION,
+            help='show version information and exit')
 
+    args = parser.parse_args()
     dic_file = get_dic_file()
     path_dict = open_dic(dic_file)
-    if ('-a', '') in optlist:
-        # The home dir can be reached quickly by "cd"
-        # and may interfere with other directories
-        if(args[-1] != os.path.expanduser("~")):
-            dicadd(path_dict, decode(args[-1]))
+
+    # The home dir can be reached quickly by "cd" and may interfere with other directories
+    if (args.add):
+        if(args.add != os.path.expanduser("~")):
+            dicadd(path_dict, decode(args.add))
             save(path_dict, dic_file)
-    elif ('--stat', '') in optlist:
+        return True
+
+    if (args.stat):
         paths = list(path_dict.items())
         paths.sort(key=itemgetter(1))
         for path, count in paths[-100:]:
             output(unico("%.1f:\t%s") % (count, path))
         print("Total key weight: %d. Number of stored paths: %d" %
                 (sum(path_dict.values()), len(paths)))
-    elif ('--version', '') in optlist:
-        print("autojump %s" % AUTOJUMP_VERSION)
-    elif ('--help', '') in optlist:
-        print("usage: j <dirspec>")
-        print("where dirspec is a few characters of the directory you want to jump to.")
+        return True
+
+    import re
+    #userchoice is i if the pattern is __pattern__i, otherwise -1
+    userchoice = -1
+    results = []
+
+    #default: gradually forget about old directories
+    if (not args.completion): forget(path_dict, dic_file)
+
+    if (args.directory == None):
+        patterns = [unico("")]
     else:
-        import re
-        completion = False
-        #userchoice is i if the pattern is __pattern__i, otherwise -1
-        userchoice = -1
-        results = []
-        if ('--completion', '') in optlist:
-            completion = True
+        patterns = [decode(a) for a in args.directory]
+
+    # If the last pattern contains a full path, jump there
+    # The regexp is because we need to support stuff like
+    # "j wo jo__3__/home/joel/workspace/joel" for zsh
+    last_pattern_path = re.sub("(.*)"+COMPLETION_SEPARATOR, "", patterns[-1])
+    if (len(last_pattern_path)>0 and
+            last_pattern_path[0] == "/" and
+            os.path.exists(last_pattern_path)):
+        if not args.completion: output(last_pattern_path)
+    else:
+        #check for ongoing completion, and act accordingly
+        endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
+        if endmatch:  #user has selected a completion
+            userchoice = int(endmatch.group(1))
+            patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*",
+                    "", patterns[-1])
+        else: #user hasn't selected a completion, display the same choices again
+            endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
+            if endmatch: patterns[-1] = endmatch.group(1)
+
+        dirs = list(path_dict.items())
+        dirs.sort(key=itemgetter(1), reverse=True)
+        if args.completion or userchoice != -1:
+            max_matches = 9
         else:
-            forget(path_dict, dic_file) #gradually forget about old directories
-        if not args: patterns = [unico("")]
-        else: patterns = [decode(a) for a in args]
+            max_matches = 1
 
-        # If the last pattern contains a full path, jump there
-        # The regexp is because we need to support stuff like
-        # "j wo jo__3__/home/joel/workspace/joel" for zsh
-        last_pattern_path = re.sub("(.*)"+COMPLETION_SEPARATOR, "", patterns[-1])
-        if (len(last_pattern_path)>0 and
-              last_pattern_path[0] == "/" and
-              os.path.exists(last_pattern_path)):
-            if not completion: output(last_pattern_path)
+        # Don't jump to the current directory
+        try:
+            current_dir = decode(os.path.realpath(os.curdir))
+        #Sometimes the current path doesn't exist anymore.
+        #In that case, jump if possible.
+        except OSError:
+            current_dir = None
+        find_matches(dirs, patterns, results, False, max_matches, current_dir)
+        # If not found, try ignoring case.
+        # On completion always show all results
+        if args.completion or not results:
+            find_matches(dirs, patterns, results,
+                    ignore_case=True,
+                    max_matches=max_matches, current_dir=current_dir)
+        # Keep the database to a reasonable size
+        if not args.completion and clean_dict(dirs, path_dict):
+            save(path_dict, dic_file)
+
+        if args.completion and ('--bash', '') in optlist: quotes = "'"
+        else: quotes = ""
+
+        if userchoice != -1:
+            if len(results) > userchoice-1 :
+                output(unico("%s%s%s") % (quotes,results[userchoice-1],quotes))
+        elif len(results) > 1 and args.completion:
+            output("\n".join(("%s%s%d%s%s" % (patterns[-1],
+                COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
+                for n, r in enumerate(results[:8]))))
+        elif results: output(unico("%s%s%s")%(quotes,results[0],quotes))
         else:
-            #check for ongoing completion, and act accordingly
-            endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
-            if endmatch:  #user has selected a completion
-                userchoice = int(endmatch.group(1))
-                patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*",
-                        "", patterns[-1])
-            else: #user hasn't selected a completion, display the same choices again
-                endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
-                if endmatch: patterns[-1] = endmatch.group(1)
+            return False
+        return True
 
-            dirs = list(path_dict.items())
-            dirs.sort(key=itemgetter(1), reverse=True)
-            if completion or userchoice != -1:
-                max_matches = 9
-            else:
-                max_matches = 1
+    #try:
+        #optlist, args = getopt.getopt(argv[1:], 'a',
+                #['stat', 'import', 'completion', 'bash', 'version', 'help'])
+    #except getopt.GetoptError as ex:
+        #print("Unknown command line argument: %s" % ex, file=stderr)
+        #exit(1)
 
-            # Don't jump to the current directory
-            try:
-                current_dir = decode(os.path.realpath(os.curdir))
-            #Sometimes the current path doesn't exist anymore.
-            #In that case, jump if possible.
-            except OSError:
-                current_dir = None
-            find_matches(dirs, patterns, results, False, max_matches, current_dir)
-            # If not found, try ignoring case.
-            # On completion always show all results
-            if completion or not results:
-                find_matches(dirs, patterns, results,
-                        ignore_case=True,
-                        max_matches=max_matches, current_dir=current_dir)
-            # Keep the database to a reasonable size
-            if not completion and clean_dict(dirs, path_dict):
-                save(path_dict, dic_file)
+    #dic_file = get_dic_file()
+    #path_dict = open_dic(dic_file)
+    #if ('-a', '') in optlist:
+        ## The home dir can be reached quickly by "cd"
+        ## and may interfere with other directories
+        #if(args[-1] != os.path.expanduser("~")):
+            #dicadd(path_dict, decode(args[-1]))
+            #save(path_dict, dic_file)
+    #elif ('--stat', '') in optlist:
+        #paths = list(path_dict.items())
+        #paths.sort(key=itemgetter(1))
+        #for path, count in paths[-100:]:
+            #output(unico("%.1f:\t%s") % (count, path))
+        #print("Total key weight: %d. Number of stored paths: %d" %
+                #(sum(path_dict.values()), len(paths)))
+    #elif ('--version', '') in optlist:
+        #print("autojump %s" % AUTOJUMP_VERSION)
+    #elif ('--help', '') in optlist:
+        #print("usage: j <dirspec>")
+        #print("where dirspec is a few characters of the directory you want to jump to.")
+    #else:
+        #import re
+        #completion = False
+        ##userchoice is i if the pattern is __pattern__i, otherwise -1
+        #userchoice = -1
+        #results = []
+        #if ('--completion', '') in optlist:
+            #completion = True
+        #else:
+            #forget(path_dict, dic_file) #gradually forget about old directories
+        #if not args: patterns = [unico("")]
+        #else: patterns = [decode(a) for a in args]
 
-            if completion and ('--bash', '') in optlist: quotes = "'"
-            else: quotes = ""
+        ## If the last pattern contains a full path, jump there
+        ## The regexp is because we need to support stuff like
+        ## "j wo jo__3__/home/joel/workspace/joel" for zsh
+        #last_pattern_path = re.sub("(.*)"+COMPLETION_SEPARATOR, "", patterns[-1])
+        #if (len(last_pattern_path)>0 and
+              #last_pattern_path[0] == "/" and
+              #os.path.exists(last_pattern_path)):
+            #if not completion: output(last_pattern_path)
+        #else:
+            ##check for ongoing completion, and act accordingly
+            #endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
+            #if endmatch:  #user has selected a completion
+                #userchoice = int(endmatch.group(1))
+                #patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*",
+                        #"", patterns[-1])
+            #else: #user hasn't selected a completion, display the same choices again
+                #endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
+                #if endmatch: patterns[-1] = endmatch.group(1)
 
-            if userchoice != -1:
-                if len(results) > userchoice-1 :
-                    output(unico("%s%s%s") % (quotes,results[userchoice-1],quotes))
-            elif len(results) > 1 and completion:
-                output("\n".join(("%s%s%d%s%s" % (patterns[-1],
-                    COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
-                    for n, r in enumerate(results[:8]))))
-            elif results: output(unico("%s%s%s")%(quotes,results[0],quotes))
-            else:
-                return False
-            return True
+            #dirs = list(path_dict.items())
+            #dirs.sort(key=itemgetter(1), reverse=True)
+            #if completion or userchoice != -1:
+                #max_matches = 9
+            #else:
+                #max_matches = 1
+
+            ## Don't jump to the current directory
+            #try:
+                #current_dir = decode(os.path.realpath(os.curdir))
+            ##Sometimes the current path doesn't exist anymore.
+            ##In that case, jump if possible.
+            #except OSError:
+                #current_dir = None
+            #find_matches(dirs, patterns, results, False, max_matches, current_dir)
+            ## If not found, try ignoring case.
+            ## On completion always show all results
+            #if completion or not results:
+                #find_matches(dirs, patterns, results,
+                        #ignore_case=True,
+                        #max_matches=max_matches, current_dir=current_dir)
+            ## Keep the database to a reasonable size
+            #if not completion and clean_dict(dirs, path_dict):
+                #save(path_dict, dic_file)
+
+            #if completion and ('--bash', '') in optlist: quotes = "'"
+            #else: quotes = ""
+
+            #if userchoice != -1:
+                #if len(results) > userchoice-1 :
+                    #output(unico("%s%s%s") % (quotes,results[userchoice-1],quotes))
+            #elif len(results) > 1 and completion:
+                #output("\n".join(("%s%s%d%s%s" % (patterns[-1],
+                    #COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
+                    #for n, r in enumerate(results[:8]))))
+            #elif results: output(unico("%s%s%s")%(quotes,results[0],quotes))
+            #else:
+                #return False
+            #return True
 
 
 if __name__ == "__main__":
