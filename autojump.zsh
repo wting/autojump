@@ -59,7 +59,6 @@ function j {
         echo -e "\\033[31m${new_path}\\033[0m"
         cd "${new_path}"
     else
-        echo "autojump returns: ${new_path}"
         echo "autojump: directory '${@}' not found"
         echo "Try \`autojump --help\` for more information."
         false
