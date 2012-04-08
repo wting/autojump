@@ -26,12 +26,10 @@ It works by maintaining a database of the directories you use the most
 from the command line.
 The jumpstat command shows you the current contents of the database.
 Directories must be visited first before they can be jumped to.
-.PP
-autojump supports tab completion in Bash v4.0+.
 .SS OPTIONS
 .PP
-Below options must be passed to \[aq]autojump\[aq] and not the
-\[aq]j\[aq] wrapper function.
+Options must be passed to \[aq]autojump\[aq] and not the \[aq]j\[aq]
+wrapper function.
 .IP
 .nf
 \f[C]
@@ -46,26 +44,57 @@ Below options must be passed to \[aq]autojump\[aq] and not the
 .IP
 .nf
 \f[C]
--b,\ --bash
+-b,\ --bash\ \ \ \ \ \ \ \ \ \ enclose\ directory\ with\ quotes\ to\ prevent\ errors
 
 --completion\ \ \ \ \ \ \ \ prevent\ key\ weight\ decay\ over\ time
 \f[]
 .fi
 .SS ADVANCED USAGE
+.IP \[bu] 2
+Prefer Symbolic Links
+.RS 2
 .PP
-To manually change an entry\[aq]s weight, edit the file
-$XDG_DATA_HOME/autojump/autojump.txt.
+Default behavior is to evaluate symbolic links into full paths as to
+reduce duplicate entries in the database.
+However, some users prefer a shorter working directory path in their
+shell prompt.
+To switch behavior to prefer symbolic links, export the following
+configuration in your ~/.bashrc:
+.IP
+.nf
+\f[C]
+export\ AUTOJUMP_KEEP_SYMLINKS=1
+\f[]
+.fi
+.RE
+.IP \[bu] 2
+Change Directory Weight
+.RS 2
+.PP
+To manually change a directory\[aq]s key weight, you can edit the file
+\f[I]$XDG_DATA_HOME/autojump/autojump.txt\f[].
+Each entry has two columns.
+The first is the key weight and the second is the path:
+.IP
+.nf
+\f[C]
+29.3383211216\ \ \ /home/user/downloads
+\f[]
+.fi
+.PP
+All negative key weights are purged automatically.
+.RE
 .SS FILES
 .PP
-If installed locally, autojump is self-contained in the directory
-~/.autojump/.
+If installed locally, autojump is self-contained in
+\f[I]~/.autojump/\f[].
 .PP
-The database is stored in $XDG_DATA_HOME/autojump/autojump.txt.
+The database is stored in \f[I]$XDG_DATA_HOME/autojump/autojump.txt\f[].
 .SS REPORTING BUGS
 .PP
 For any issues please visit the following URL:
 .PP
-https://github.com/joelthelion/autojump/issues
+\f[I]https://github.com/joelthelion/autojump/issues\f[]
 .SS THANKS
 .PP
 Special thanks goes out to: Pierre Gueth, Simon Marache-Francisco,

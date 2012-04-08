@@ -225,7 +225,7 @@ def shell_utility():
     parser.add_argument('-a', '--add', metavar='DIR', type=unicode,
             help='manually add path to database')
     parser.add_argument('-b', '--bash', action="store_true", default=False,
-            help='')
+            help='enclose directory quotes to prevent errors')
     parser.add_argument('--completion', action="store_true", default=False,
             help='prevent key weight decay over time')
     parser.add_argument('--stat', action="store_true", default=False,

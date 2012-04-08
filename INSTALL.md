@@ -4,6 +4,8 @@
 
 Python v2.6+ or 3.0+
 
+Bash v4.0+ for tab completion
+
 ### AUTOMATIC INSTALLATION
 
 **Linux**
