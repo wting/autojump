@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#Copyright Joel Schaerer 2008, 2009
+#Copyright Joel Schaerer 2008-2012
 #This file is part of autojump
 
 #autojump is free software: you can redistribute it and/or modify
