@@ -10,10 +10,10 @@
     and usage scenarios.
     - Installation scripts now act dependent on current
     environmental settings.
-      If run as root, will do a global install. Installation script also
-      detects which version to install (bash or zsh) dependent on $SHELL.
-      Both of these behaviors can be overrode using --local/--global or
-      --bash/--zsh arguments.
+    If run as root, will do a global install. Installation script also
+    detects which version to install (bash or zsh) dependent on $SHELL.
+    Both of these behaviors can be overrode using --local/--global or
+    --bash/--zsh arguments.
     - Uninstallation script added, will remove both global and local
     installations but ignores database.
     - Symlinks can be preserved as database entries, refer to man page for
