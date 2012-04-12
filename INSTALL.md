@@ -2,7 +2,7 @@
 
 ### REQUIREMENTS
 
-Python v2.6+ or 3.0+
+Python v2.7+ or 3.2+
 
 Bash v4.0+ for tab completion
 

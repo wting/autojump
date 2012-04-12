@@ -128,9 +128,9 @@ fi
 
 # check Python version
 python_version=`python -c 'import sys; print(sys.version_info[:])'`
-if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 6 ]]; then
+if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 7 ]]; then
     echo
-    echo "Incompatible Python version, please upgrade to v2.6+ or v3.0+."
+    echo "Incompatible Python version, please upgrade to v2.7+ or v3.2+."
     if [[ ${python_version:4:1} -gt 3 ]]; then
         echo
         echo "Alternatively, you can download v12 that supports Python v2.4+ from:"

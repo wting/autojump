@@ -6,6 +6,8 @@
 
 	* Release v20:
 
+    - Python versions supported is now v2.7+ and v3.2+ due to rewrite using
+    argparse.
     - Man page and --help has been overhauled to provide better documentation
     and usage scenarios.
     - Installation scripts now act dependent on current
