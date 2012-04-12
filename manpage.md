@@ -51,6 +51,16 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     All negative key weights are purged automatically.
 
+## KNOWN ISSUES
+
+- zsh (bug #86)
+
+    Tab completion does not work.
+
+- jumpapplet (bug #59)
+
+    Does not work in Gnome 3 shell or LDXE.
+
 ## FILES
 
 If installed locally, autojump is self-contained in _~/.autojump/_.
