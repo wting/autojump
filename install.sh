@@ -47,6 +47,7 @@ function help_msg {
 
 # Default install directory.
 shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
+force=
 if [[ ${UID} -eq 0 ]]; then
     local=
     prefix=/usr
@@ -70,6 +71,10 @@ while true; do
     case "$1" in
         -b|--bash)
             shell="bash"
+            shift
+            ;;
+        -f|--force)
+            force=true
             shift
             ;;
         -g|--global)
@@ -127,18 +132,46 @@ if [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]]; then
 fi
 
 # check Python version
-python_version=`python -c 'import sys; print(sys.version_info[:])'`
-if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 7 ]]; then
-    echo
-    echo "Incompatible Python version, please upgrade to v2.7+ or v3.2+."
-    if [[ ${python_version:4:1} -gt 3 ]]; then
+if [ ! ${force} ]; then
+    python_version=`python -c 'import sys; print(sys.version_info[:])'`
+
+    if [[ ${python_version:1:1} -eq 3 && ${python_version:4:1} -lt 2 ]]; then
         echo
-        echo "Alternatively, you can download v12 that supports Python v2.4+ from:"
+        echo "Incompatible Python version, please upgrade to v2.7+ or v3.2+."
         echo
-        echo -e "\thttps://github.com/joelthelion/autojump/tags"
+        echo "Alternatively, you can download v19 that supports Python v3.0+ from:"
         echo
+        echo -e "\thttps://github.com/joelthelion/autojump/downloads"
+        echo
+        echo "OR"
+        echo
+        echo "Install argparse manually using 'pip install argparse' and then reattempt the installation using the --force option."
+        echo
+        exit 1
     fi
-    exit 1
+
+    if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 7 ]]; then
+        echo
+        echo "Incompatible Python version, please upgrade to v2.7+ or v3.2+."
+        if [[ ${python_version:4:1} -ge 6 ]]; then
+            echo
+            echo "Alternatively, you can download v19 that supports Python v2.6+ from:"
+            echo
+            echo -e "\thttps://github.com/joelthelion/autojump/downloads"
+            echo
+            echo "OR"
+            echo
+            echo "Install argparse manually using 'pip install argparse' and then reattempt the installation using the --force option."
+            echo
+        elif [[ ${python_version:4:1} -ge 4 ]]; then
+            echo
+            echo "Alternatively, you can download v12 that supports Python v2.4+ from:"
+            echo
+            echo -e "\thttps://github.com/joelthelion/autojump/downloads"
+            echo
+        fi
+        exit 1
+    fi
 fi
 
 echo
