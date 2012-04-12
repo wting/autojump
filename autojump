@@ -220,9 +220,9 @@ def shell_utility():
     """Run this when autojump is called as a shell utility"""
     parser = argparse.ArgumentParser(description='Automatically jump to directory passed as an argument.',
             epilog="Please see autojump(1) man pages for full documentation.")
-    parser.add_argument('directory', metavar='DIR', type=unicode, nargs='*', default=u'',
+    parser.add_argument('directory', metavar='DIR', nargs='*', default='',
             help='directory to jump to')
-    parser.add_argument('-a', '--add', metavar='DIR', type=unicode,
+    parser.add_argument('-a', '--add', metavar='DIR',
             help='manually add path to database')
     parser.add_argument('-b', '--bash', action="store_true", default=False,
             help='enclose directory quotes to prevent errors')
@@ -261,7 +261,7 @@ def shell_utility():
     #default: gradually forget about old directories
     if (not args.completion): forget(path_dict, dic_file)
 
-    if (args.directory == u''):
+    if (args.directory == ''):
         patterns = [unico("")]
     else:
         patterns = [decode(a) for a in args.directory]
