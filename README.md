@@ -2,11 +2,13 @@
 % 
 % 10 April 2012
 
-## NAME
+NAME
+----
 
 autojump - a faster way to navigate your filesystem
 
-## SYNOPSIS
+SYNOPSIS
+--------
 
 Jump to a previously visited directory 'foobar':
 
@@ -16,7 +18,8 @@ Show all database entries and their respective key weights:
 
     jumpstat
 
-## DESCRIPTION
+DESCRIPTION
+-----------
 
 autojump is a faster way to navigate your filesystem. It works by
 maintaining a database of the directories you use the most from the
@@ -24,7 +27,8 @@ command line. The jumpstat command shows you the current contents of the
 database. Directories must be visited first before they can be jumped
 to.
 
-## OPTIONS
+OPTIONS
+-------
 
 Options must be passed to 'autojump' and not the 'j' wrapper function.
 
@@ -34,13 +38,15 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     --version           show version information and exit
 
-## INTERNAL OPTIONS
+INTERNAL OPTIONS
+----------------
 
     -b, --bash          enclose directory with quotes to prevent errors
 
     --completion        prevent key weight decay over time
 
-## ADVANCED USAGE
+ADVANCED USAGE
+--------------
 
 -   Prefer Symbolic Links
 
@@ -62,36 +68,42 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     All negative key weights are purged automatically.
 
-## FILES
+FILES
+-----
 
 If installed locally, autojump is self-contained in *\~/.autojump/*.
 
 The database is stored in *$XDG\_DATA\_HOME/autojump/autojump.txt*.
 
-## REPORTING BUGS
+REPORTING BUGS
+--------------
 
 For any issues please visit the following URL:
 
 *https://github.com/joelthelion/autojump/issues*
 
-## THANKS
+THANKS
+------
 
 Special thanks goes out to: Pierre Gueth, Simon Marache-Francisco,
 Daniel Jackoway, and many others.
 
-## AUTHORS
+AUTHORS
+-------
 
 autojump was originally written by Joël Schaerer, and currently
 maintained by William Ting.
 
-## COPYRIGHT
+COPYRIGHT
+---------
 
 Copyright © 2012 Free Software Foundation, Inc. License GPLv3+: GNU GPL
 version 3 or later <http://gnu.org/licenses/gpl.html>. This is free
 software: you are free to change and redistribute it. There is NO
 WARRANTY, to the extent permitted by law.
 
-## INSTALLATION
+INSTALLATION
+------------
 
 ### REQUIREMENTS
 
@@ -119,11 +131,11 @@ etc):
 
 **Mac**
 
-Homebrew is the recommended installation method for Mac OS X::
+Homebrew is the recommended installation method for Mac OS X:
 
     brew install autojump
 
-MacPorts also available::
+MacPorts also available:
 
     port install autojump
 
@@ -134,11 +146,11 @@ for an up to date listing of installation methods.
 
 ### MANUAL INSTALLATION
 
-Grab a copy of autojump::
+Grab a copy of autojump:
 
     git clone git://github.com/joelthelion/autojump.git
 
-Run the installation script::
+Run the installation script:
 
     cd autojump
     ./install.sh [ --local ] [ --zsh ]

@@ -24,11 +24,11 @@ autojump is included in the following distro repositories, please use relevant p
 
 **Mac**
 
-Homebrew is the recommended installation method for Mac OS X::
+Homebrew is the recommended installation method for Mac OS X:
 
     brew install autojump
 
-MacPorts also available::
+MacPorts also available:
 
     port install autojump
 
@@ -38,11 +38,11 @@ Please check the [Wiki](https://github.com/joelthelion/autojump/wiki) for an up 
 
 ### MANUAL INSTALLATION
 
-Grab a copy of autojump::
+Grab a copy of autojump:
 
     git clone git://github.com/joelthelion/autojump.git
 
-Run the installation script::
+Run the installation script:
 
     cd autojump
     ./install.sh [ --local ] [ --zsh ]
