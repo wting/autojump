@@ -142,12 +142,13 @@ etc):
 
 **Mac**
 
-Homebrew is the recommended installation method for Mac OS X::
+Homebrew is the recommended installation method for Mac OS X:
 
     brew install autojump
 
-A MacPorts installation method is also
-[available](https://trac.macports.org/browser/trunk/dports/sysutils/autojump/Portfile).
+MacPorts also available:
+
+    port install autojump
 
 **Other**
 
@@ -156,11 +157,11 @@ for an up to date listing of installation methods.
 
 ### MANUAL INSTALLATION
 
-Grab a copy of autojump::
+Grab a copy of autojump:
 
     git clone git://github.com/joelthelion/autojump.git
 
-Run the installation script::
+Run the installation script:
 
     cd autojump
     ./install.sh [ --local ] [ --zsh ]
