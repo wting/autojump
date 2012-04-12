@@ -123,8 +123,9 @@ Homebrew is the recommended installation method for Mac OS X::
 
     brew install autojump
 
-A MacPorts installation method is also
-[available](https://trac.macports.org/browser/trunk/dports/sysutils/autojump/Portfile).
+MacPorts also available::
+
+    port install autojump
 
 **Other**
 
