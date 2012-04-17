@@ -6,11 +6,11 @@ Python v2.7+ or 3.2+
 
 Bash v4.0+ for tab completion
 
-If you are unable to update Python to a supported version, older versions of autojump can be [downloaded](https://github.com/joelthelion/autojump/downloads) and installed manually.
+If you are unable to update Python to a supported version, older versions of autojump can be [downloaded][dl] and installed manually.
 
-Python v2.6+ is supported by [release v19](https://github.com/downloads/joelthelion/autojump/autojump_v19.tar.gz).
+Python v2.6+ is supported by [release v19][v19].
 
-Python v2.4+ is supported by [release v12](https://github.com/downloads/joelthelion/autojump/autojump_v12.tar.gz).
+Python v2.4+ is supported by [release v12][v12].
 
 ### AUTOMATIC INSTALLATION
 
@@ -40,7 +40,7 @@ MacPorts also available:
 
 **Other**
 
-Please check the [Wiki](https://github.com/joelthelion/autojump/wiki) for an up to date listing of installation methods.
+Please check the [Wiki][wiki] for an up to date listing of installation methods.
 
 ### MANUAL INSTALLATION
 
@@ -71,3 +71,8 @@ Run the uninstallation script:
 and follow on screen instructions.
 
 If you keep getting `autojump: command not found` at the prompt, do:`unset PROMPT_COMMAND`. You can also restart your shell.
+
+[dl]: https://github.com/joelthelion/autojump/downloads
+[v12]: https://github.com/downloads/joelthelion/autojump/autojump_v12.tar.gz
+[v19]: https://github.com/downloads/joelthelion/autojump/autojump_v19.tar.gz
+[wiki]: https://github.com/joelthelion/autojump/wiki

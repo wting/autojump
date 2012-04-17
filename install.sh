@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#Copyright Joel Schaerer 2008, 2009
+#Copyright Joel Schaerer 2008-2012
 #This file is part of autojump
 
 #autojump is free software: you can redistribute it and/or modify
@@ -21,9 +21,9 @@ function add_msg {
     echo
 
     if [ "${1}" == "global" ]; then
-        echo -e "\t[[ -f /etc/profile.d/autojump.${2} ]] && source /etc/profile.d/autojump.${2}"
+        echo -e "\t[[ -s /etc/profile.d/autojump.${2} ]] && source /etc/profile.d/autojump.${2}"
     elif [ "${1}" == "local" ]; then
-        echo -e "\t[[ -f ~/.autojump/etc/profile.d/autojump.${2} ]] && source ~/.autojump/etc/profile.d/autojump.${2}"
+        echo -e "\t[[ -s ~/.autojump/etc/profile.d/autojump.${2} ]] && source ~/.autojump/etc/profile.d/autojump.${2}"
     fi
 
     echo
@@ -179,16 +179,16 @@ echo "Installing ${shell} version of autojump to ${prefix} ..."
 echo
 
 # add git revision to autojump
-./git-version.sh
+./tools/git-version.sh
 
 # INSTALL AUTOJUMP
 mkdir -p ${prefix}/share/autojump/
 mkdir -p ${prefix}/bin/
 mkdir -p ${prefix}/share/man/man1/
-cp -v icon.png ${prefix}/share/autojump/
-cp -v jumpapplet ${prefix}/bin/
-cp -v autojump ${prefix}/bin/
-cp -v autojump.1 ${prefix}/share/man/man1/
+cp -v ./bin/icon.png ${prefix}/share/autojump/
+cp -v ./bin/jumpapplet ${prefix}/bin/
+cp -v ./bin/autojump ${prefix}/bin/
+cp -v ./docs/autojump.1 ${prefix}/share/man/man1/
 
 # global installation
 if [ ! ${local} ]; then
@@ -197,7 +197,7 @@ if [ ! ${local} ]; then
         success=
         fpath=`/usr/bin/env zsh -c 'echo $fpath'`
         for f in ${fpath}; do
-            cp -v _j ${f} && success=true && break
+            cp -v ./bin/_j ${f} && success=true && break
         done
 
         if [ ! ${success} ]; then
@@ -209,20 +209,20 @@ if [ ! ${local} ]; then
     fi
 
     if [ -d "/etc/profile.d" ]; then
-        cp -v autojump.sh /etc/profile.d/
-        cp -v autojump.${shell} /etc/profile.d/
+        cp -v ./bin/autojump.sh /etc/profile.d/
+        cp -v ./bin/autojump.${shell} /etc/profile.d/
         add_msg "global" ${shell}
     else
         echo "Your distribution does not have a '/etc/profile.d/' directory, please create it manually or use the local install option."
     fi
 else # local installation
     mkdir -p ${prefix}/etc/profile.d/
-    cp -v autojump.sh ${prefix}/etc/profile.d/
-    cp -v autojump.${shell} ${prefix}/etc/profile.d/
+    cp -v ./bin/autojump.sh ${prefix}/etc/profile.d/
+    cp -v ./bin/autojump.${shell} ${prefix}/etc/profile.d/
 
     if [ ${shell} == "zsh" ]; then
         mkdir -p ${prefix}/functions/
-        cp _j ${prefix}/functions/
+        cp ./bin/_j ${prefix}/functions/
     fi
 
     add_msg "local" ${shell}
