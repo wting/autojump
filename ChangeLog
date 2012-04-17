@@ -2,43 +2,28 @@
 # Summary of release changes, see commit history for more details:
 # https://github.com/joelthelion/autojump/commits/master/
 
-2011-04-10  William Ting  <william.h.ting@gmail.com>
+* Release v20:
 
-	* Release v20:
+ - Python versions supported is now v2.7+ and v3.2+ due to rewrite using argparse.
+ - Man page and --help has been overhauled to provide better documentation and usage scenarios.
+ - Installation scripts now act dependent on current environmental settings.
+   If run as root, will do a global install. Installation script also detects which version to install (bash or zsh) dependent on $SHELL.  Both of these behaviors can be overrode using --local/--global or --bash/--zsh arguments.
+ - Uninstallation script added, will remove both global and local installations but ignores database.
+ - Symlinks can be preserved as database entries, refer to man page for more details.
+ - This change log added to better help package maintainers keep track of changes between releases.
+ - Miscellaneous bug fixes.
 
-    - Python versions supported is now v2.7+ and v3.2+ due to rewrite using
-    argparse.
-    - Man page and --help has been overhauled to provide better documentation
-    and usage scenarios.
-    - Installation scripts now act dependent on current
-    environmental settings.
-    If run as root, will do a global install. Installation script also
-    detects which version to install (bash or zsh) dependent on $SHELL.
-    Both of these behaviors can be overrode using --local/--global or
-    --bash/--zsh arguments.
-    - Uninstallation script added, will remove both global and local
-    installations but ignores database.
-    - Symlinks can be preserved as database entries, refer to man page for
-    more details.
-    - This change log added to better help package maintainers keep track of
-    changes between releases.
-    - Miscellaneous bug fixes.
+* Release v19:
 
-2011-12-11  Joël Schaerer  <joel.schaerer@gmail.com>
+ - prototype `cp` and `mv` directory tab completion
+ - Debian post-installation instructions
+ - minor Mac OS X fixes
 
-	* Release v19:
+* Release v18:
 
-	- prototype `cp` and `mv` directory tab completion
-	- Debian post-installation instructions
-	- minor Mac OS X fixes
-
-2011-11-18  Joël Schaerer  <joel.schaerer@gmail.com>
-
-	* Release v18:
-
-	- add automated version numbering
-	- performance tweaks to reduce filesystem checks
-	- add local installation option
-	- unicode fixes
-	- ugly fixes for Python 3
-	- migrate to new database format
+ - add automated version numbering
+ - performance tweaks to reduce filesystem checks
+ - add local installation option
+ - unicode fixes
+ - ugly fixes for Python 3
+ - migrate to new database format
