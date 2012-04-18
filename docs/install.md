@@ -2,15 +2,13 @@
 
 ### REQUIREMENTS
 
-Python v2.7+ or 3.2+
-
-Bash v4.0+ for tab completion
+- Python v2.7+ or 3.2+
+- Bash v4.0+ for tab completion
 
 If you are unable to update Python to a supported version, older versions of autojump can be [downloaded][dl] and installed manually.
 
-Python v2.6+ is supported by [release v19][v19].
-
-Python v2.4+ is supported by [release v12][v12].
+- Python v2.6+ is supported by [release v19][v19].
+- Python v2.4+ is supported by [release v12][v12].
 
 ### AUTOMATIC INSTALLATION
 
@@ -18,15 +16,14 @@ Python v2.4+ is supported by [release v12][v12].
 
 autojump is included in the following distro repositories, please use relevant package management utilities to install (e.g. yum, apt-get, etc):
 
-    - Debian testing/unstable, Ubuntu, Linux Mint
+- Debian\* testing/unstable, Ubuntu, Linux Mint
+- RedHat, Fedora, CentOS
+- ArchLinux
+- Gentoo
+- Frugalware
+- Slackware
 
-    On Debian only, autojump requires manual activation for policy reasons. Please see ``/usr/share/doc/autojump/README.Debian``.
-
-    - RedHat, Fedora, CentOS
-    - ArchLinux
-    - Gentoo
-    - Frugalware
-    - Slackware
+\* Requires manual activation for policy reasons, please see ``/usr/share/doc/autojump/README.Debian``.
 
 **Mac**
 
