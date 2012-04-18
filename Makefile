@@ -10,8 +10,8 @@ uninstall:
 	uninstall.sh
 
 docs:
-	pandoc -s -w man docs/manpage.md -o docs/autojump.1
-	pandoc -s -w markdown docs/manpage.md docs/install.md -o README.md
+	pandoc -s -w man docs/manpage_header.md docs/header.md docs/manpage.md -o docs/autojump.1
+	pandoc -s -w markdown docs/header.md docs/install.md docs/manpage.md -o README.md
 
 release:
 	# Check for tag existence
