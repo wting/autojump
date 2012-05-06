@@ -2,16 +2,18 @@
 from __future__ import division, print_function
 
 import argparse
-import sys
-from tempfile import NamedTemporaryFile
 from operator import itemgetter
 import os
+import re
 import shutil
+import sys
+from tempfile import NamedTemporaryFile
 
-AUTOJUMP_VERSION = 'release-v20'
+VERSION = 'release-v20'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 600
 COMPLETION_SEPARATOR = '__'
+ARGS = None
 
 if 'AUTOJUMP_DATA_DIR' in os.environ:
     CONFIG_DIR = os.environ.get('AUTOJUMP_DATA_DIR')
@@ -121,14 +123,6 @@ class Database:
                 print("Error while creating backup autojump file. (%s)" %
                         ex, file=sys.stderr)
 
-                def trim(self):
-                    """ If database has exceeded MAX_STORED_PATHS, removes bottom 10%. """
-        dirs = list(self.data.items())
-        dirs.sort(key=itemgetter(1))
-        remove_cnt = .1 * MAX_STORED_PATHS
-        for path, _ in dirs[:remove_cnt]:
-            del self.data[path]
-
     def trim(self):
         """ If database has exceeded MAX_STORED_PATHS, removes bottom 10%. """
         dirs = list(self.data.items())
@@ -146,9 +140,59 @@ def get_db_file(filename = "autojump.txt"):
     else:
         return CONFIG_DIR + "/" + filename
 
-def output(unicode_text,encoding=None):
-    """Wrapper for the print function, using the filesystem encoding by default
-    to minimize encoding mismatch problems in directory names"""
+def options():
+    """ Parse command line options. """
+    global ARGS
+
+    parser = argparse.ArgumentParser(description='Automatically jump to directory passed as an argument.',
+            epilog="Please see autojump(1) man pages for full documentation.")
+    parser.add_argument('directory', metavar='DIR', nargs='*', default='',
+            help='directory to jump to')
+    parser.add_argument('-a', '--add', metavar='DIR',
+            help='manually add path to database')
+    parser.add_argument('-b', '--bash', action="store_true", default=False,
+            help='enclose directory quotes to prevent errors')
+    parser.add_argument('--complete', action="store_true", default=False,
+            help='used for bash tab completion')
+    parser.add_argument('--preserve', action="store_true", default=False,
+            help='prevent key weight decay over time')
+    parser.add_argument('--stat', action="store_true", default=False,
+            help='show database entries and their key weights')
+    parser.add_argument('--version', action="version", version="%(prog)s " + VERSION,
+            help='show version information and exit')
+
+    ARGS = parser.parse_args()
+
+    # The home dir can be reached quickly by "cd" and may interfere with other directories
+    if (ARGS.add):
+        if(ARGS.add != os.path.expanduser("~")):
+            db = Database(DB_FILE)
+            db.add(decode(ARGS.add))
+            db.save()
+        sys.exit(0)
+
+    if (ARGS.stat):
+        db = Database(DB_FILE)
+        dirs = list(db.data.items())
+        dirs.sort(key=itemgetter(1))
+        for path, count in dirs[-100:]:
+            output(unico("%.1f:\t%s") % (count, path))
+        print("Total key weight: %d. Number of stored dirs: %d" %
+                (sum(db.data.values()), len(dirs)))
+        sys.exit(0)
+
+def decode(text, encoding=None, errors="strict"):
+    """ Decoding step for Python 2 which does not default to unicode. """
+    if sys.version_info[0] > 2:
+        return text
+    else:
+        if encoding is None:
+            encoding = sys.getfilesystemencoding()
+        return text.decode(encoding, errors)
+
+def output(unicode_text, encoding=None):
+    """ Wrapper for the print function, using the filesystem encoding by default
+    to minimize encoding mismatch problems in directory names. """
     if sys.version_info[0] > 2:
         print(unicode_text)
     else:
@@ -156,25 +200,16 @@ def output(unicode_text,encoding=None):
             encoding = sys.getfilesystemencoding()
         print(unicode_text.encode(encoding))
 
-def decode(text,encoding=None,errors="strict"):
-    """Decoding step for python2.x which does not default to unicode"""
-    if sys.version_info[0] > 2:
-        return text
-    else:
-        if encoding is None:
-            encoding = sys.getfilesystemencoding()
-        return text.decode(encoding,errors)
-
 def unico(text):
-    """if python2, convert to a unicode object"""
+    """ If Python 2, convert to a unicode object. """
     if sys.version_info[0] > 2:
         return text
     else:
         return unicode(text)
 
 def match(path, pattern, ignore_case=False, only_end=False):
-    """Check whether a path matches a particular pattern, and return
-       the remaning part of the string"""
+    """ Check whether a path matches a particular pattern, and return
+       the remaining part of the string. """
     if only_end:
         match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
     else:
@@ -192,9 +227,8 @@ def match(path, pattern, ignore_case=False, only_end=False):
     return (does_match, eaten_path)
 
 def find_matches(dirs, patterns, result_list, ignore_case, max_matches, current_dir):
-    """Find max_matches paths that match the pattern,
-    and add them to the result_list"""
-    for path, count in dirs:
+    """ Find max_matches paths that match the pattern, and add them to the result_list. """
+    for path, _ in dirs:
         # Don't jump to where we alread are
         if current_dir == path :
             continue
@@ -212,53 +246,18 @@ def find_matches(dirs, patterns, result_list, ignore_case, max_matches, current_
                 break
 
 def shell_utility():
-    """Run this when autojump is called as a shell utility"""
-    parser = argparse.ArgumentParser(description='Automatically jump to directory passed as an argument.',
-            epilog="Please see autojump(1) man pages for full documentation.")
-    parser.add_argument('directory', metavar='DIR', nargs='*', default='',
-            help='directory to jump to')
-    parser.add_argument('-a', '--add', metavar='DIR',
-            help='manually add path to database')
-    parser.add_argument('-b', '--bash', action="store_true", default=False,
-            help='enclose directory quotes to prevent errors')
-    parser.add_argument('--completion', action="store_true", default=False,
-            help='prevent key weight decay over time')
-    parser.add_argument('--stat', action="store_true", default=False,
-            help='show database entries and their key weights')
-    parser.add_argument('--version', action="version", version="%(prog)s " + AUTOJUMP_VERSION,
-            help='show version information and exit')
-
-    args = parser.parse_args()
+    """ Run this when autojump is called as a shell utility. """
+    options()
     db = Database(DB_FILE)
 
-    # The home dir can be reached quickly by "cd" and may interfere with other directories
-    if (args.add):
-        if(args.add != os.path.expanduser("~")):
-            dicadd(path_dict, decode(args.add))
-            save(path_dict, dic_file)
-        return True
-
-    if (args.stat):
-        paths = list(path_dict.items())
-        paths.sort(key=itemgetter(1))
-        for path, count in paths[-100:]:
-            output(unico("%.1f:\t%s") % (count, path))
-        print("Total key weight: %d. Number of stored paths: %d" %
-                (sum(path_dict.values()), len(paths)))
-        return True
-
-    import re
     #userchoice is i if the pattern is __pattern__i, otherwise -1
     userchoice = -1
     results = []
 
-    #default: gradually forget about old directories
-    if (not args.completion): forget(path_dict, dic_file)
-
-    if (args.directory == ''):
-        patterns = [unico("")]
+    if (ARGS.directory == ''):
+        patterns = [unico('')]
     else:
-        patterns = [decode(a) for a in args.directory]
+        patterns = [decode(a) for a in ARGS.directory]
 
     # If the last pattern contains a full path, jump there
     # The regexp is because we need to support stuff like
@@ -267,7 +266,7 @@ def shell_utility():
     if (len(last_pattern_path)>0 and
             last_pattern_path[0] == "/" and
             os.path.exists(last_pattern_path)):
-        if not args.completion: output(last_pattern_path)
+        if not ARGS.complete: output(last_pattern_path)
     else:
         #check for ongoing completion, and act accordingly
         endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
@@ -279,9 +278,9 @@ def shell_utility():
             endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
             if endmatch: patterns[-1] = endmatch.group(1)
 
-        dirs = list(path_dict.items())
+        dirs = list(db.data.items())
         dirs.sort(key=itemgetter(1), reverse=True)
-        if args.completion or userchoice != -1:
+        if ARGS.complete or userchoice != -1:
             max_matches = 9
         else:
             max_matches = 1
@@ -296,27 +295,28 @@ def shell_utility():
         find_matches(dirs, patterns, results, False, max_matches, current_dir)
         # If not found, try ignoring case.
         # On completion always show all results
-        if args.completion or not results:
+        if ARGS.complete or not results:
             find_matches(dirs, patterns, results,
                     ignore_case=True,
                     max_matches=max_matches, current_dir=current_dir)
-        # Keep the database to a reasonable size
-        if not args.completion and clean_dict(dirs, path_dict):
-            save(path_dict, dic_file)
 
-        if args.completion and args.bash: quotes = "'"
+        if ARGS.complete and ARGS.bash: quotes = "'"
         else: quotes = ""
 
         if userchoice != -1:
             if len(results) > userchoice-1 :
                 output(unico("%s%s%s") % (quotes,results[userchoice-1],quotes))
-        elif len(results) > 1 and args.completion:
+        elif len(results) > 1 and ARGS.complete:
             output("\n".join(("%s%s%d%s%s" % (patterns[-1],
                 COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
                 for n, r in enumerate(results[:8]))))
         elif results: output(unico("%s%s%s")%(quotes,results[0],quotes))
         else:
             return False
+
+        if not ARGS.preserve:
+            db.maintenance()
+
         return True
 
 if __name__ == "__main__":
