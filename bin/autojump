@@ -34,6 +34,7 @@ class Database:
         self.data = {}
         self.load()
 
+    # TODO: increase logarithmically as opposed to linear
     def add(self, key, increment = 1):
         """ Increment existing paths or initialize new ones to 0. """
         self.data[key] = self.data.get(key, 0.) + increment
@@ -207,6 +208,19 @@ def unico(text):
     else:
         return unicode(text)
 
+def match_last(pattern):
+    """ If the last pattern contains a full path, jump there.
+    The regexp is because we need to support stuff like
+    "j wo jo__3__/home/joel/workspace/joel" for zsh. """
+    last_pattern_path = re.sub("(.*)"+COMPLETION_SEPARATOR, "", pattern[-1])
+    if (len(last_pattern_path) > 0 and
+            last_pattern_path[0] == "/" and
+            os.path.exists(last_pattern_path)):
+        if not ARGS.preserve:
+            output(last_pattern_path)
+            return True
+    return False
+
 def match(path, pattern, ignore_case=False, only_end=False):
     """ Check whether a path matches a particular pattern, and return
        the remaining part of the string. """
@@ -250,74 +264,70 @@ def shell_utility():
     options()
     db = Database(DB_FILE)
 
-    #userchoice is i if the pattern is __pattern__i, otherwise -1
-    userchoice = -1
-    results = []
-
+    # if no directories, add empty string
     if (ARGS.directory == ''):
         patterns = [unico('')]
     else:
         patterns = [decode(a) for a in ARGS.directory]
 
-    # If the last pattern contains a full path, jump there
-    # The regexp is because we need to support stuff like
-    # "j wo jo__3__/home/joel/workspace/joel" for zsh
-    last_pattern_path = re.sub("(.*)"+COMPLETION_SEPARATOR, "", patterns[-1])
-    if (len(last_pattern_path)>0 and
-            last_pattern_path[0] == "/" and
-            os.path.exists(last_pattern_path)):
-        if not ARGS.complete: output(last_pattern_path)
+    # check last pattern for full path
+    # FIXME: disabled until tab completion is fixed on the shell side
+    # if match_last(patterns): return True
+
+    #userchoice is i if the pattern is __pattern__i, otherwise -1
+    userchoice = -1
+    results = []
+
+    #check for ongoing completion, and act accordingly
+    endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
+    if endmatch:  #user has selected a completion
+        userchoice = int(endmatch.group(1))
+        patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*",
+                "", patterns[-1])
+    else: #user hasn't selected a completion, display the same choices again
+        endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
+        if endmatch: patterns[-1] = endmatch.group(1)
+
+    dirs = list(db.data.items())
+    dirs.sort(key=itemgetter(1), reverse=True)
+    if ARGS.complete or userchoice != -1:
+        max_matches = 9
     else:
-        #check for ongoing completion, and act accordingly
-        endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
-        if endmatch:  #user has selected a completion
-            userchoice = int(endmatch.group(1))
-            patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*",
-                    "", patterns[-1])
-        else: #user hasn't selected a completion, display the same choices again
-            endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
-            if endmatch: patterns[-1] = endmatch.group(1)
+        max_matches = 1
 
-        dirs = list(db.data.items())
-        dirs.sort(key=itemgetter(1), reverse=True)
-        if ARGS.complete or userchoice != -1:
-            max_matches = 9
-        else:
-            max_matches = 1
+    # Don't jump to the current directory
+    try:
+        current_dir = decode(os.path.realpath(os.curdir))
+    #Sometimes the current path doesn't exist anymore.
+    #In that case, jump if possible.
+    except OSError:
+        current_dir = None
+    find_matches(dirs, patterns, results, False, max_matches, current_dir)
+    # If not found, try ignoring case.
+    # On completion always show all results
+    if ARGS.complete or not results:
+        find_matches(dirs, patterns, results,
+                ignore_case=True,
+                max_matches=max_matches, current_dir=current_dir)
 
-        # Don't jump to the current directory
-        try:
-            current_dir = decode(os.path.realpath(os.curdir))
-        #Sometimes the current path doesn't exist anymore.
-        #In that case, jump if possible.
-        except OSError:
-            current_dir = None
-        find_matches(dirs, patterns, results, False, max_matches, current_dir)
-        # If not found, try ignoring case.
-        # On completion always show all results
-        if ARGS.complete or not results:
-            find_matches(dirs, patterns, results,
-                    ignore_case=True,
-                    max_matches=max_matches, current_dir=current_dir)
+    if ARGS.complete and ARGS.bash: quotes = "'"
+    else: quotes = ""
 
-        if ARGS.complete and ARGS.bash: quotes = "'"
-        else: quotes = ""
+    if userchoice != -1:
+        if len(results) > userchoice-1 :
+            output(unico("%s%s%s") % (quotes,results[userchoice-1],quotes))
+    elif len(results) > 1 and ARGS.complete:
+        output("\n".join(("%s%s%d%s%s" % (patterns[-1],
+            COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
+            for n, r in enumerate(results[:8]))))
+    elif results: output(unico("%s%s%s")%(quotes,results[0],quotes))
+    else:
+        return False
 
-        if userchoice != -1:
-            if len(results) > userchoice-1 :
-                output(unico("%s%s%s") % (quotes,results[userchoice-1],quotes))
-        elif len(results) > 1 and ARGS.complete:
-            output("\n".join(("%s%s%d%s%s" % (patterns[-1],
-                COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
-                for n, r in enumerate(results[:8]))))
-        elif results: output(unico("%s%s%s")%(quotes,results[0],quotes))
-        else:
-            return False
+    if not ARGS.preserve:
+        db.maintenance()
 
-        if not ARGS.preserve:
-            db.maintenance()
-
-        return True
+    return True
 
 if __name__ == "__main__":
     if not shell_utility(): sys.exit(1)
