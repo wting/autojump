@@ -2,154 +2,175 @@
 from __future__ import division, print_function
 
 import argparse
-from sys import argv, stderr, version_info, exit, getfilesystemencoding
+import sys
 from tempfile import NamedTemporaryFile
 from operator import itemgetter
 import os
 import shutil
 
-AUTOJUMP_VERSION = "release-v20"
+AUTOJUMP_VERSION = 'release-v20'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 600
 COMPLETION_SEPARATOR = '__'
 
-if "AUTOJUMP_DATA_DIR" in os.environ:
-    CONFIG_DIR = os.environ.get("AUTOJUMP_DATA_DIR")
+if 'AUTOJUMP_DATA_DIR' in os.environ:
+    CONFIG_DIR = os.environ.get('AUTOJUMP_DATA_DIR')
 else:
     xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
-    CONFIG_DIR=os.path.join(xdg_data_dir, 'autojump')
+    CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
 
-def uniqadd(collection, key):
-    """Adds a key to a list only if it is not already present"""
-    if key not in collection:
-        collection.append(key)
+if CONFIG_DIR == os.path.expanduser('~'):
+    DB_FILE = CONFIG_DIR + '/.autojump.txt'
+else:
+    DB_FILE = CONFIG_DIR + '/autojump.txt'
 
-def dicadd(dic, key, increment=1):
-    """Increment a value in a dic, set it to 0
-    if is is not already present"""
-    dic[key] = dic.get(key, 0.)+increment
+class Database:
+    """ Object for interfacing with autojump database. """
+
+    def __init__(self, filename):
+        self.filename = filename
+        self.data = {}
+        self.load()
+
+    def add(self, key, increment = 1):
+        """ Increment existing paths or initialize new ones to 0. """
+        self.data[key] = self.data.get(key, 0.) + increment
+
+    def decay(self):
+        """ Decay database entries. """
+        for k in self.data.keys():
+            self.data[k] *= 0.9
+
+    def load(self, error_recovery = False):
+        """ Try to open the database file, recovering from backup if needed. """
+        try:
+            with open(self.filename, 'r') as aj_file:
+                for line in aj_file.readlines():
+                    weight, path = line[:-1].split("\t", 1)
+                    path = decode(path, 'utf-8')
+                    self.data[path] = float(weight)
+        except (IOError, EOFError):
+            if not error_recovery and os.path.exists(self.filename + ".bak"):
+                print('Problem with autojump database,\
+                        trying to recover from backup...', file=sys.stderr)
+                shutil.copy(self.filename + '.bak', self.filename)
+                return self.load(True)
+            else:
+                # TODO: migration code, will be removed in v22+
+                # autojump_py last used in v17
+                self.filename = get_db_file('autojump_py')
+                if os.path.exists(self.filename):
+                    try: # fix to get optimised pickle in python < 3
+                        import cPickle as pickle
+                    except ImportError:
+                        import pickle
+                    try:
+                        with open(self.filename, 'rb') as aj_file:
+                            # encoding is only specified for Python 2 compatibility
+                            if sys.version_info[0] > 2:
+                                self.data = pickle.load(aj_file, encoding="utf-8")
+                            else:
+                                self.data = pickle.load(aj_file)
+                        unicode_dict = {}
+                        for k, v in self.data.items():
+                            print(k)
+                            unicode_dict[decode(k, errors="replace")] = v
+                        return unicode_dict
+                    except (IOError, EOFError, pickle.UnpicklingError):
+                        pass
+                return {} # if everything fails, return an empty dictionary
+
+    def maintenance(self):
+        """ Trims and decays database entries when exceeding settings. """
+        if sum(self.data.values()) > MAX_KEYWEIGHT:
+            self.decay()
+        if len(self.data) > MAX_STORED_PATHS:
+            self.trim()
+        self.save()
+
+    def save(self):
+        """ Save database atomically and preserve backup. """
+        # check file existence and permissions
+        if ((not os.path.exists(self.filename)) or
+                os.name == 'nt' or
+                os.getuid() == os.stat(self.filename)[4]):
+            temp = NamedTemporaryFile(dir = CONFIG_DIR, delete = False)
+            for path, weight in sorted(self.data.items(),
+                    key=itemgetter(1),
+                    reverse=True):
+                temp.write((unico("%s\t%s\n")%(weight, path)).encode("utf-8"))
+
+            # catching disk errors and skipping save when file handle can't be closed.
+            try:
+                # http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
+                temp.flush()
+                os.fsync(temp)
+                temp.close()
+            except IOError as ex:
+                print("Error saving autojump database (disk full?)" %
+                        ex, file=sys.stderr)
+                return
+
+            shutil.move(temp.name, self.filename)
+            try: # backup file
+                import time
+                if (not os.path.exists(self.filename+".bak") or
+                        time.time()-os.path.getmtime(self.filename+".bak") > 86400):
+                    shutil.copy(self.filename, self.filename+".bak")
+            except OSError as ex:
+                print("Error while creating backup autojump file. (%s)" %
+                        ex, file=sys.stderr)
+
+                def trim(self):
+                    """ If database has exceeded MAX_STORED_PATHS, removes bottom 10%. """
+        dirs = list(self.data.items())
+        dirs.sort(key=itemgetter(1))
+        remove_cnt = .1 * MAX_STORED_PATHS
+        for path, _ in dirs[:remove_cnt]:
+            del self.data[path]
+
+    def trim(self):
+        """ If database has exceeded MAX_STORED_PATHS, removes bottom 10%. """
+        dirs = list(self.data.items())
+        dirs.sort(key=itemgetter(1))
+        remove_cnt = .1 * MAX_STORED_PATHS
+        for path, _ in dirs[:remove_cnt]:
+            del self.data[path]
+
+
+def get_db_file(filename = "autojump.txt"):
+    """ Retrieve full database path. """
+    # TODO: Remove when migration code is removed.
+    if CONFIG_DIR == os.path.expanduser("~"):
+        return CONFIG_DIR + "/." + filename
+    else:
+        return CONFIG_DIR + "/" + filename
 
 def output(unicode_text,encoding=None):
     """Wrapper for the print function, using the filesystem encoding by default
     to minimize encoding mismatch problems in directory names"""
-    if version_info[0] > 2:
+    if sys.version_info[0] > 2:
         print(unicode_text)
     else:
         if encoding is None:
-            encoding = getfilesystemencoding()
+            encoding = sys.getfilesystemencoding()
         print(unicode_text.encode(encoding))
 
 def decode(text,encoding=None,errors="strict"):
     """Decoding step for python2.x which does not default to unicode"""
-    if version_info[0] > 2:
+    if sys.version_info[0] > 2:
         return text
     else:
         if encoding is None:
-            encoding = getfilesystemencoding()
+            encoding = sys.getfilesystemencoding()
         return text.decode(encoding,errors)
 
 def unico(text):
     """if python2, convert to a unicode object"""
-    if version_info[0] > 2:
+    if sys.version_info[0] > 2:
         return text
     else:
         return unicode(text)
-
-def save(path_dict, dic_file):
-    """Save the database in an atomic way, and preserve
-       a backup file."""
-    # If the dic_file exists and os supports permissions, check that dic_file belongs to us
-    # Otherwise, fail quietly
-    if (not os.path.exists(dic_file)) or os.name == 'nt' or os.getuid() == os.stat(dic_file)[4]:
-        temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
-        for path,weight in sorted(path_dict.items(),key=itemgetter(1),reverse=True):
-            # the db is stored in utf-8
-            temp.write((unico("%s\t%s\n")%(weight,path)).encode("utf-8"))
-
-        # Catching disk errors and skipping save since file handle can't be closed.
-        try:
-            #cf. http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
-            temp.flush()
-            os.fsync(temp)
-            temp.close()
-        except IOError as ex:
-            print("Error while saving autojump database (disk full?)" %
-                    ex, file=stderr)
-            return
-
-        # Use shutil.move instead of os.rename because windows doesn't support
-        # using rename to overwrite files
-        shutil.move(temp.name, dic_file)
-        try: #backup file
-            import time
-            if (not os.path.exists(dic_file+".bak") or
-                    time.time()-os.path.getmtime(dic_file+".bak")>86400):
-                shutil.copy(dic_file, dic_file+".bak")
-        except OSError as ex:
-            print("Error while creating backup autojump file. (%s)" %
-                    ex, file=stderr)
-
-def open_dic(dic_file, error_recovery=False):
-    """Try hard to open the database file, recovering
-       from backup if needed. """
-    try:
-        path_dict = {}
-        with open(dic_file, 'r') as aj_file:
-            for l in aj_file.readlines():
-                weight,path = l[:-1].split("\t",1)
-                # the db is stored in utf-8
-                path = decode(path,"utf-8")
-                path_dict[path] = float(weight)
-            return path_dict
-    except (IOError, EOFError):
-        if not error_recovery and os.path.exists(dic_file+".bak"):
-            print('Problem with autojump database,\
-                    trying to recover from backup...', file=stderr)
-            shutil.copy(dic_file+".bak", dic_file)
-            return open_dic(dic_file, True)
-        else:
-            # Temporary migration code
-            old_dic_file = get_dic_file("autojump_py")
-            if os.path.exists(old_dic_file):
-                try: # fix to get optimised pickle in python < 3
-                    import cPickle as pickle
-                except ImportError:
-                    import pickle
-                try:
-                    with open(old_dic_file, 'rb') as aj_file:
-                        if version_info[0] > 2:
-                            #encoding is only specified for python2.x compatibility
-                            path_dict = pickle.load(aj_file, encoding="utf-8")
-                        else:
-                            path_dict = pickle.load(aj_file)
-                    unicode_dict = {} #we now use unicode internally
-                    for k,v in path_dict.items():
-                        print(k)
-                        unicode_dict[decode(k,errors="replace")] = v
-                    return unicode_dict
-                except (IOError, EOFError, pickle.UnpicklingError):
-                    pass
-            return {} #if everything fails, return an empty file
-
-
-def forget(path_dict, dic_file):
-    """Gradually forget about directories. Only call
-    from the actual jump since it can take time"""
-    keyweight = sum(path_dict.values())
-    if keyweight > MAX_KEYWEIGHT:
-        for k in path_dict.keys():
-            path_dict[k] *= 0.9 * MAX_KEYWEIGHT / keyweight
-        save(path_dict, dic_file)
-
-def clean_dict(sorted_dirs, path_dict):
-    """Limits the sized of the path_dict to MAX_STORED_PATHS.
-    Returns True if keys were deleted"""
-    if len(sorted_dirs) > MAX_STORED_PATHS:
-        #remove 25 more than needed, to avoid doing it every time
-        for path, dummy in sorted_dirs[MAX_STORED_PATHS-25:]:
-            del path_dict[path]
-        return True
-    else: return False
 
 def match(path, pattern, ignore_case=False, only_end=False):
     """Check whether a path matches a particular pattern, and return
@@ -185,16 +206,10 @@ def find_matches(dirs, patterns, result_list, ignore_case, max_matches, current_
         #If a path doesn't exist, don't jump there
         #We still keep it in db in case it's from a removable drive
         if does_match and os.path.exists(path):
-            uniqadd(result_list, path)
+            if path not in result_list:
+                result_list.append(path)
             if len(result_list) >= max_matches :
                 break
-
-def get_dic_file(filename="autojump.txt"):
-    if CONFIG_DIR == os.path.expanduser("~"):
-        dic_file = CONFIG_DIR+"/." + filename
-    else:
-        dic_file = CONFIG_DIR+"/" + filename
-    return dic_file
 
 def shell_utility():
     """Run this when autojump is called as a shell utility"""
@@ -214,8 +229,7 @@ def shell_utility():
             help='show version information and exit')
 
     args = parser.parse_args()
-    dic_file = get_dic_file()
-    path_dict = open_dic(dic_file)
+    db = Database(DB_FILE)
 
     # The home dir can be reached quickly by "cd" and may interfere with other directories
     if (args.add):
@@ -306,5 +320,4 @@ def shell_utility():
         return True
 
 if __name__ == "__main__":
-    success=shell_utility()
-    if not success: exit(1)
+    if not shell_utility(): sys.exit(1)
