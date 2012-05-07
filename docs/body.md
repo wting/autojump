@@ -68,6 +68,12 @@ For any issues please visit the following URL:
 
 _https://github.com/joelthelion/autojump/issues_
 
+## ANNOUNCEMENTS
+
+For release announcements please join the following group:
+
+_https://groups.google.com/forum/?fromgroups#!forum/autojump_
+
 ## THANKS
 
 Special thanks goes out to: Pierre Gueth, Simon Marache-Francisco, Daniel Jackoway, and many others.
