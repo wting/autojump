@@ -15,4 +15,4 @@ else
     gitrevision="$1"
 fi
 
-sed -i "s/^AUTOJUMP_VERSION = \".*\"$/AUTOJUMP_VERSION = \"$gitrevision\"/" ./bin/autojump
+sed -i "s/^VERSION = \".*\"$/VERSION = \"$gitrevision\"/" ./bin/autojump

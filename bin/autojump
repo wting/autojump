@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
   Copyright © 2008-2012 Joel Schaerer
   Copyright © 2012      William Ting
@@ -28,7 +29,7 @@ import shutil
 import sys
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v20-3'
+VERSION = 'release-v20-4'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -122,6 +123,16 @@ class Database:
             self.trim()
         self.save()
 
+    def purge(self):
+        """ Deletes all entries that no longer exist on system. """
+        removed = []
+        for path in self.data.keys():
+            if not os.path.exists(path):
+                removed.append(path)
+                del self.data[path]
+        self.save()
+        return removed
+
     def save(self):
         """ Save database atomically and preserve backup. """
         # check file existence and permissions
@@ -186,6 +197,8 @@ def options():
             help='enclose directory quotes to prevent errors')
     parser.add_argument('--complete', action="store_true", default=False,
             help='used for bash tab completion')
+    parser.add_argument('--purge', action="store_true", default=False,
+            help='delete all database entries that no longer exist on system')
     parser.add_argument('--stat', action="store_true", default=False,
             help='show database entries and their key weights')
     parser.add_argument('--version', action="version", version="%(prog)s " + VERSION,
@@ -199,6 +212,15 @@ def options():
             db = Database(DB_FILE)
             db.add(decode(ARGS.add))
             db.save()
+        return True
+
+    if (ARGS.purge):
+        db = Database(DB_FILE)
+        removed = db.purge()
+        if len(removed) > 0:
+            for dir in removed:
+                output(unico(dir))
+        print("Number of database entries removed: %d" % len(removed))
         return True
 
     if (ARGS.stat):
