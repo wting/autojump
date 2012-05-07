@@ -222,26 +222,26 @@ def match_last(pattern):
             return True
     return False
 
-def match(path, pattern, ignore_case=False, only_end=False):
+def match(path, pattern, only_end=False, ignore_case=False):
     """ Check whether a path matches a particular pattern, and return
        the remaining part of the string. """
     if only_end:
-        match_string = "/".join(path.split('/')[-1-pattern.count('/'):])
+        match_path = "/".join(path.split('/')[-1-pattern.count('/'):])
     else:
-        match_string = path
-    if ignore_case:
-        find_idx = match_string.lower().find(pattern.lower())
-    else:
-        find_idx = match_string.find(pattern)
-    does_match = (find_idx != -1)
-    # Eat the path to avoid two patterns matching the same part of the string
-    if does_match:
-        eaten_path = path[find_idx+len(pattern):]
-    else:
-        eaten_path = path
-    return (does_match, eaten_path)
+        match_path = path
 
-def find_matches(db, patterns, max_matches, ignore_case):
+    if ignore_case:
+        find_idx = match_path.lower().find(pattern.lower())
+    else:
+        find_idx = match_path.find(pattern)
+
+    # truncate path to avoid matching a pattern multiple times
+    if find_idx != -1:
+        return (True, path)
+    else:
+        return (False, path[find_idx+len(pattern):])
+
+def find_matches(db, patterns, max_matches=1, ignore_case=False):
     """ Find max_matches paths that match the pattern, and add them to the result_list. """
     try:
         current_dir = decode(os.path.realpath(os.curdir))
@@ -250,25 +250,26 @@ def find_matches(db, patterns, max_matches, ignore_case):
 
     dirs = list(db.data.items())
     dirs.sort(key=itemgetter(1), reverse=True)
-
     results = []
     for path, _ in dirs:
-        # Don't jump to where we alread are
+        # avoid jumping to current directory
         if current_dir == path :
             continue
-        does_match, eaten_path = True, path
-        for n,p in enumerate(patterns):
-            #For the last pattern, only match the end of the pattern
-            does_match, eaten_path = match(eaten_path, p, ignore_case, only_end=(n == len(patterns)-1))
-            if not does_match: break
-        #If a path doesn't exist, don't jump there
-        #We still keep it in db in case it's from a removable drive
-        if does_match and os.path.exists(path):
+
+        found, tmp = True, path
+        for n, p in enumerate(patterns):
+            # for single/last pattern, only check end of path
+            if n == len(patterns)-1:
+                found, tmp = match(tmp, p, True, ignore_case)
+            else:
+                found, tmp = match(tmp, p, False, ignore_case)
+            if not found: break
+
+        if found and os.path.exists(path):
             if path not in results:
                 results.append(path)
-            if len(results) >= max_matches :
+            if len(results) >= max_matches:
                 break
-
     return results
 
 def shell_utility():
