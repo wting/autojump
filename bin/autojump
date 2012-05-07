@@ -2,7 +2,6 @@
 from __future__ import division, print_function
 
 import argparse
-import math
 from operator import itemgetter
 import os
 import re
@@ -10,7 +9,7 @@ import shutil
 import sys
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v20'
+VERSION = 'release-v20-3'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -40,6 +39,7 @@ class Database:
         if path not in self.data:
             self.data[path] = 10
         else:
+            import math
             self.data[path] = math.sqrt((self.data[path]**2)+100)
 
     def decay(self):
@@ -234,17 +234,17 @@ def match(path, pattern, only_end=False, ignore_case=False):
         match_path = path
 
     if ignore_case:
-        find_idx = match_path.lower().find(pattern.lower())
-    else:
-        find_idx = match_path.find(pattern)
+        match_path = match_path.lower()
+        pattern = pattern.lower()
 
+    find_idx = match_path.find(pattern)
     # truncate path to avoid matching a pattern multiple times
     if find_idx != -1:
         return (True, path)
     else:
         return (False, path[find_idx+len(pattern):])
 
-def find_matches(db, patterns, max_matches=1, ignore_case=False):
+def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
     """ Find max_matches paths that match the pattern, and add them to the result_list. """
     try:
         current_dir = decode(os.path.realpath(os.curdir))
@@ -254,6 +254,30 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False):
     dirs = list(db.data.items())
     dirs.sort(key=itemgetter(1), reverse=True)
     results = []
+    if fuzzy:
+        from difflib import get_close_matches
+
+        # create dictionary of end paths to compare against
+        end_dirs = {}
+        for d in dirs:
+            if ignore_case:
+                end = d[0].split('/')[-1].lower()
+            else:
+                end = d[0].split('/')[-1]
+
+            # collisions: ignore lower weight paths
+            if end not in end_dirs and os.path.exists(d[0]):
+                end_dirs[end] = d[0]
+
+        # find the first match (heighest weight)
+        found = get_close_matches(patterns[-1], end_dirs, 1, .6)
+        if found:
+            found = found[0]
+            results.append(end_dirs[found])
+            return results
+        else:
+            return []
+
     for path, _ in dirs:
         # avoid jumping to current directory
         if current_dir == path :
@@ -311,6 +335,10 @@ def shell_utility():
     # if no results, try ignoring case
     if ARGS.complete or not results:
         results = find_matches(db, patterns, max_matches, True)
+
+    # if no results, try approximate matching
+    if not results:
+        results = find_matches(db, patterns, max_matches, True, True)
 
     quotes = ""
     if ARGS.complete and ARGS.bash: quotes = "'"
