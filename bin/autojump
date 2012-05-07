@@ -2,6 +2,7 @@
 from __future__ import division, print_function
 
 import argparse
+import math
 from operator import itemgetter
 import os
 import re
@@ -34,10 +35,12 @@ class Database:
         self.data = {}
         self.load()
 
-    # TODO: increase logarithmically as opposed to linear
-    def add(self, key, increment = 1):
+    def add(self, path, increment=1):
         """ Increment existing paths or initialize new ones to 0. """
-        self.data[key] = self.data.get(key, 0.) + increment
+        if path not in self.data:
+            self.data[path] = 10
+        else:
+            self.data[path] = math.sqrt((self.data[path]**2)+100)
 
     def decay(self):
         """ Decay database entries. """
