@@ -114,8 +114,6 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     -a, --add DIR       manually add path to database
 
-    --preserve          prevent key weight decay over time
-
     --stat              show database entries and their key weights
 
     --version           show version information and exit
@@ -127,8 +125,8 @@ INTERNAL OPTIONS
 
     --complete          used for tab completion
 
-ADVANCED USAGE
---------------
+ADDITIONAL CONFIGURATION
+------------------------
 
 -   Always Ignore Case
 
@@ -139,6 +137,15 @@ ADVANCED USAGE
 
         export AUTOJUMP_IGNORE_CASE=1
 
+-   Prevent Database Entries' Decay
+
+    Default behavior is to decay unused database entries slowly over
+    time. Eventually when database limits are hit and maintenance is
+    run, autojump will purge older less used entries. To prevent decay,
+    add the following variable in your \~/.bashrc:
+
+        export AUTOJUMP_KEEP_ALL_ENTRIES=1
+
 -   Prefer Symbolic Links
 
     Default behavior is to evaluate symbolic links into full paths as to
@@ -148,6 +155,9 @@ ADVANCED USAGE
     variable in your \~/.bashrc:
 
         export AUTOJUMP_KEEP_SYMLINKS=1
+
+ADVANCED USAGE
+--------------
 
 -   Change Directory Weight
 

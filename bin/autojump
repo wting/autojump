@@ -22,6 +22,12 @@ else:
     xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
     CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
 
+if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ:
+    if os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == 1:
+        KEEP_ALL_ENTRIES = True
+    else:
+        KEEP_ALL_ENTRIES = False
+
 if 'AUTOJUMP_IGNORE_CASE' in os.environ:
     if os.environ.get('AUTOJUMP_IGNORE_CASE') == 1:
         ALWAYS_IGNORE_CASE = True
@@ -165,8 +171,6 @@ def options():
             help='enclose directory quotes to prevent errors')
     parser.add_argument('--complete', action="store_true", default=False,
             help='used for bash tab completion')
-    parser.add_argument('--preserve', action="store_true", default=False,
-            help='prevent key weight decay over time')
     parser.add_argument('--stat', action="store_true", default=False,
             help='show database entries and their key weights')
     parser.add_argument('--version', action="version", version="%(prog)s " + VERSION,
@@ -227,7 +231,7 @@ def match_last(pattern):
     if (len(last_pattern_path) > 0 and
             last_pattern_path[0] == "/" and
             os.path.exists(last_pattern_path)):
-        if not ARGS.preserve:
+        if not ARGS.complete:
             output(last_pattern_path)
             return True
     return False
@@ -364,7 +368,7 @@ def shell_utility():
     else:
         return False
 
-    if not ARGS.preserve:
+    if not KEEP_ALL_ENTRIES:
         db.maintenance()
 
     return True
