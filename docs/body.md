@@ -4,7 +4,7 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     -a, --add DIR       manually add path to database
 
-    --purge             deletes all database entries that no longer exist on system
+    --purge             deletes database entries that no longer exist on system
 
     --stat              show database entries and their key weights
 
@@ -64,13 +64,13 @@ The database is stored in _$XDG_DATA_HOME/autojump/autojump.txt_.
 
 ## REPORTING BUGS
 
-For any issues please visit the following URL:
+For any usage related issues or feature requests please visit:
 
 _https://github.com/joelthelion/autojump/issues_
 
-## ANNOUNCEMENTS
+## MAILING LIST
 
-For release announcements please join the following group:
+For release announcements and development related discussion please visit:
 
 _https://groups.google.com/forum/?fromgroups#!forum/autojump_
 

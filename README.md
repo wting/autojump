@@ -192,14 +192,15 @@ The database is stored in *$XDG\_DATA\_HOME/autojump/autojump.txt*.
 REPORTING BUGS
 --------------
 
-For any issues please visit the following URL:
+For any usage related issues or feature requests please visit:
 
 *https://github.com/joelthelion/autojump/issues*
 
-ANNOUNCEMENTS
--------------
+MAILING LIST
+------------
 
-For release announcements please join the following group:
+For release announcements and development related discussion please
+visit:
 
 *https://groups.google.com/forum/?fromgroups\#!forum/autojump*
 
