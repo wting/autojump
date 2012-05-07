@@ -22,17 +22,13 @@ else:
     xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
     CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
 
-if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ:
-    if os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == 1:
-        KEEP_ALL_ENTRIES = True
-    else:
-        KEEP_ALL_ENTRIES = False
+KEEP_ALL_ENTRIES = False
+if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ and os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == 1:
+    KEEP_ALL_ENTRIES = True
 
-if 'AUTOJUMP_IGNORE_CASE' in os.environ:
-    if os.environ.get('AUTOJUMP_IGNORE_CASE') == 1:
-        ALWAYS_IGNORE_CASE = True
-    else:
-        ALWAYS_IGNORE_CASE = False
+ALWAYS_IGNORE_CASE = False
+if 'AUTOJUMP_IGNORE_CASE' in os.environ and os.environ.get('AUTOJUMP_IGNORE_CASE') == 1:
+    ALWAYS_IGNORE_CASE = True
 
 if CONFIG_DIR == os.path.expanduser('~'):
     DB_FILE = CONFIG_DIR + '/.autojump.txt'
