@@ -15,11 +15,18 @@ MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
 ARGS = None
 
+# load config from environmental variables
 if 'AUTOJUMP_DATA_DIR' in os.environ:
     CONFIG_DIR = os.environ.get('AUTOJUMP_DATA_DIR')
 else:
     xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
     CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
+
+if 'AUTOJUMP_IGNORE_CASE' in os.environ:
+    if os.environ.get('AUTOJUMP_IGNORE_CASE') == 1:
+        ALWAYS_IGNORE_CASE = True
+    else:
+        ALWAYS_IGNORE_CASE = False
 
 if CONFIG_DIR == os.path.expanduser('~'):
     DB_FILE = CONFIG_DIR + '/.autojump.txt'
@@ -331,7 +338,9 @@ def shell_utility():
     else:
         max_matches = 1
 
-    results = find_matches(db, patterns, max_matches, False)
+    if not ALWAYS_IGNORE_CASE:
+        results = find_matches(db, patterns, max_matches, False)
+
     # if no results, try ignoring case
     if ARGS.complete or not results:
         results = find_matches(db, patterns, max_matches, True)

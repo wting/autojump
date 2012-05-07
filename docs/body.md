@@ -18,9 +18,15 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
 ## ADVANCED USAGE
 
+- Always Ignore Case
+
+    Default behavior is to prioritize exact matches over all else. For example, `j foo` will prefer /foobar over /FooBar even if the latter has a higher weight. To change this behavior and ignore case, add the following environmental variable in your ~/.bashrc:
+
+        export AUTOJUMP_IGNORE_CASE=1
+
 - Prefer Symbolic Links
 
-    Default behavior is to evaluate symbolic links into full paths as to reduce duplicate entries in the database. However, some users prefer a shorter working directory path in their shell prompt. To switch behavior to prefer symbolic links, export the following configuration in your ~/.bashrc:
+    Default behavior is to evaluate symbolic links into full paths as to reduce duplicate entries in the database. However, some users prefer a shorter working directory path in their shell prompt. To switch behavior to prefer symbolic links, add the following environmental variable in your ~/.bashrc:
 
         export AUTOJUMP_KEEP_SYMLINKS=1
 

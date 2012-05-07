@@ -53,6 +53,22 @@ wrapper function.
 .fi
 .SS ADVANCED USAGE
 .IP \[bu] 2
+Always Ignore Case
+.RS 2
+.PP
+Default behavior is to prioritize exact matches over all else.
+For example, \f[C]j\ foo\f[] will prefer /foobar over /FooBar even if
+the latter has a higher weight.
+To change this behavior and ignore case, add the following environmental
+variable in your ~/.bashrc:
+.IP
+.nf
+\f[C]
+export\ AUTOJUMP_IGNORE_CASE=1
+\f[]
+.fi
+.RE
+.IP \[bu] 2
 Prefer Symbolic Links
 .RS 2
 .PP
@@ -60,8 +76,8 @@ Default behavior is to evaluate symbolic links into full paths as to
 reduce duplicate entries in the database.
 However, some users prefer a shorter working directory path in their
 shell prompt.
-To switch behavior to prefer symbolic links, export the following
-configuration in your ~/.bashrc:
+To switch behavior to prefer symbolic links, add the following
+environmental variable in your ~/.bashrc:
 .IP
 .nf
 \f[C]
