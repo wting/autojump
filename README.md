@@ -114,6 +114,8 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     -a, --add DIR       manually add path to database
 
+    --preserve          prevent key weight decay over time
+
     --stat              show database entries and their key weights
 
     --version           show version information and exit
@@ -123,7 +125,7 @@ INTERNAL OPTIONS
 
     -b, --bash          enclose directory with quotes to prevent errors
 
-    --completion        prevent key weight decay over time
+    --complete          used for tab completion
 
 ADVANCED USAGE
 --------------

@@ -2,7 +2,7 @@ _autojump()
 {
         local cur
         cur=${COMP_WORDS[*]:1}
-        comps=$(autojump --bash --completion $cur)
+        comps=$(autojump --bash --complete $cur)
         while read i
         do
             COMPREPLY=("${COMPREPLY[@]}" "${i}")
@@ -18,7 +18,7 @@ _autojump_files()
         local cur
         #cur=${COMP_WORDS[*]:1}
         cur=${COMP_WORDS[COMP_CWORD]}
-        comps=$(autojump --bash --completion $cur)
+        comps=$(autojump --bash --complete $cur)
         while read i
         do
             COMPREPLY=("${COMPREPLY[@]}" "${i}")
