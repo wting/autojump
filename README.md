@@ -196,6 +196,10 @@ For any issues please visit the following URL:
 
 *https://github.com/joelthelion/autojump/issues*
 
+For feedback or anything else, you can message the project's mailing-list:
+
+autojump@googlegroups.com
+
 THANKS
 ------
 
