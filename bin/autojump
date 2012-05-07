@@ -274,35 +274,31 @@ def shell_utility():
     # FIXME: disabled until tab completion is fixed on the shell side
     # if match_last(patterns): return True
 
-    #userchoice is i if the pattern is __pattern__i, otherwise -1
-    userchoice = -1
-    results = []
-
     #check for ongoing completion, and act accordingly
+    userchoice = -1
     endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
     if endmatch:  #user has selected a completion
         userchoice = int(endmatch.group(1))
-        patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*",
-                "", patterns[-1])
+        patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*", "", patterns[-1])
     else: #user hasn't selected a completion, display the same choices again
         endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
         if endmatch: patterns[-1] = endmatch.group(1)
 
-    dirs = list(db.data.items())
-    dirs.sort(key=itemgetter(1), reverse=True)
     if ARGS.complete or userchoice != -1:
         max_matches = 9
     else:
         max_matches = 1
 
-    # Don't jump to the current directory
     try:
         current_dir = decode(os.path.realpath(os.curdir))
-    #Sometimes the current path doesn't exist anymore.
-    #In that case, jump if possible.
     except OSError:
         current_dir = None
+
+    results = []
+    dirs = list(db.data.items())
+    dirs.sort(key=itemgetter(1), reverse=True)
     find_matches(dirs, patterns, results, False, max_matches, current_dir)
+
     # If not found, try ignoring case.
     # On completion always show all results
     if ARGS.complete or not results:
