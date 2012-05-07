@@ -11,7 +11,7 @@ from tempfile import NamedTemporaryFile
 
 VERSION = 'release-v20'
 MAX_KEYWEIGHT = 1000
-MAX_STORED_PATHS = 600
+MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
 ARGS = None
 
