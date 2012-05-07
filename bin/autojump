@@ -170,7 +170,7 @@ def options():
             db = Database(DB_FILE)
             db.add(decode(ARGS.add))
             db.save()
-        sys.exit(0)
+        return True
 
     if (ARGS.stat):
         db = Database(DB_FILE)
@@ -180,7 +180,8 @@ def options():
             output(unico("%.1f:\t%s") % (count, path))
         print("Total key weight: %d. Number of stored dirs: %d" %
                 (sum(db.data.values()), len(dirs)))
-        sys.exit(0)
+        return True
+    return False
 
 def decode(text, encoding=None, errors="strict"):
     """ Decoding step for Python 2 which does not default to unicode. """
@@ -240,8 +241,17 @@ def match(path, pattern, ignore_case=False, only_end=False):
         eaten_path = path
     return (does_match, eaten_path)
 
-def find_matches(dirs, patterns, result_list, ignore_case, max_matches, current_dir):
+def find_matches(db, patterns, max_matches, ignore_case):
     """ Find max_matches paths that match the pattern, and add them to the result_list. """
+    try:
+        current_dir = decode(os.path.realpath(os.curdir))
+    except OSError:
+        current_dir = None
+
+    dirs = list(db.data.items())
+    dirs.sort(key=itemgetter(1), reverse=True)
+
+    results = []
     for path, _ in dirs:
         # Don't jump to where we alread are
         if current_dir == path :
@@ -254,14 +264,16 @@ def find_matches(dirs, patterns, result_list, ignore_case, max_matches, current_
         #If a path doesn't exist, don't jump there
         #We still keep it in db in case it's from a removable drive
         if does_match and os.path.exists(path):
-            if path not in result_list:
-                result_list.append(path)
-            if len(result_list) >= max_matches :
+            if path not in results:
+                results.append(path)
+            if len(results) >= max_matches :
                 break
+
+    return results
 
 def shell_utility():
     """ Run this when autojump is called as a shell utility. """
-    options()
+    if options(): return True
     db = Database(DB_FILE)
 
     # if no directories, add empty string
@@ -271,52 +283,43 @@ def shell_utility():
         patterns = [decode(a) for a in ARGS.directory]
 
     # check last pattern for full path
-    # FIXME: disabled until tab completion is fixed on the shell side
+    # FIXME: disabled until zsh tab completion is fixed on the shell side
     # if match_last(patterns): return True
 
-    #check for ongoing completion, and act accordingly
-    userchoice = -1
-    endmatch = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
-    if endmatch:  #user has selected a completion
-        userchoice = int(endmatch.group(1))
+    # check for tab completion
+    tab_choice = -1
+    tab_match = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
+    if tab_match: # user has selected a tab completion entry
+        tab_choice = int(tab_match.group(1))
         patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*", "", patterns[-1])
-    else: #user hasn't selected a completion, display the same choices again
-        endmatch = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
-        if endmatch: patterns[-1] = endmatch.group(1)
+    else: # user hasn't selected a tab completion, display choices again
+        tab_match = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
+        if tab_match:
+            patterns[-1] = tab_match.group(1)
 
-    if ARGS.complete or userchoice != -1:
+    # on tab completion always show all results
+    if ARGS.complete or tab_choice != -1:
         max_matches = 9
     else:
         max_matches = 1
 
-    try:
-        current_dir = decode(os.path.realpath(os.curdir))
-    except OSError:
-        current_dir = None
-
-    results = []
-    dirs = list(db.data.items())
-    dirs.sort(key=itemgetter(1), reverse=True)
-    find_matches(dirs, patterns, results, False, max_matches, current_dir)
-
-    # If not found, try ignoring case.
-    # On completion always show all results
+    results = find_matches(db, patterns, max_matches, False)
+    # if no results, try ignoring case
     if ARGS.complete or not results:
-        find_matches(dirs, patterns, results,
-                ignore_case=True,
-                max_matches=max_matches, current_dir=current_dir)
+        results = find_matches(db, patterns, max_matches, True)
 
+    quotes = ""
     if ARGS.complete and ARGS.bash: quotes = "'"
-    else: quotes = ""
 
-    if userchoice != -1:
-        if len(results) > userchoice-1 :
-            output(unico("%s%s%s") % (quotes,results[userchoice-1],quotes))
+    if tab_choice != -1:
+        if len(results) > tab_choice-1:
+            output(unico("%s%s%s") % (quotes,results[tab_choice-1],quotes))
     elif len(results) > 1 and ARGS.complete:
         output("\n".join(("%s%s%d%s%s" % (patterns[-1],
             COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
             for n, r in enumerate(results[:8]))))
-    elif results: output(unico("%s%s%s")%(quotes,results[0],quotes))
+    elif results:
+        output(unico("%s%s%s")%(quotes,results[0],quotes))
     else:
         return False
 
