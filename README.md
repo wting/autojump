@@ -114,7 +114,7 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     -a, --add DIR       manually add path to database
 
-    --purge             deletes all database entries that no longer exist on system
+    --purge             deletes database entries that no longer exist on system
 
     --stat              show database entries and their key weights
 
