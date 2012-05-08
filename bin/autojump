@@ -29,7 +29,7 @@ import shutil
 import sys
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v20-4'
+VERSION = 'release-v20-5'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -43,11 +43,11 @@ else:
     CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
 
 KEEP_ALL_ENTRIES = False
-if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ and os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == 1:
+if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ and os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == '1':
     KEEP_ALL_ENTRIES = True
 
 ALWAYS_IGNORE_CASE = False
-if 'AUTOJUMP_IGNORE_CASE' in os.environ and os.environ.get('AUTOJUMP_IGNORE_CASE') == 1:
+if 'AUTOJUMP_IGNORE_CASE' in os.environ and os.environ.get('AUTOJUMP_IGNORE_CASE') == '1':
     ALWAYS_IGNORE_CASE = True
 
 if CONFIG_DIR == os.path.expanduser('~'):
@@ -379,6 +379,7 @@ def shell_utility():
     else:
         max_matches = 1
 
+    results = []
     if not ALWAYS_IGNORE_CASE:
         results = find_matches(db, patterns, max_matches, False)
 
