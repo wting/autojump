@@ -28,17 +28,17 @@ INSTALLATION
 
 ### REQUIREMENTS
 
--   Python v2.7+ or 3.2+
--   Bash v4.0+ for tab completion
+-   Python v2.7, 3.0, or 2.6 with argparse
+-   Bash v4.0 for tab completion
 
 If you are unable to update Python to a supported version, older
 versions of autojump can be
 [downloaded](https://github.com/joelthelion/autojump/downloads) and
 installed manually.
 
--   Python v2.6+ is supported by [release
+-   Python v2.6 is supported by [release
     v19](https://github.com/downloads/joelthelion/autojump/autojump_v19.tar.gz).
--   Python v2.4+ is supported by [release
+-   Python v2.4 is supported by [release
     v12](https://github.com/downloads/joelthelion/autojump/autojump_v12.tar.gz).
 
 ### AUTOMATIC INSTALLATION
