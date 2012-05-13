@@ -1,7 +1,7 @@
 VERSION = v20
 TAGNAME = release-$(VERSION)
 
-.PHONY: docs install uninstall
+.PHONY: docs install uninstall test
 
 install:
 	install.sh
@@ -28,3 +28,6 @@ release:
 
 	# Create tagged archive
 	git archive --format=tar --prefix autojump_$(VERSION)/ $(TAGNAME) | gzip > autojump_$(VERSION).tar.gz
+
+test:
+	python tests/runtests.py
