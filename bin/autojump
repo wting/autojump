@@ -29,7 +29,7 @@ import shutil
 import sys
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v20-6'
+VERSION = 'release-v20-7'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -37,32 +37,27 @@ ARGS = None
 
 CONFIG_DIR = None
 DB_FILE = None
-
 TESTING = False
+
+# load config from environmental variables
+if 'AUTOJUMP_DATA_DIR' in os.environ:
+    CONFIG_DIR = os.environ.get('AUTOJUMP_DATA_DIR')
+else:
+    xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
+    CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
+
 KEEP_ALL_ENTRIES = False
-IGNORE_CASE = False
+if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ and os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == '1':
+    KEEP_ALL_ENTRIES = True
 
-def config(testing=False):
-    global TESTING, CONFIG_DIR, KEEP_ALL_ENTRIES, DB_FILE
-    TESTING = testing
+ALWAYS_IGNORE_CASE = False
+if 'AUTOJUMP_IGNORE_CASE' in os.environ and os.environ.get('AUTOJUMP_IGNORE_CASE') == '1':
+    ALWAYS_IGNORE_CASE = True
 
-    # load config from environmental variables
-    if 'AUTOJUMP_DATA_DIR' in os.environ:
-        CONFIG_DIR = os.environ.get('AUTOJUMP_DATA_DIR')
-    else:
-        xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
-        CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
-
-    if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ and os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == '1':
-        KEEP_ALL_ENTRIES = True
-
-    if 'AUTOJUMP_IGNORE_CASE' in os.environ and os.environ.get('AUTOJUMP_IGNORE_CASE') == '1':
-        ALWAYS_IGNORE_CASE = True
-
-    if CONFIG_DIR == os.path.expanduser('~'):
-        DB_FILE = CONFIG_DIR + '/.autojump.txt'
-    else:
-        DB_FILE = CONFIG_DIR + '/autojump.txt'
+if CONFIG_DIR == os.path.expanduser('~'):
+    DB_FILE = CONFIG_DIR + '/.autojump.txt'
+else:
+    DB_FILE = CONFIG_DIR + '/autojump.txt'
 
 class Database:
     """
@@ -226,6 +221,8 @@ def options():
     """
     Parse command line options.
     """
+    global ARGS
+
     parser = argparse.ArgumentParser(description='Automatically jump to directory passed as an argument.',
             epilog="Please see autojump(1) man pages for full documentation.")
     parser.add_argument('directory', metavar='DIR', nargs='*', default='',
@@ -403,10 +400,6 @@ def shell_utility():
     Run this when autojump is called as a shell utility.
     """
     if options(): return True
-    config()
-
-    global ARGS, COMPLETION_SEPARATOR, DB_FILE, \
-            ALWAYS_IGNORE_CASE, KEEP_ALL_ENTRIES
     db = Database(DB_FILE)
 
     # if no directories, add empty string

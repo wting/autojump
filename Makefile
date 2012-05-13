@@ -30,4 +30,4 @@ release:
 	git archive --format=tar --prefix autojump_$(VERSION)/ $(TAGNAME) | gzip > autojump_$(VERSION).tar.gz
 
 test:
-	python tests/runtests.py
+	@tests/runtests.py

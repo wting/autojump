@@ -13,7 +13,7 @@ import unittest
 class TestAutojump(unittest.TestCase):
 
     def setUp(self):
-        autojump.config(True)
+        autojump.TESTING = True
         self.fd, DB_FILE = tempfile.mkstemp()
         self.db = autojump.Database(DB_FILE)
         pass
