@@ -41,16 +41,6 @@ else
     prefix=~/.autojump
 fi
 
-user=${SUDO_USER:-${USER}}
-OS=`uname`
-
-if [ $OS == 'Darwin' ]; then
-    user_home=$(dscl . -search /Users UniqueID ${user} | cut -d: -f6)
-else
-    user_home=$(getent passwd ${user} | cut -d: -f6)
-fi
-bashrc_file=${user_home}/.bashrc
-
 # Command line parsing
 while true; do
     case "$1" in
