@@ -37,7 +37,7 @@ wrapper function.
 
 --purge\ \ \ \ \ \ \ \ \ \ \ \ \ deletes\ database\ entries\ that\ no\ longer\ exist\ on\ system
 
---stat\ \ \ \ \ \ \ \ \ \ \ \ \ \ show\ database\ entries\ and\ their\ key\ weights
+-s,\ --stat\ \ \ \ \ \ \ \ \ \ \ \ \ \ show\ database\ entries\ and\ their\ key\ weights
 
 --version\ \ \ \ \ \ \ \ \ \ \ show\ version\ information\ and\ exit
 \f[]
@@ -119,6 +119,8 @@ The first is the key weight and the second is the path:
 All negative key weights are purged automatically.
 .RE
 .SS KNOWN ISSUES
+.IP \[bu] 2
+Does not support directories that begin with \f[C]-\f[].
 .IP \[bu] 2
 zsh (bug #86)
 .RS 2

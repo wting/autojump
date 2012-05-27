@@ -41,11 +41,20 @@ function autojump_preexec() {
 typeset -ga preexec_functions
 preexec_functions+=autojump_preexec
 
-alias jumpstat="autojump --stat"
-
 function j {
-    local new_path="$(autojump $@)"
+    if is-at-least 4.3.5; then
+        if [[ ${@} =~ -.* ]]; then
+            autojump ${@}
+            return
+        fi
+    else
+        if [[ ${@} -pcre-match -.* ]]; then
+            autojump ${@}
+            return
+        fi
+    fi
 
+    local new_path="$(autojump $@)"
     if [ -d "${new_path}" ]; then
         echo -e "\\033[31m${new_path}\\033[0m"
         cd "${new_path}"

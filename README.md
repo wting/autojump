@@ -131,7 +131,7 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     --purge             deletes database entries that no longer exist on system
 
-    --stat              show database entries and their key weights
+    -s, --stat              show database entries and their key weights
 
     --version           show version information and exit
 
@@ -188,6 +188,8 @@ ADVANCED USAGE
 
 KNOWN ISSUES
 ------------
+
+-   Does not support directories that begin with `-`.
 
 -   zsh (bug \#86)
 

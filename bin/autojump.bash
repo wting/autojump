@@ -62,11 +62,13 @@ case $PROMPT_COMMAND in
     *)   export PROMPT_COMMAND="$AUTOJUMP ; ${PROMPT_COMMAND:-:}";;
 esac
 
-alias jumpstat="autojump --stat"
-
 function j {
-    new_path="$(autojump $@)"
+    if [[ ${@} =~ -.* ]]; then
+        autojump ${@}
+        return
+    fi
 
+    new_path="$(autojump $@)"
     if [ -d "${new_path}" ]; then
         echo -e "\\033[31m${new_path}\\033[0m"
         cd "${new_path}"
