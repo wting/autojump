@@ -35,17 +35,10 @@ typeset -ga preexec_functions
 preexec_functions+=autojump_preexec
 
 function j {
-    if is-at-least 4.3.5; then
-        if [[ ${@} =~ -.* ]]; then
-            autojump ${@}
-            return
-        fi
-    else
-        if [[ ${@} -pcre-match -.* ]]; then
-            autojump ${@}
-            return
-        fi
-    fi
+	if [[ ${@} == -* ]]; then
+		autojump ${@}
+		return
+	fi
 
     local new_path="$(autojump $@)"
     if [ -d "${new_path}" ]; then

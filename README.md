@@ -189,7 +189,9 @@ ADVANCED USAGE
 KNOWN ISSUES
 ------------
 
--   Does not support directories that begin with `-`.
+-   The jump function `j` does not support directories that begin with
+    `-`. If you want to jump a directory called `--music`, try using
+    `j music` instead of `j --music`.
 
 -   zsh (bug \#86)
 

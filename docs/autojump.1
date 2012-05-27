@@ -121,7 +121,10 @@ All negative key weights are purged automatically.
 .RE
 .SS KNOWN ISSUES
 .IP \[bu] 2
-Does not support directories that begin with \f[C]-\f[].
+The jump function \f[C]j\f[] does not support directories that begin
+with \f[C]-\f[].
+If you want to jump a directory called \f[C]--music\f[], try using
+\f[C]j\ music\f[] instead of \f[C]j\ --music\f[].
 .IP \[bu] 2
 zsh (bug #86)
 .RS 2
