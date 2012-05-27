@@ -1,15 +1,8 @@
 # determine the data directory according to the XDG Base Directory Specification
-autoload -U is-at-least
-
-export AUTOJUMP_DATA_DIR=${HOME}/.local/share/autojump
-if is-at-least 4.3.5; then
-	if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} =~ ${USER} ]]; then
-		export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
-	fi
+if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} == *${USER}* ]]; then
+	export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
 else
-	if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} -pcre-match ${USER} ]]; then
-		export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
-	fi
+	export AUTOJUMP_DATA_DIR=${HOME}/.local/share/autojump
 fi
 
 if [[ ! -e ${AUTOJUMP_DATA_DIR} ]]; then
