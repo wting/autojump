@@ -6,6 +6,7 @@
 
 from __future__ import division
 import autojump
+import os
 import tempfile
 import unittest
 
@@ -14,12 +15,13 @@ class TestAutojump(unittest.TestCase):
 
     def setUp(self):
         autojump.TESTING = True
-        self.fd, DB_FILE = tempfile.mkstemp()
-        self.db = autojump.Database(DB_FILE)
-        pass
+        self.fd, self.fname = tempfile.mkstemp()
+        self.db = autojump.Database(self.fname)
 
     def tearDown(self):
-        pass
+        os.remove(self.fname)
+        if os.path.isfile(self.fname + ".bak"):
+            os.remove(self.fname + ".bak")
 
     def test_config(self):
         self.assertEqual(autojump.COMPLETION_SEPARATOR, '__')
@@ -40,7 +42,16 @@ class TestAutojump(unittest.TestCase):
         self.db.decay()
         self.assertTrue(self.db.get_weight('/1') < 10)
 
-    def test_db_load(self):
+    def test_db_load_empty(self):
+        pass
+
+    def test_db_load_backup(self):
+        pass
+
+    def test_db_load_migrate(self):
+        pass
+
+    def test_db_load_existing(self):
         self.db = autojump.Database('tests/database.txt')
         self.assertTrue(len(self.db) > 0)
 
