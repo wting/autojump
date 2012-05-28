@@ -104,41 +104,29 @@ class Database:
         Try to open the database file, recovering from backup if needed.
         """
         if os.path.exists(self.filename):
-            with open(self.filename, 'r') as f:
-                for line in f.readlines():
-                    weight, path = line[:-1].split("\t", 1)
-                    path = decode(path, 'utf-8')
-                    self.data[path] = float(weight)
-        elif os.path.exists(self.filename + '.bak'):
+            try:
+                with open(self.filename, 'r') as f:
+                    for line in f.readlines():
+                        weight, path = line[:-1].split("\t", 1)
+                        path = decode(path, 'utf-8')
+                        self.data[path] = float(weight)
+            except (IOError, EOFError):
+                self.load_backup(error_recovery)
+        else:
+            self.load_backup(error_recovery)
+
+    def load_backup(self, error_recovery = False):
+        """
+        Loads database from backup file.
+        """
+        if os.path.exists(self.filename + '.bak'):
             if not error_recovery:
                 print('Problem with autojump database,\
                         trying to recover from backup...', file=sys.stderr)
                 shutil.copy(self.filename + '.bak', self.filename)
                 return self.load(True)
             else:
-                # migration code, autojump_py last used in v17
-                self.filename = get_db_file('autojump_py')
-                if os.path.exists(self.filename):
-                    try: # fix to get optimised pickle in python < 3
-                        import cPickle as pickle
-                    except ImportError:
-                        import pickle
-
-                    try:
-                        with open(self.filename, 'rb') as f:
-                            # encoding is only specified for Python 2 compatibility
-                            if sys.version_info[0] > 2:
-                                self.data = pickle.load(f, encoding="utf-8")
-                            else:
-                                self.data = pickle.load(f)
-                        unicode_dict = {}
-                        for k, v in self.data.items():
-                            print(k)
-                            unicode_dict[decode(k, errors="replace")] = v
-                        return unicode_dict
-                    except (IOError, EOFError, pickle.UnpicklingError):
-                        pass
-                return {} # if everything fails, return an empty dictionary
+                self.migrate()
 
     def maintenance(self):
         """
@@ -149,6 +137,33 @@ class Database:
         if len(self.data) > MAX_STORED_PATHS:
             self.trim()
         self.save()
+
+    def migrate(self):
+        """
+        Migrates database from old format autojump_py, last used in release-v17.
+        """
+        self.filename = get_db_file('autojump_py')
+        if os.path.exists(self.filename):
+            try: # fix to get optimised pickle in python < 3
+                import cPickle as pickle
+            except ImportError:
+                import pickle
+
+            try:
+                with open(self.filename, 'rb') as f:
+                    # encoding is only specified for Python 2 compatibility
+                    if sys.version_info[0] > 2:
+                        self.data = pickle.load(f, encoding="utf-8")
+                    else:
+                        self.data = pickle.load(f)
+                unicode_dict = {}
+                for k, v in self.data.items():
+                    print(k)
+                    unicode_dict[decode(k, errors="replace")] = v
+                return unicode_dict
+            except (IOError, EOFError, pickle.UnpicklingError):
+                pass
+        return {} # if everything fails, return an empty dictionary
 
     def purge(self):
         """
