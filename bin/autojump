@@ -81,6 +81,7 @@ class Database:
         else:
             import math
             self.data[path] = math.sqrt((self.data[path]**2)+(increment**2))
+        self.save()
 
     def decay(self):
         """
@@ -102,34 +103,34 @@ class Database:
         """
         Try to open the database file, recovering from backup if needed.
         """
-        try:
-            with open(self.filename, 'r') as aj_file:
-                for line in aj_file.readlines():
+        if os.path.exists(self.filename):
+            with open(self.filename, 'r') as f:
+                for line in f.readlines():
                     weight, path = line[:-1].split("\t", 1)
                     path = decode(path, 'utf-8')
                     self.data[path] = float(weight)
-        except (IOError, EOFError):
-            if not error_recovery and os.path.exists(self.filename + ".bak"):
+        elif os.path.exists(self.filename + '.bak'):
+            if not error_recovery:
                 print('Problem with autojump database,\
                         trying to recover from backup...', file=sys.stderr)
                 shutil.copy(self.filename + '.bak', self.filename)
                 return self.load(True)
             else:
-                # TODO: migration code, will be removed in v22+
-                # autojump_py last used in v17
+                # migration code, autojump_py last used in v17
                 self.filename = get_db_file('autojump_py')
                 if os.path.exists(self.filename):
                     try: # fix to get optimised pickle in python < 3
                         import cPickle as pickle
                     except ImportError:
                         import pickle
+
                     try:
-                        with open(self.filename, 'rb') as aj_file:
+                        with open(self.filename, 'rb') as f:
                             # encoding is only specified for Python 2 compatibility
                             if sys.version_info[0] > 2:
-                                self.data = pickle.load(aj_file, encoding="utf-8")
+                                self.data = pickle.load(f, encoding="utf-8")
                             else:
-                                self.data = pickle.load(aj_file)
+                                self.data = pickle.load(f)
                         unicode_dict = {}
                         for k, v in self.data.items():
                             print(k)
@@ -163,7 +164,8 @@ class Database:
 
     def save(self):
         """
-        Save database atomically and preserve backup.
+        Save database atomically and preserve backup, creating new database if
+        needed.
         """
         # check file existence and permissions
         if ((not os.path.exists(self.filename)) or
@@ -247,7 +249,6 @@ def options():
         if(ARGS.add != os.path.expanduser("~")):
             db = Database(DB_FILE)
             db.add(decode(ARGS.add))
-            db.save()
         return True
 
     if (ARGS.purge):

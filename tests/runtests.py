@@ -6,9 +6,22 @@
 
 from __future__ import division
 import autojump
+import contextlib
+import random
 import os
+import shutil
+import sys
 import tempfile
 import unittest
+
+@contextlib.contextmanager
+def no_stderr():
+    savestderr = sys.stderr
+    class DevNull(object):
+        def write(self, _): pass
+    sys.stderr = DevNull()
+    yield
+    sys.stderr = savestderr
 
 # test suite
 class TestAutojump(unittest.TestCase):
@@ -17,6 +30,8 @@ class TestAutojump(unittest.TestCase):
         autojump.TESTING = True
         self.fd, self.fname = tempfile.mkstemp()
         self.db = autojump.Database(self.fname)
+
+        random.seed()
 
     def tearDown(self):
         os.remove(self.fname)
@@ -42,18 +57,67 @@ class TestAutojump(unittest.TestCase):
         self.db.decay()
         self.assertTrue(self.db.get_weight('/1') < 10)
 
-    def test_db_load_empty(self):
-        pass
-
-    def test_db_load_backup(self):
-        pass
-
-    def test_db_load_migrate(self):
-        pass
-
     def test_db_load_existing(self):
         self.db = autojump.Database('tests/database.txt')
         self.assertTrue(len(self.db) > 0)
+
+    def test_db_load_empty(self):
+        # setup
+        _, fname = tempfile.mkstemp()
+        db = autojump.Database(fname)
+
+        try:
+            # test
+            self.assertEquals(len(self.db), 0)
+        finally:
+            # teardown
+            os.remove(fname)
+
+    def test_db_load_backup(self):
+        # setup
+        fname = '/tmp/autojump_test_db_load_backup_' + str(random.randint(0,32678))
+        db = autojump.Database(fname)
+        db.add('/1')
+        os.rename(fname, fname + '.bak')
+
+        try:
+            # test
+            with no_stderr():
+                db = autojump.Database(fname)
+            self.assertTrue(len(db.data) > 0)
+            self.assertTrue(os.path.isfile(fname))
+        finally:
+            # teardown
+            os.remove(fname)
+            os.remove(fname + '.bak')
+
+    def test_db_load_migrate(self):
+        ORIG_CONFIG_DIR = autojump.CONFIG_DIR
+        try:
+            # setup
+            CONFIG_DIR = '/tmp/autojump_test_db_load_migrate_' + str(random.randint(0,32678))
+            os.mkdir(CONFIG_DIR)
+            autojump.CONFIG_DIR = CONFIG_DIR
+            fname = CONFIG_DIR + '/autojump_py'
+            db = autojump.Database(fname)
+            db.add('/1')
+            shutil.copy(fname, fname + '.bak')
+            db.add('/2')
+
+            # test
+            missing_fname = '/tmp/autojump_test_db_load_missing_' + str(random.randint(0,32678)) + '.txt'
+            db = autojump.Database(missing_fname)
+
+            db.add('/3')
+            self.assertEquals(len(db.data), 3)
+
+        finally:
+            # teardown
+            shutil.rmtree(CONFIG_DIR)
+            os.remove(missing_fname)
+            os.remove(missing_fname + '.bak')
+
+            autojump.CONFIG_DIR = ORIG_CONFIG_DIR
 
     def test_db_purge(self):
         self.db.add('/1')
@@ -61,7 +125,18 @@ class TestAutojump(unittest.TestCase):
         self.assertEquals(len(self.db), 0)
 
     def test_db_save(self):
-        pass
+        # setup
+        fname = '/tmp/autojump_test_db_save_' + str(random.randint(0,32678)) + '.txt'
+        db = autojump.Database(fname)
+
+        try:
+            # test
+            db.save()
+            self.assertTrue(os.path.isfile(fname))
+        finally:
+            # teardown
+            os.remove(fname)
+            os.remove(fname + '.bak')
 
     def test_db_trim(self):
         self.db.add('/1')
