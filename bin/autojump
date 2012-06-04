@@ -54,6 +54,10 @@ ALWAYS_IGNORE_CASE = False
 if 'AUTOJUMP_IGNORE_CASE' in os.environ and os.environ.get('AUTOJUMP_IGNORE_CASE') == '1':
     ALWAYS_IGNORE_CASE = True
 
+KEEP_SYMLINKS = False
+if 'AUTOJUMP_KEEP_SYMLINKS' in os.environ and os.environ.get('AUTOJUMP_KEEP_SYMLINKS') == '1':
+    KEEP_SYMLINKS = True
+
 if CONFIG_DIR == os.path.expanduser('~'):
     DB_FILE = CONFIG_DIR + '/.autojump.txt'
 else:
@@ -74,7 +78,7 @@ class Database:
 
     def add(self, path, increment = 10):
         """
-        Increment existing paths or initialize new ones to 0.
+        Increment existing paths or initialize new ones to 10.
         """
         if path not in self.data:
             self.data[path] = increment
@@ -359,7 +363,10 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
     Find max_matches paths that match the pattern, and add them to the result_list.
     """
     try:
-        current_dir = decode(os.path.realpath(os.curdir))
+        if KEEP_SYMLINKS:
+            current_dir = decode(os.curdir)
+        else:
+            current_dir = decode(os.path.realpath(os.curdir))
     except OSError:
         current_dir = None
 
