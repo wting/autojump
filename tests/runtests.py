@@ -27,6 +27,7 @@ def no_stderr():
 class TestAutojump(unittest.TestCase):
 
     def setUp(self):
+        autojump.CONFIG_DIR = tempfile.mkdtemp()
         autojump.TESTING = True
         self.fd, self.fname = tempfile.mkstemp()
         self.db = autojump.Database(self.fname)
@@ -37,6 +38,9 @@ class TestAutojump(unittest.TestCase):
         os.remove(self.fname)
         if os.path.isfile(self.fname + ".bak"):
             os.remove(self.fname + ".bak")
+        if (os.path.exists(autojump.CONFIG_DIR) and
+            ('tmp' in autojump.CONFIG_DIR or 'temp' in autojump.CONFIG_DIR)):
+            shutil.rmtree(autojump.CONFIG_DIR)
 
     def test_config(self):
         self.assertEqual(autojump.COMPLETION_SEPARATOR, '__')
