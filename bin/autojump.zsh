@@ -18,8 +18,8 @@ if [[ -d ${HOME}/.autojump ]]; then
     fpath=(${HOME}/.autojump/functions/ ${fpath})
 fi
 # set fpath if necessary for homebrew installation
-if [[ -d "`brew --prefix 2>/dev/null`/share/zsh/functions" ]]; then
-    fpath=(`brew --prefix`/share/zsh/functions ${fpath})
+if [[ -d "`brew --prefix 2>/dev/null`/share/zsh/site-functions" ]]; then
+    fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
 fi
 
 function autojump_preexec() {
