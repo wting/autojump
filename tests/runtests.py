@@ -95,34 +95,6 @@ class TestAutojump(unittest.TestCase):
             os.remove(fname)
             os.remove(fname + '.bak')
 
-    def test_db_migration(self):
-        ORIG_CONFIG_DIR = autojump.CONFIG_DIR
-        try:
-            # setup
-            CONFIG_DIR = '/tmp/autojump_test_db_load_migrate_' + str(random.randint(0,32678))
-            os.mkdir(CONFIG_DIR)
-            autojump.CONFIG_DIR = CONFIG_DIR
-            fname = CONFIG_DIR + '/autojump_py'
-            db = autojump.Database(fname)
-            db.add('/1')
-            db.add('/2')
-            shutil.copy(fname, fname + '.bak')
-
-            # test
-            missing_fname = '/tmp/autojump_test_db_load_missing_' + str(random.randint(0,32678)) + '.txt'
-            db = autojump.Database(missing_fname)
-
-            db.add('/3')
-            self.assertEquals(len(db.data), 3)
-
-        finally:
-            # teardown
-            shutil.rmtree(CONFIG_DIR)
-            os.remove(missing_fname)
-            os.remove(missing_fname + '.bak')
-
-            autojump.CONFIG_DIR = ORIG_CONFIG_DIR
-
     def test_db_purge(self):
         self.db.add('/1')
         self.db.purge()

@@ -29,7 +29,7 @@ import shutil
 import sys
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v20.9.4'
+VERSION = 'release-v20.9.5'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -129,8 +129,6 @@ class Database:
                         trying to recover from backup...', file=sys.stderr)
                 shutil.copy(self.filename + '.bak', self.filename)
                 return self.load(True)
-            else:
-                self.migrate()
 
     def maintenance(self):
         """
@@ -141,33 +139,6 @@ class Database:
         if len(self.data) > MAX_STORED_PATHS:
             self.trim()
         self.save()
-
-    def migrate(self):
-        """
-        Migrates database from old format autojump_py, last used in release-v17.
-        """
-        self.filename = get_db_file('autojump_py')
-        if os.path.exists(self.filename):
-            try: # fix to get optimised pickle in python < 3
-                import cPickle as pickle
-            except ImportError:
-                import pickle
-
-            try:
-                with open(self.filename, 'rb') as f:
-                    # encoding is only specified for Python 2 compatibility
-                    if sys.version_info[0] > 2:
-                        self.data = pickle.load(f, encoding="utf-8")
-                    else:
-                        self.data = pickle.load(f)
-                unicode_dict = {}
-                for k, v in self.data.items():
-                    print(k)
-                    unicode_dict[decode(k, errors="replace")] = v
-                return unicode_dict
-            except (IOError, EOFError, pickle.UnpicklingError):
-                pass
-        return {} # if everything fails, return an empty dictionary
 
     def purge(self):
         """
@@ -227,16 +198,6 @@ class Database:
         for path, _ in dirs[:remove_cnt]:
             del self.data[path]
 
-
-def get_db_file(filename = "autojump.txt"):
-    """
-    Retrieve full database path.
-    """
-    # TODO: Remove when migration code is removed.
-    if CONFIG_DIR == os.path.expanduser("~"):
-        return CONFIG_DIR + "/." + filename
-    else:
-        return CONFIG_DIR + "/" + filename
 
 def options():
     """
