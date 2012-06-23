@@ -29,7 +29,7 @@ import shutil
 import sys
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v20.9.3'
+VERSION = 'release-v20.9.4'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -253,7 +253,7 @@ def options():
     parser.add_argument('-b', '--bash', action="store_true", default=False,
             help='enclose directory quotes to prevent errors')
     parser.add_argument('--complete', action="store_true", default=False,
-            help='used for bash tab completion')
+            help='used for tab completion')
     parser.add_argument('--purge', action="store_true", default=False,
             help='delete all database entries that no longer exist on system')
     parser.add_argument('-s', '--stat', action="store_true", default=False,
