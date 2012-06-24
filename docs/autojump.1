@@ -103,6 +103,26 @@ export\ AUTOJUMP_KEEP_SYMLINKS=1
 .RE
 .SS ADVANCED USAGE
 .IP \[bu] 2
+Using Multiple Arguments
+.RS 2
+.PP
+Let\[aq]s assume the following database:
+.IP
+.nf
+\f[C]
+30\ \ \ /home/user/mail/inbox
+10\ \ \ /home/user/work/inbox
+\f[]
+.fi
+.PP
+\f[C]j\ in\f[] would jump into /home/user/mail/inbox as the higher
+weighted entry.
+However you can pass multiple arguments to autojump to prefer a
+different entry.
+In the above example, \f[C]j\ w\ in\f[] would then jump you into
+/home/user/work/inbox.
+.RE
+.IP \[bu] 2
 Change Directory Weight
 .RS 2
 .PP
@@ -125,12 +145,6 @@ The jump function \f[C]j\f[] does not support directories that begin
 with \f[C]-\f[].
 If you want to jump a directory called \f[C]--music\f[], try using
 \f[C]j\ music\f[] instead of \f[C]j\ --music\f[].
-.IP \[bu] 2
-zsh (bug #86)
-.RS 2
-.PP
-Tab completion does not work.
-.RE
 .IP \[bu] 2
 jumpapplet (bug #59)
 .RS 2

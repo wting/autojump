@@ -38,6 +38,15 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
 ## ADVANCED USAGE
 
+- Using Multiple Arguments
+
+    Let's assume the following database:
+
+        30   /home/user/mail/inbox
+        10   /home/user/work/inbox
+
+    `j in` would jump into /home/user/mail/inbox as the higher weighted entry. However you can pass multiple arguments to autojump to prefer a different entry. In the above example, `j w in` would then jump you into /home/user/work/inbox.
+
 - Change Directory Weight
 
     To manually change a directory's key weight, you can edit the file _$XDG_DATA_HOME/autojump/autojump.txt_. Each entry has two columns. The first is the key weight and the second is the path:
@@ -49,10 +58,6 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 ## KNOWN ISSUES
 
 - The jump function `j` does not support directories that begin with `-`. If you want to jump a directory called `--music`, try using `j music` instead of `j --music`.
-
-- zsh (bug #86)
-
-    Tab completion does not work.
 
 - jumpapplet (bug #59)
 

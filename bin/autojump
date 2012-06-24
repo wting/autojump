@@ -29,7 +29,7 @@ import shutil
 import sys
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v20.9.5'
+VERSION = 'release-v21-rc'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
