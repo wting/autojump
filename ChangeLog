@@ -47,6 +47,15 @@
    The database is regularly trimmed for performance reasons. However users can
    prevent database maintenance with the above environmental variable.
 
+ - ZSH tab completion fixed.
+
+   ZSH behavior now matches Bash behavior. To use type:
+
+	   j<space><tab><tab>
+
+   A menu showing the top database entries will be displayed. Type in any number
+   followed by <tab> to complete the entry.
+
  - Database entry weight growth changed form linear to logarithmic scale.
 
    A combination of low total weight ceiling and linear growth resulted in
