@@ -47,6 +47,10 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     `j in` would jump into /home/user/mail/inbox as the higher weighted entry. However you can pass multiple arguments to autojump to prefer a different entry. In the above example, `j w in` would then jump you into /home/user/work/inbox.
 
+- ZSH Tab Completion
+
+    Tab completion requires two tabs before autojump will display the completion menu. However if `setopt nolistambiguous` is enabled, then only one tab is required.
+
 - Change Directory Weight
 
     To manually change a directory's key weight, you can edit the file _$XDG_DATA_HOME/autojump/autojump.txt_. Each entry has two columns. The first is the key weight and the second is the path:
