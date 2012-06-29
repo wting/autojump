@@ -63,7 +63,7 @@ case $PROMPT_COMMAND in
 esac
 
 function j {
-    if [[ ${@} =~ -.* ]]; then
+    if [[ ${@} =~ ^-{1,2}.* ]]; then
         autojump ${@}
         return
     fi
