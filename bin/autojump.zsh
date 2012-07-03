@@ -1,8 +1,8 @@
 # determine the data directory according to the XDG Base Directory Specification
 if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} == *${USER}* ]]; then
-	export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
+    export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
 else
-	export AUTOJUMP_DATA_DIR=${HOME}/.local/share/autojump
+    export AUTOJUMP_DATA_DIR=${HOME}/.local/share/autojump
 fi
 
 if [[ ! -e ${AUTOJUMP_DATA_DIR} ]]; then
@@ -31,15 +31,15 @@ function autojump_preexec() {
     { (autojump -a "$(pwd ${_PWD_ARGS})"&)>/dev/null 2>>|${AUTOJUMP_DATA_DIR}/.autojump_errors ; } 2>/dev/null
 }
 
-autoload -U compinit; compinit
 typeset -ga preexec_functions
 preexec_functions+=autojump_preexec
 
 function j {
-	if [[ ${@} == -* ]]; then
-		autojump ${@}
-		return
-	fi
+    # Cannot use =~ due to MacPorts zsh v4.2, see issue #125.
+    if [[ ${@} == -* ]]; then
+        autojump ${@}
+        return
+    fi
 
     local new_path="$(autojump $@)"
     if [ -d "${new_path}" ]; then

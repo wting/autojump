@@ -145,6 +145,13 @@ INTERNAL OPTIONS
 ADDITIONAL CONFIGURATION
 ------------------------
 
+-   Enable ZSH Tab Completion
+
+    ZSH tab completion requires the `compinit` module to be loaded.
+    Please add the following line to your \~/.zshrc:
+
+        autoload -U compinit; compinit
+
 -   Always Ignore Case
 
     Default behavior is to prioritize exact matches over all else. For
@@ -187,6 +194,12 @@ ADVANCED USAGE
     entry. However you can pass multiple arguments to autojump to prefer
     a different entry. In the above example, `j w in` would then jump
     you into /home/user/work/inbox.
+
+-   ZSH Tab Completion
+
+    Tab completion requires two tabs before autojump will display the
+    completion menu. However if `setopt nolistambiguous` is enabled,
+    then only one tab is required.
 
 -   Change Directory Weight
 

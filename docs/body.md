@@ -18,6 +18,12 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
 ## ADDITIONAL CONFIGURATION
 
+- Enable ZSH Tab Completion
+
+    ZSH tab completion requires the `compinit` module to be loaded. Please add the following line to your ~/.zshrc:
+
+        autoload -U compinit; compinit
+
 - Always Ignore Case
 
     Default behavior is to prioritize exact matches over all else. For example, `j foo` will prefer /foobar over /FooBar even if the latter has a higher weight. To change this behavior and ignore case, add the following environmental variable in your ~/.bashrc:
@@ -46,6 +52,10 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
         10   /home/user/work/inbox
 
     `j in` would jump into /home/user/mail/inbox as the higher weighted entry. However you can pass multiple arguments to autojump to prefer a different entry. In the above example, `j w in` would then jump you into /home/user/work/inbox.
+
+- ZSH Tab Completion
+
+    Tab completion requires two tabs before autojump will display the completion menu. However if `setopt nolistambiguous` is enabled, then only one tab is required.
 
 - Change Directory Weight
 

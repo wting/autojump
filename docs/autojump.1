@@ -54,6 +54,19 @@ wrapper function.
 .fi
 .SS ADDITIONAL CONFIGURATION
 .IP \[bu] 2
+Enable ZSH Tab Completion
+.RS 2
+.PP
+ZSH tab completion requires the \f[C]compinit\f[] module to be loaded.
+Please add the following line to your ~/.zshrc:
+.IP
+.nf
+\f[C]
+autoload\ -U\ compinit;\ compinit
+\f[]
+.fi
+.RE
+.IP \[bu] 2
 Always Ignore Case
 .RS 2
 .PP
@@ -121,6 +134,15 @@ However you can pass multiple arguments to autojump to prefer a
 different entry.
 In the above example, \f[C]j\ w\ in\f[] would then jump you into
 /home/user/work/inbox.
+.RE
+.IP \[bu] 2
+ZSH Tab Completion
+.RS 2
+.PP
+Tab completion requires two tabs before autojump will display the
+completion menu.
+However if \f[C]setopt\ nolistambiguous\f[] is enabled, then only one
+tab is required.
 .RE
 .IP \[bu] 2
 Change Directory Weight
