@@ -145,6 +145,13 @@ INTERNAL OPTIONS
 ADDITIONAL CONFIGURATION
 ------------------------
 
+-   Enable ZSH Tab Completion
+
+    ZSH tab completion requires the `compinit` module to be loaded.
+    Please add the following line to your \~/.zshrc:
+
+        autoload -U compinit; compinit
+
 -   Always Ignore Case
 
     Default behavior is to prioritize exact matches over all else. For

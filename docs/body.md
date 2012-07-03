@@ -18,6 +18,12 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
 ## ADDITIONAL CONFIGURATION
 
+- Enable ZSH Tab Completion
+
+    ZSH tab completion requires the `compinit` module to be loaded. Please add the following line to your ~/.zshrc:
+
+        autoload -U compinit; compinit
+
 - Always Ignore Case
 
     Default behavior is to prioritize exact matches over all else. For example, `j foo` will prefer /foobar over /FooBar even if the latter has a higher weight. To change this behavior and ignore case, add the following environmental variable in your ~/.bashrc:

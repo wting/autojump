@@ -31,7 +31,6 @@ function autojump_preexec() {
     { (autojump -a "$(pwd ${_PWD_ARGS})"&)>/dev/null 2>>|${AUTOJUMP_DATA_DIR}/.autojump_errors ; } 2>/dev/null
 }
 
-autoload -U compinit; compinit
 typeset -ga preexec_functions
 preexec_functions+=autojump_preexec
 

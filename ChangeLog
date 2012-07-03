@@ -4,111 +4,116 @@
 
 * Release v21:
 
- - New mailing list for developer discussion and announcements:
+  - New mailing list for developer discussion and announcements:
 
-   https://groups.google.com/forum/?fromgroups%5C#!forum/autojump
+  https://groups.google.com/forum/?fromgroups%5C#!forum/autojump
 
- - Switch to semantic versioning (http://semver.org/): major.minor.micro
+  - Switch to semantic versioning (http://semver.org/): major.minor.micro
 
-   major = breaks backwards compatibility
-   minor = new features with backwards compatibility
-   micro = bug fixes with backwards compatibility
+  major = breaks backwards compatibility
+  minor = new features with backwards compatibility
+  micro = bug fixes with backwards compatibility
 
- - Migration code for v17 or older users has been removed.
+  - Migration code for v17 or older users has been removed.
 
-   During testing, it was apparent that the migration code wasn't working to
-   begin with. The major distros (Debian, RedHat) have already moved to v18+ for
-   LTS. Rolling release distros and Homebrew / Macports are regularly kept up to
-   date.
+  During testing, it was apparent that the migration code wasn't working to
+  begin with. The major distros (Debian, RedHat) have already moved to v18+ for
+  LTS. Rolling release distros and Homebrew / Macports are regularly kept up to
+  date.
 
-   Users upgrading from v17 or older will start with a new database.
+  Users upgrading from v17 or older will start with a new database.
 
- - Approximate matching introduced.
+  - Approximate matching introduced.
 
-   Matching priority is now:
-   1. exact match
-   2. case insensitive match
-   3. approximate match
+  Matching priority is now:
+  1. exact match
+  2. case insensitive match
+  3. approximate match
 
- - The `j` function now accepts autojump arguments (e.g. --help, --stat).
+  - The `j` function now accepts autojump arguments (e.g. --help, --stat).
 
-   As a result, the `jumpstat` alias is now removed. The preferred method is `j
-   --stat` or `j -s`. Consequently, autojump cannot jump to directories
-   beginning with a hyphen '-'.
+  As a result, the `jumpstat` alias is now removed. The preferred method is `j
+  --stat` or `j -s`. Consequently, autojump cannot jump to directories
+  beginning with a hyphen '-'.
 
- - Always use case insensitive search with AUTOJUMP_IGNORE_CASE=1
+  - Always use case insensitive search with AUTOJUMP_IGNORE_CASE=1
 
-   As mentioned earlier, normal priority is to prefer exact match and then check
-   for case insensitive match. For users who prefer case insensitivity can now
-   modify the program behavior.
+  As mentioned earlier, normal priority is to prefer exact match and then check
+  for case insensitive match. For users who prefer case insensitivity can now
+  modify the program behavior.
 
- - Prevent database decay with AUTOJUMP_KEEP_ALL_ENTRIES=1
+  - Prevent database decay with AUTOJUMP_KEEP_ALL_ENTRIES=1
 
-   The database is regularly trimmed for performance reasons. However users can
-   prevent database maintenance with the above environmental variable.
+  The database is regularly trimmed for performance reasons. However users can
+  prevent database maintenance with the above environmental variable.
 
- - ZSH tab completion fixed.
+  - ZSH tab completion fixed.
 
-   ZSH behavior now matches Bash behavior. To use type:
+  ZSH behavior now matches Bash behavior. However it requires the `compinit`
+  module to be loaded. Add the following line to ~/.zshrc:
 
-	   j<space><tab><tab>
+  autoload -U compinit; compinit
 
-   A menu showing the top database entries will be displayed. Type in any number
-   followed by <tab> to complete the entry.
+  To use type:
 
- - Database entry weight growth changed form linear to logarithmic scale.
+  j<space><tab><tab>
 
-   A combination of low total weight ceiling and linear growth resulted in
-   a few, commonly used directories to be responsible for 50%+ of the total
-   database weight. This caused unnecessary trimming of long tail entries.
+  A menu showing the top database entries will be displayed. Type in any number
+  followed by <tab> to complete the entry.
 
-   Switching to logarithmic growth combined with regular decay meant that
-   commonly used directories still climbed database ranking appropriately with a
-   more even weight distribution.
+  - Database entry weight growth changed form linear to logarithmic scale.
 
- - Unit testing suite added.
+  A combination of low total weight ceiling and linear growth resulted in
+  a few, commonly used directories to be responsible for 50%+ of the total
+  database weight. This caused unnecessary trimming of long tail entries.
 
- - Miscellaneous refactoring, bug fixes, documentation updates.
+  Switching to logarithmic growth combined with regular decay meant that
+  commonly used directories still climbed database ranking appropriately with a
+  more even weight distribution.
+
+  - Unit testing suite added.
+
+  - Miscellaneous refactoring, bug fixes, documentation updates.
 
 * Release v20:
 
- - Python versions supported is now v2.7+ and v3.2+ due to rewrite using
- argparse.
+  - Python versions supported is now v2.7+ and v3.2+ due to rewrite using
+  argparse.
 
- - Man page and --help has been overhauled to provide better documentation and
- usage scenarios.
+  - Man page and --help has been overhauled to provide better documentation and
+  usage scenarios.
 
- - Installation scripts now act dependent on current environmental settings.
+  - Installation scripts now act dependent on current environmental settings.
 
-   If run as root, will do a global install. Installation script also detects
-   which version to install (bash or zsh) dependent on $SHELL.  Both of these
-   behaviors can be overrode using --local/--global or --bash/--zsh arguments.
+  If run as root, will do a global install. Installation script also detects
+  which version to install (bash or zsh) dependent on $SHELL.  Both of these
+  behaviors can be overrode using --local/--global or --bash/--zsh arguments.
 
- - Uninstallation script added, will remove both global and local installations
- but ignores database.
+  - Uninstallation script added, will remove both global and local installations
+  but ignores database.
 
- - Allow symlink database entries with AUTOJUMP_KEEP_SYMLINKS=1
+  - Allow symlink database entries with AUTOJUMP_KEEP_SYMLINKS=1
 
-   Normally symlinks are resolved to full path to prevent duplicate database
-   entries. However users who prefer symlink paths can modify behavior with the
-   above environmental variable.
+  Normally symlinks are resolved to full path to prevent duplicate database
+  entries. However users who prefer symlink paths can modify behavior with the
+  above environmental variable.
 
- - This ChangeLog added to better help package maintainers keep track of changes
-   between releases.
+  - This ChangeLog added to better help package maintainers keep track of changes
+  between releases.
 
- - Miscellaneous bug fixes.
+  - Miscellaneous bug fixes.
 
 * Release v19:
 
- - prototype `cp` and `mv` directory tab completion
- - Debian post-installation instructions
- - minor Mac OS X fixes
+  - prototype `cp` and `mv` directory tab completion
+  - Debian post-installation instructions
+  - minor Mac OS X fixes
 
 * Release v18:
 
- - add automated version numbering
- - performance tweaks to reduce filesystem checks
- - add local installation option
- - unicode fixes
- - ugly fixes for Python 3
- - migrate to new database format
+  - add automated version numbering
+  - performance tweaks to reduce filesystem checks
+  - add local installation option
+  - unicode fixes
+  - ugly fixes for Python 3
+  - migrate to new database format
