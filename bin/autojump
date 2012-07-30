@@ -43,7 +43,8 @@ TESTING = False
 if 'AUTOJUMP_DATA_DIR' in os.environ:
     CONFIG_DIR = os.environ.get('AUTOJUMP_DATA_DIR')
 else:
-    xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
+    xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(
+        os.environ['HOME'], '.local', 'share')
     CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
 
 KEEP_ALL_ENTRIES = False
@@ -63,6 +64,7 @@ if CONFIG_DIR == os.path.expanduser('~'):
 else:
     DB_FILE = CONFIG_DIR + '/autojump.txt'
 
+
 class Database:
     """
     Object for interfacing with autojump database.
@@ -76,7 +78,7 @@ class Database:
     def __len__(self):
         return len(self.data)
 
-    def add(self, path, increment = 10):
+    def add(self, path, increment=10):
         """
         Increment existing paths or initialize new ones to 10.
         """
@@ -84,7 +86,8 @@ class Database:
             self.data[path] = increment
         else:
             import math
-            self.data[path] = math.sqrt((self.data[path]**2)+(increment**2))
+            self.data[path] = math.sqrt((self.data[path] ** 2)
+                                        + (increment ** 2))
         self.save()
 
     def decay(self):
@@ -103,7 +106,7 @@ class Database:
         else:
             return 0
 
-    def load(self, error_recovery = False):
+    def load(self, error_recovery=False):
         """
         Try to open the database file, recovering from backup if needed.
         """
@@ -119,7 +122,7 @@ class Database:
         else:
             self.load_backup(error_recovery)
 
-    def load_backup(self, error_recovery = False):
+    def load_backup(self, error_recovery=False):
         """
         Loads database from backup file.
         """
@@ -161,11 +164,12 @@ class Database:
         if ((not os.path.exists(self.filename)) or
                 os.name == 'nt' or
                 os.getuid() == os.stat(self.filename)[4]):
-            temp = NamedTemporaryFile(dir = CONFIG_DIR, delete = False)
+            temp = NamedTemporaryFile(dir=CONFIG_DIR, delete=False)
             for path, weight in sorted(self.data.items(),
-                    key=itemgetter(1),
-                    reverse=True):
-                temp.write((unico("%s\t%s\n")%(weight, path)).encode("utf-8"))
+                                       key=itemgetter(1),
+                                       reverse=True):
+                temp.write(
+                    (unico("%s\t%s\n") % (weight, path)).encode("utf-8"))
 
             # catching disk errors and skipping save when file handle can't be closed.
             try:
@@ -175,18 +179,18 @@ class Database:
                 temp.close()
             except IOError as ex:
                 print("Error saving autojump database (disk full?)" %
-                        ex, file=sys.stderr)
+                      ex, file=sys.stderr)
                 return
 
             shutil.move(temp.name, self.filename)
-            try: # backup file
+            try:  # backup file
                 import time
-                if (not os.path.exists(self.filename+".bak") or
-                        time.time()-os.path.getmtime(self.filename+".bak") > 86400):
-                    shutil.copy(self.filename, self.filename+".bak")
+                if (not os.path.exists(self.filename + ".bak") or
+                        time.time() - os.path.getmtime(self.filename + ".bak") > 86400):
+                    shutil.copy(self.filename, self.filename + ".bak")
             except OSError as ex:
                 print("Error while creating backup autojump file. (%s)" %
-                        ex, file=sys.stderr)
+                      ex, file=sys.stderr)
 
     def trim(self, percent=0.1):
         """
@@ -205,22 +209,24 @@ def options():
     """
     global ARGS
 
-    parser = argparse.ArgumentParser(description='Automatically jump to directory passed as an argument.',
-            epilog="Please see autojump(1) man pages for full documentation.")
+    parser = argparse.ArgumentParser(
+        description='Automatically jump to directory passed as an argument.',
+        epilog="Please see autojump(1) man pages for full documentation.")
     parser.add_argument('directory', metavar='DIR', nargs='*', default='',
-            help='directory to jump to')
+                        help='directory to jump to')
     parser.add_argument('-a', '--add', metavar='DIR',
-            help='manually add path to database')
+                        help='manually add path to database')
     parser.add_argument('-b', '--bash', action="store_true", default=False,
-            help='enclose directory quotes to prevent errors')
+                        help='enclose directory quotes to prevent errors')
     parser.add_argument('--complete', action="store_true", default=False,
-            help='used for tab completion')
+                        help='used for tab completion')
     parser.add_argument('--purge', action="store_true", default=False,
-            help='delete all database entries that no longer exist on system')
+                        help='delete all database entries that no longer exist on system')
     parser.add_argument('-s', '--stat', action="store_true", default=False,
-            help='show database entries and their key weights')
-    parser.add_argument('--version', action="version", version="%(prog)s " + VERSION,
-            help='show version information and exit')
+                        help='show database entries and their key weights')
+    parser.add_argument(
+        '--version', action="version", version="%(prog)s " + VERSION,
+        help='show version information and exit')
 
     ARGS = parser.parse_args()
 
@@ -247,9 +253,10 @@ def options():
         for path, count in dirs[-100:]:
             output(unico("%.1f:\t%s") % (count, path))
         print("Total key weight: %d. Number of stored dirs: %d" %
-                (sum(db.data.values()), len(dirs)))
+              (sum(db.data.values()), len(dirs)))
         return True
     return False
+
 
 def decode(text, encoding=None, errors="strict"):
     """
@@ -261,6 +268,7 @@ def decode(text, encoding=None, errors="strict"):
         if encoding is None:
             encoding = sys.getfilesystemencoding()
         return text.decode(encoding, errors)
+
 
 def output(unicode_text, encoding=None):
     """
@@ -274,6 +282,7 @@ def output(unicode_text, encoding=None):
             encoding = sys.getfilesystemencoding()
         print(unicode_text.encode(encoding))
 
+
 def unico(text):
     """
     If Python 2, convert to a unicode object.
@@ -283,13 +292,14 @@ def unico(text):
     else:
         return unicode(text)
 
+
 def match_last(pattern):
     """
     If the last pattern contains a full path, jump there.
     The regexp is because we need to support stuff like
     "j wo jo__3__/home/joel/workspace/joel" for zsh.
     """
-    last_pattern_path = re.sub("(.*)"+COMPLETION_SEPARATOR, "", pattern[-1])
+    last_pattern_path = re.sub("(.*)" + COMPLETION_SEPARATOR, "", pattern[-1])
     if (len(last_pattern_path) > 0 and
             last_pattern_path[0] == "/" and
             os.path.exists(last_pattern_path)):
@@ -298,13 +308,14 @@ def match_last(pattern):
             return True
     return False
 
+
 def match(path, pattern, only_end=False, ignore_case=False):
     """
     Check whether a path matches a particular pattern, and return
     the remaining part of the string.
     """
     if only_end:
-        match_path = "/".join(path.split('/')[-1-pattern.count('/'):])
+        match_path = "/".join(path.split('/')[-1 - pattern.count('/'):])
     else:
         match_path = path
 
@@ -317,7 +328,8 @@ def match(path, pattern, only_end=False, ignore_case=False):
     if find_idx != -1:
         return (True, path)
     else:
-        return (False, path[find_idx+len(pattern):])
+        return (False, path[find_idx + len(pattern):])
+
 
 def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
     """
@@ -360,17 +372,18 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
 
     for path, _ in dirs:
         # avoid jumping to current directory
-        if current_dir == path :
+        if current_dir == path:
             continue
 
         found, tmp = True, path
         for n, p in enumerate(patterns):
             # for single/last pattern, only check end of path
-            if n == len(patterns)-1:
+            if n == len(patterns) - 1:
                 found, tmp = match(tmp, p, True, ignore_case)
             else:
                 found, tmp = match(tmp, p, False, ignore_case)
-            if not found: break
+            if not found:
+                break
 
         if found and (os.path.exists(path) or TESTING):
             if path not in results:
@@ -379,11 +392,13 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
                 break
     return results
 
+
 def shell_utility():
     """
     Run this when autojump is called as a shell utility.
     """
-    if options(): return True
+    if options():
+        return True
     db = Database(DB_FILE)
 
     # if no directories, add empty string
@@ -398,12 +413,13 @@ def shell_utility():
 
     # check for tab completion
     tab_choice = -1
-    tab_match = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
-    if tab_match: # user has selected a tab completion entry
+    tab_match = re.search(COMPLETION_SEPARATOR + "([0-9]+)", patterns[-1])
+    if tab_match:  # user has selected a tab completion entry
         tab_choice = int(tab_match.group(1))
-        patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*", "", patterns[-1])
-    else: # user hasn't selected a tab completion, display choices again
-        tab_match = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
+        patterns[-1] = re.sub(COMPLETION_SEPARATOR + "[0-9]+.*",
+                              "", patterns[-1])
+    else:  # user hasn't selected a tab completion, display choices again
+        tab_match = re.match("(.*)" + COMPLETION_SEPARATOR, patterns[-1])
         if tab_match:
             patterns[-1] = tab_match.group(1)
 
@@ -426,17 +442,18 @@ def shell_utility():
         results = find_matches(db, patterns, max_matches, True, True)
 
     quotes = ""
-    if ARGS.complete and ARGS.bash: quotes = "'"
+    if ARGS.complete and ARGS.bash:
+        quotes = "'"
 
     if tab_choice != -1:
-        if len(results) > tab_choice-1:
-            output(unico("%s%s%s") % (quotes,results[tab_choice-1],quotes))
+        if len(results) > tab_choice - 1:
+            output(unico("%s%s%s") % (quotes, results[tab_choice - 1], quotes))
     elif len(results) > 1 and ARGS.complete:
         output("\n".join(("%s%s%d%s%s" % (patterns[-1],
-            COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
-            for n, r in enumerate(results[:8]))))
+                                          COMPLETION_SEPARATOR, n + 1, COMPLETION_SEPARATOR, r)
+                          for n, r in enumerate(results[:8]))))
     elif results:
-        output(unico("%s%s%s")%(quotes,results[0],quotes))
+        output(unico("%s%s%s") % (quotes, results[0], quotes))
     else:
         return False
 
@@ -446,4 +463,5 @@ def shell_utility():
     return True
 
 if __name__ == "__main__":
-    if not shell_utility(): sys.exit(1)
+    if not shell_utility():
+        sys.exit(1)

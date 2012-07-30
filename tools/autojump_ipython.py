@@ -13,18 +13,21 @@ from IPython.iplib import InteractiveShell
 
 ip = get()
 
-def magic_j(self,parameter_s=''):
-    cmd = ['autojump']+parameter_s.split()
+
+def magic_j(self, parameter_s=''):
+    cmd = ['autojump'] + parameter_s.split()
     # print 'executing autojump with args %s' % str(cmd)
-    newpath=sub.Popen(cmd,stdout=sub.PIPE,shell=False).communicate()[0][:-1] # delete last '\n'
+    newpath = sub.Popen(cmd, stdout=sub.PIPE, shell=False).communicate(
+    )[0][:-1]  # delete last '\n'
     # print 'Autojump answer: \'%s\'' % newpath
     if newpath:
         ip.magic('cd \'%s\'' % newpath)
 
+
 def cd_decorator(f):
-    def autojump_cd_monitor(self,parameter_s=''):
-        f(self,parameter_s)
-        sub.call(['autojump','-a',os.getcwd()])
+    def autojump_cd_monitor(self, parameter_s=''):
+        f(self, parameter_s)
+        sub.call(['autojump', '-a', os.getcwd()])
     return autojump_cd_monitor
 
 # Add the new magic function to the class dict and decorate magic_cd:
