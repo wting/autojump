@@ -14,16 +14,21 @@ import sys
 import tempfile
 import unittest
 
+
 @contextlib.contextmanager
 def no_stderr():
     savestderr = sys.stderr
+
     class DevNull(object):
-        def write(self, _): pass
+        def write(self, _):
+            pass
     sys.stderr = DevNull()
     yield
     sys.stderr = savestderr
 
 # test suite
+
+
 class TestAutojump(unittest.TestCase):
 
     def setUp(self):
@@ -39,7 +44,7 @@ class TestAutojump(unittest.TestCase):
         if os.path.isfile(self.fname + ".bak"):
             os.remove(self.fname + ".bak")
         if (os.path.exists(autojump.CONFIG_DIR) and
-            ('tmp' in autojump.CONFIG_DIR or 'temp' in autojump.CONFIG_DIR)):
+                ('tmp' in autojump.CONFIG_DIR or 'temp' in autojump.CONFIG_DIR)):
             shutil.rmtree(autojump.CONFIG_DIR)
 
     def test_config(self):
@@ -79,7 +84,8 @@ class TestAutojump(unittest.TestCase):
 
     def test_db_load_backup(self):
         # setup
-        fname = '/tmp/autojump_test_db_load_backup_' + str(random.randint(0,32678))
+        fname = '/tmp/autojump_test_db_load_backup_' + str(
+            random.randint(0, 32678))
         db = autojump.Database(fname)
         db.add('/1')
         os.rename(fname, fname + '.bak')
@@ -102,7 +108,8 @@ class TestAutojump(unittest.TestCase):
 
     def test_db_save(self):
         # setup
-        fname = '/tmp/autojump_test_db_save_' + str(random.randint(0,32678)) + '.txt'
+        fname = '/tmp/autojump_test_db_save_' + str(random.randint(
+            0, 32678)) + '.txt'
         db = autojump.Database(fname)
 
         try:
@@ -182,8 +189,10 @@ class TestAutojump(unittest.TestCase):
         self.db.add('/9')
 
         patterns = [u'']
-        results = autojump.find_matches(self.db, patterns, max_matches, ignore_case)
-        self.assertEquals(results, ['/5', '/6', '/9', '/8', '/7', '/4', '/3', '/2', '/1'])
+        results = autojump.find_matches(
+            self.db, patterns, max_matches, ignore_case)
+        self.assertEquals(
+            results, ['/5', '/6', '/9', '/8', '/7', '/4', '/3', '/2', '/1'])
 
     def test_match_case_insensitive(self):
         max_matches = 1
@@ -192,7 +201,8 @@ class TestAutojump(unittest.TestCase):
         self.db.add('/foo', 10)
 
         patterns = [u'fo']
-        results = autojump.find_matches(self.db, patterns, max_matches, ignore_case)
+        results = autojump.find_matches(
+            self.db, patterns, max_matches, ignore_case)
         self.assertEquals(results[0], '/FOO')
 
     def test_match_fuzzy(self):
@@ -204,19 +214,23 @@ class TestAutojump(unittest.TestCase):
         self.db.add('/abcdefg', 10)
 
         patterns = [u'random']
-        results = autojump.find_matches(self.db, patterns, max_matches, ignore_case, fuzzy_search)
+        results = autojump.find_matches(
+            self.db, patterns, max_matches, ignore_case, fuzzy_search)
         self.assertTrue(len(results) == 0)
 
         patterns = [u'abcdefg']
-        results = autojump.find_matches(self.db, patterns, max_matches, ignore_case, fuzzy_search)
+        results = autojump.find_matches(
+            self.db, patterns, max_matches, ignore_case, fuzzy_search)
         self.assertEquals(results[0], '/abcdefg')
 
         patterns = [u'abcefg']
-        results = autojump.find_matches(self.db, patterns, max_matches, ignore_case, fuzzy_search)
+        results = autojump.find_matches(
+            self.db, patterns, max_matches, ignore_case, fuzzy_search)
         self.assertEquals(results[0], '/abcdefg')
 
         patterns = [u'bacef']
-        results = autojump.find_matches(self.db, patterns, max_matches, ignore_case, fuzzy_search)
+        results = autojump.find_matches(
+            self.db, patterns, max_matches, ignore_case, fuzzy_search)
         self.assertEquals(results[0], '/abcdefg')
 
 if __name__ == '__main__':
