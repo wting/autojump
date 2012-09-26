@@ -110,35 +110,10 @@ fi
 if [ ! ${force} ]; then
     python_version=`python -c 'import sys; print(sys.version_info[:])'`
 
-    if [[ ${python_version:1:1} -eq 3 && ${python_version:4:1} -lt 2 ]]; then
+    if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 6 ]]; then
         echo
-        echo "Incompatible Python version, please upgrade to v2.7+ or v3.2+."
-        echo
-        echo "Alternatively, you can download v19 that supports Python v3.0+ from:"
-        echo
-        echo -e "\thttps://github.com/joelthelion/autojump/downloads"
-        echo
-        echo "OR"
-        echo
-        echo "Install argparse manually using 'pip install argparse' and then reattempt the installation using the --force option."
-        echo
-        exit 1
-    fi
-
-    if [[ ${python_version:1:1} -eq 2 && ${python_version:4:1} -lt 7 ]]; then
-        echo
-        echo "Incompatible Python version, please upgrade to v2.7+ or v3.2+."
-        if [[ ${python_version:4:1} -ge 6 ]]; then
-            echo
-            echo "Alternatively, you can download v19 that supports Python v2.6+ from:"
-            echo
-            echo -e "\thttps://github.com/joelthelion/autojump/downloads"
-            echo
-            echo "OR"
-            echo
-            echo "Install argparse manually using 'pip install argparse' and then reattempt the installation using the --force option."
-            echo
-        elif [[ ${python_version:4:1} -ge 4 ]]; then
+        echo "Incompatible Python version, please upgrade to v2.6+."
+        if [[ ${python_version:4:1} -ge 4 ]]; then
             echo
             echo "Alternatively, you can download v12 that supports Python v2.4+ from:"
             echo
@@ -163,6 +138,7 @@ mkdir -p ${prefix}/share/man/man1/
 cp -v ./bin/icon.png ${prefix}/share/autojump/
 cp -v ./bin/jumpapplet ${prefix}/bin/
 cp -v ./bin/autojump ${prefix}/bin/
+cp -v ./bin/autojump_argparse.py ${prefix}/bin/
 cp -v ./docs/autojump.1 ${prefix}/share/man/man1/
 
 # global installation
