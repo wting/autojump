@@ -148,7 +148,7 @@ if [ ! ${local} ]; then
         success=
         fpath=`/usr/bin/env zsh -c 'echo $fpath'`
         for f in ${fpath}; do
-            cp -v ./bin/_j ${f} && success=true && break
+            install -v -m 0755 ./bin/_j ${f} && success=true && break
         done
 
         if [ ! ${success} ]; then
@@ -173,7 +173,7 @@ else # local installation
 
     if [ ${shell} == "zsh" ]; then
         mkdir -p ${prefix}/functions/
-        cp ./bin/_j ${prefix}/functions/
+        install -v -m 0755 ./bin/_j ${prefix}/functions/
     fi
 
     add_msg "local" ${shell}
