@@ -28,16 +28,14 @@ INSTALLATION
 
 ### REQUIREMENTS
 
--   Python v2.7, 3.0, or 2.6 with argparse
--   Bash v4.0 for tab completion
+-   Python v2.6
+-   Bash v4.0 for tab completion (or zsh)
 
 If you are unable to update Python to a supported version, older
 versions of autojump can be
 [downloaded](https://github.com/joelthelion/autojump/downloads) and
 installed manually.
 
--   Python v2.6 is supported by [release
-    v19](https://github.com/downloads/joelthelion/autojump/autojump_v19.tar.gz).
 -   Python v2.4 is supported by [release
     v12](https://github.com/downloads/joelthelion/autojump/autojump_v12.tar.gz).
 
@@ -187,8 +185,7 @@ ADVANCED USAGE
 
     Let's assume the following database:
 
-        30   /home/user/mail/inbox
-        10   /home/user/work/inbox
+        30   /home/user/mail/inbox 10   /home/user/work/inbox
 
     `j in` would jump into /home/user/mail/inbox as the higher weighted
     entry. However you can pass multiple arguments to autojump to prefer
@@ -214,9 +211,20 @@ ADVANCED USAGE
 KNOWN ISSUES
 ------------
 
+-   For bash users, autojump keeps track of directories as a pre-command
+    hook by modifying $PROMPT\_COMMAND. If you overwrite
+    $PROMPT\_COMMAND in \~/.bashrc you can cause problems. Don't do
+    this:
+
+        export PROMPT_COMMAND="history -a"
+
+    Do this:
+
+    export PROMPT\_COMMAND="${PROMPT\_COMMAND}; history -a"
+
 -   The jump function `j` does not support directories that begin with
     `-`. If you want to jump a directory called `--music`, try using
-    `j music` instead of `j --music`.
+    `j music` instead of `j   --music`.
 
 -   jumpapplet (bug \#59)
 

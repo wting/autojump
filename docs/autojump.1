@@ -123,8 +123,7 @@ Let\[aq]s assume the following database:
 .IP
 .nf
 \f[C]
-30\ \ \ /home/user/mail/inbox
-10\ \ \ /home/user/work/inbox
+30\ \ \ /home/user/mail/inbox\ 10\ \ \ /home/user/work/inbox
 \f[]
 .fi
 .PP
@@ -163,10 +162,27 @@ All negative key weights are purged automatically.
 .RE
 .SS KNOWN ISSUES
 .IP \[bu] 2
+For bash users, autojump keeps track of directories as a pre-command
+hook by modifying $PROMPT_COMMAND.
+If you overwrite $PROMPT_COMMAND in ~/.bashrc you can cause problems.
+Don\[aq]t do this:
+.RS 2
+.IP
+.nf
+\f[C]
+export\ PROMPT_COMMAND="history\ -a"
+\f[]
+.fi
+.PP
+Do this:
+.PP
+export PROMPT_COMMAND="${PROMPT_COMMAND}; history -a"
+.RE
+.IP \[bu] 2
 The jump function \f[C]j\f[] does not support directories that begin
 with \f[C]-\f[].
 If you want to jump a directory called \f[C]--music\f[], try using
-\f[C]j\ music\f[] instead of \f[C]j\ --music\f[].
+\f[C]j\ music\f[] instead of \f[C]j\ \ \ --music\f[].
 .IP \[bu] 2
 jumpapplet (bug #59)
 .RS 2
