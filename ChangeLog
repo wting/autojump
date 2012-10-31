@@ -71,6 +71,8 @@
   commonly used directories still climbed database ranking appropriately with a
   more even weight distribution.
 
+  - Vendorize argparse so now Python v2.6+ is supported (from v2.7).
+
   - Unit testing suite added.
 
   - Miscellaneous refactoring, bug fixes, documentation updates.
