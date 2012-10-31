@@ -1,7 +1,7 @@
-VERSION = v20
+VERSION = v21.0.2
 TAGNAME = release-$(VERSION)
 
-.PHONY: docs install uninstall test
+.PHONY: docs install uninstall tar test
 
 install:
 	install.sh
@@ -26,6 +26,10 @@ release: docs test
 	# Create tag
 	git tag -a $(TAGNAME)
 
+	# Create tagged archive
+	git archive --format=tar --prefix autojump_$(VERSION)/ $(TAGNAME) | gzip > autojump_$(VERSION).tar.gz
+
+tar:
 	# Create tagged archive
 	git archive --format=tar --prefix autojump_$(VERSION)/ $(TAGNAME) | gzip > autojump_$(VERSION).tar.gz
 
