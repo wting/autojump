@@ -128,9 +128,6 @@ echo
 echo "Installing ${shell} version of autojump to ${prefix} ..."
 echo
 
-# add git revision to autojump
-./tools/git-version.sh
-
 # INSTALL AUTOJUMP
 mkdir -p ${prefix}/share/autojump/
 mkdir -p ${prefix}/bin/

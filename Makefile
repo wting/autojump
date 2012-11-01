@@ -1,4 +1,4 @@
-VERSION = v21.0.3
+VERSION = v21.0.4
 TAGNAME = release-$(VERSION)
 
 .PHONY: docs install uninstall tar test
