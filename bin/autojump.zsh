@@ -17,10 +17,11 @@ if [[ -d ${HOME}/.autojump ]]; then
     path=(${HOME}/.autojump/bin ${path})
     fpath=(${HOME}/.autojump/functions/ ${fpath})
 fi
+
 # set fpath if necessary for homebrew installation
-if [[ -d "`brew --prefix 2>/dev/null`/share/zsh/site-functions" ]]; then
-    fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
-fi
+command -v brew &>/dev/null \
+    && [[ -d "`brew --prefix`/share/zsh/site-functions" ]] \
+    && fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
 
 function autojump_preexec() {
     if [[ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]]; then
