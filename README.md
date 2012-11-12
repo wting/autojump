@@ -220,7 +220,7 @@ KNOWN ISSUES
 
     Do this:
 
-    export PROMPT\_COMMAND="${PROMPT\_COMMAND}; history -a"
+        export PROMPT\_COMMAND="${PROMPT\_COMMAND}; history -a"
 
 -   The jump function `j` does not support directories that begin with
     `-`. If you want to jump a directory called `--music`, try using
