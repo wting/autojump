@@ -59,7 +59,7 @@ AUTOJUMP='{ [[ "$AUTOJUMP_HOME" == "$HOME" ]] && (autojump -a "$(pwd ${_PWD_ARGS
 
 case $PROMPT_COMMAND in
     *autojump*)    ;;
-    *)   export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }$AUTOJUMP";;
+    *)   export PROMPT_COMMAND="$AUTOJUMP ; ${PROMPT_COMMAND:-:}";;
 esac
 
 function j {
