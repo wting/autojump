@@ -49,17 +49,21 @@ if [ -d ~/.autojump/ ]; then
 fi
 
 export AUTOJUMP_HOME=${HOME}
-if [ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]
-then
+if [ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]; then
     _PWD_ARGS=""
 else
     _PWD_ARGS="-P"
 fi
-AUTOJUMP='{ [[ "$AUTOJUMP_HOME" == "$HOME" ]] && (autojump -a "$(pwd ${_PWD_ARGS})"&)>/dev/null 2>>"${AUTOJUMP_DATA_DIR}/.autojump_errors";} 2>/dev/null'
+
+autojump_add_to_database() {
+    if [[ "${AUTOJUMP_HOME}" == "${HOME}" ]]; then
+        autojump -a "$(pwd ${_PWD_ARGS})" 1>/dev/null 2>>"${AUTOJUMP_DATA_DIR}/.autojump_errors"
+    fi
+}
 
 case $PROMPT_COMMAND in
     *autojump*)    ;;
-    *)   export PROMPT_COMMAND="$AUTOJUMP ; ${PROMPT_COMMAND:-:}";;
+    *)   export PROMPT_COMMAND="autojump_add_to_database; ${PROMPT_COMMAND:-:}";;
 esac
 
 function j {
