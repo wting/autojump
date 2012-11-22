@@ -29,6 +29,7 @@ function help_msg {
 
 dry_run=
 local=
+global=
 force=
 shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
 destdir=
@@ -65,6 +66,7 @@ while true; do
             fi
             ;;
         -g|--global)
+            global=true
             destdir=
             prefix=usr
             shift
@@ -213,15 +215,20 @@ cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/ || exit 1
 mkdir -p ${destdir}${zshsharedir} || exit 1
 install -v -m 0755 ./bin/_j ${destdir}${zshsharedir} || exit 1
 
+# MODIFY AUTOJUMP.SH FOR CUSTOM INSTALLS
+if [[ -z ${local} ]] && [[ -z ${global} ]]; then
+    sed -i "s:custom_install:${destdir}etc/profile.d:g" ${destdir}etc/profile.d/autojump.sh
+fi
+
 # DISPLAY ADD MESSAGE
 rc_file="~/.${shell}rc"
 if [[ `uname` == "Darwin" ]] && [[ ${shell} == "bash" ]]; then
     rc_file="~/.bash_profile"
 fi
 
-aj_shell_file="${destdir}etc/profile.d/autojump.${shell}"
+aj_shell_file="${destdir}etc/profile.d/autojump.sh"
 if [[ ${local} ]]; then
-    aj_shell_file="~/.autojump/etc/profile.d/autojump.${shell}"
+    aj_shell_file="~/.autojump/etc/profile.d/autojump.sh"
 fi
 
 echo
