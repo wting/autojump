@@ -213,5 +213,14 @@ cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/
 mkdir -p ${destdir}${zshsharedir}
 install -v -m 0755 ./bin/_j ${destdir}${zshsharedir}
 
-echo "Remember: you need to source ${destdir}etc/profile.d/autojump.sh before you can use autojump"
-
+# DISPLAY ADD MESSAGE
+echo
+if [[ `uname` == "Darwin" ]] && [[ ${shell} == "bash" ]]; then
+    echo "Please add the line to ~/.bash_profile :"
+else
+    echo "Please add the line to ~/.${shell}rc :"
+fi
+echo
+echo -e "[[ -s ${destdir}etc/profile.d/autojump.sh ]] && source ${destdir}etc/profile.d/autojump.sh"
+echo
+echo "You need to run 'source ~/.${shell}rc' before you can start using autojump. To remove autojump, run './uninstall.sh'"
