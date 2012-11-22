@@ -3,7 +3,7 @@
 function help_msg {
     echo "./install.sh [OPTION..]"
     echo
-    echo " -a, --auto           Try to determine destdir, prefix, shell (and zshshare if apply)"
+    echo " -a, --auto           Try to determine destdir, prefix (and zshshare if applicable)"
     echo " -g, --global         Use default global settings (destdir=/; prefix=usr)"
     echo " -l, --local          Use default local settings (destdir=~/.autojump)"
     echo
@@ -11,14 +11,11 @@ function help_msg {
     echo " -p, --prefix PATH    Use PATH as prefix"
     echo " -Z, --zshshare PATH  Use PATH as zsh share destination"
     echo
-    echo " -b, --bash           Install for bash only"
-    echo " -z, --zsh            Install for zsh only"
-    echo " (If neither are specified, both bash & zsh support are installed)"
-    echo
     echo " -f, --force          Ignore python version check"
     echo " -n, --dry_run        Only show installation paths, don't install anything"
     echo
     echo "Will install autojump into:"
+    echo
     echo ' Binaries:        $destdir$prefix/bin'
     echo ' Documentation:   $destdir$prefix/share/man/man1'
     echo ' Icon:            $destdir$prefix/share/autojump'
@@ -35,7 +32,7 @@ dry_run=
 auto=
 local=
 force=
-shell=
+shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
 destdir=
 prefix="usr/local"
 zshsharedir=
@@ -55,10 +52,6 @@ while true; do
             else
                 set -- "--local" "${@:2}"
             fi
-            ;;
-        -b|--bash)
-            shell="bash"
-            shift
             ;;
         -d|--destdir)
             if [ $# -gt 1 ]; then
@@ -97,10 +90,6 @@ while true; do
                 echo "--prefix or -p requires an argument" 1>&2
                 exit 1
             fi
-            ;;
-        -z|--zsh)
-            shell="zsh"
-            shift
             ;;
         -Z|--zshshare)
             if [ $# -gt 1 ]; then
@@ -150,14 +139,14 @@ if [[ -n ${prefix} ]]; then
     fi
 fi
 
-# check shell if supported
-if [[ -n ${shell} ]] && [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]]; then
-    echo "Unsupported shell (${shell}). Use --bash or --zsh to explicitly define shell."
+# check shell support
+if [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]]; then
+    echo "Unsupported shell (${shell}). Only bash and zsh shells are supported."
     exit 1
 fi
 
 # zsh functions
-if [[ -z $shell ]] || [[ $shell == "zsh" ]]; then
+if [[ $shell == "zsh" ]]; then
     if [[ -z $zshsharedir ]]; then
         # if not set, use a default
         if [[ $local ]]; then
@@ -193,11 +182,6 @@ echo "Destination:      $destdir"
 if [[ -n $prefix ]]; then
     echo "Prefix:           /$prefix"
 fi
-if [[ -n $shell ]]; then
-    echo "Shell:            $shell"
-else
-    echo "Shell:            bash & zsh"
-fi
 echo
 echo "Binary:           ${destdir}${prefix}bin/"
 echo "Documentation:    ${destdir}${prefix}share/man/man1/"
@@ -224,14 +208,10 @@ cp -v ./bin/autojump_argparse.py ${destdir}${prefix}bin/
 cp -v ./docs/autojump.1 ${destdir}${prefix}share/man/man1/
 mkdir -p ${destdir}etc/profile.d/
 cp -v ./bin/autojump.sh ${destdir}etc/profile.d/
-if [[ -z $shell ]] || [[ $shell == "bash" ]]; then
-    cp -v ./bin/autojump.bash ${destdir}etc/profile.d/
-fi
-if [[ -z $shell ]] || [[ $shell == "zsh" ]]; then
-    cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/
-    mkdir -p ${destdir}${zshsharedir}
-    install -v -m 0755 ./bin/_j ${destdir}${zshsharedir}
-fi
+cp -v ./bin/autojump.bash ${destdir}etc/profile.d/
+cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/
+mkdir -p ${destdir}${zshsharedir}
+install -v -m 0755 ./bin/_j ${destdir}${zshsharedir}
 
 echo "Remember: you need to source ${destdir}etc/profile.d/autojump.sh before you can use autojump"
 
