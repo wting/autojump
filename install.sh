@@ -29,7 +29,6 @@ function help_msg {
 }
 
 dry_run=
-auto=
 local=
 force=
 shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
@@ -62,6 +61,9 @@ while true; do
         -f|--force)
             force=true
             shift
+            if [[ ${#} == 0 ]]; then
+                set -- "--auto"
+            fi
             ;;
         -g|--global)
             destdir=
