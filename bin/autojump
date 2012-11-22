@@ -34,7 +34,7 @@ import re
 import shutil
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v21.1.0'
+VERSION = 'release-v21.1.1'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -114,11 +114,18 @@ class Database:
         """
         if os.path.exists(self.filename):
             try:
-                with open(self.filename, 'r') as f:
-                    for line in f.readlines():
-                        weight, path = line[:-1].split("\t", 1)
-                        path = decode(path, 'utf-8')
-                        self.data[path] = float(weight)
+                if sys.version > (2, 6):
+                    with open(self.filename, 'r', encoding = 'utf-8') as f:
+                        for line in f.readlines():
+                            weight, path = line[:-1].split("\t", 1)
+                            path = decode(path, 'utf-8')
+                            self.data[path] = float(weight)
+                else:
+                    with open(self.filename, 'r') as f:
+                        for line in f.readlines():
+                            weight, path = line[:-1].split("\t", 1)
+                            path = decode(path, 'utf-8')
+                            self.data[path] = float(weight)
             except (IOError, EOFError):
                 self.load_backup(error_recovery)
         else:
