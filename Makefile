@@ -1,5 +1,5 @@
-VERSION = v21.0.4
-TAGNAME = release-$(VERSION)
+VERSION = $(shell grep -oE "[0-9]+\.[0-9]+\.[0-9]+" bin/autojump)
+TAGNAME = release-v$(VERSION)
 
 .PHONY: docs install uninstall tar test
 
@@ -27,11 +27,13 @@ release: docs test
 	git tag -a $(TAGNAME)
 
 	# Create tagged archive
-	git archive --format=tar --prefix autojump_$(VERSION)/ $(TAGNAME) | gzip > autojump_$(VERSION).tar.gz
+	git archive --format=tar --prefix autojump_v$(VERSION)/ $(TAGNAME) | gzip > autojump_v$(VERSION).tar.gz
+	sha1sum autojump_v$(VERSION).tar.gz
 
 tar:
 	# Create tagged archive
-	git archive --format=tar --prefix autojump_$(VERSION)/ $(TAGNAME) | gzip > autojump_$(VERSION).tar.gz
+	git archive --format=tar --prefix autojump_v$(VERSION)/ $(TAGNAME) | gzip > autojump_v$(VERSION).tar.gz
+	sha1sum autojump_v$(VERSION).tar.gz
 
 test:
 	@tests/runtests.py
