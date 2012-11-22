@@ -91,7 +91,7 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     Do this:
 
-       export PROMPT_COMMAND="${PROMPT_COMMAND}; history -a"
+        export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ;} history -a"
 
 - The jump function `j` does not support directories that begin with `-`. If you
   want to jump a directory called `--music`, try using `j music` instead of `j

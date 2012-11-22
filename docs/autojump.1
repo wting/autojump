@@ -175,8 +175,12 @@ export\ PROMPT_COMMAND="history\ -a"
 .fi
 .PP
 Do this:
-.PP
-export PROMPT_COMMAND="${PROMPT_COMMAND}; history -a"
+.IP
+.nf
+\f[C]
+export\ PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND\ ;}\ history\ -a"
+\f[]
+.fi
 .RE
 .IP \[bu] 2
 The jump function \f[C]j\f[] does not support directories that begin
