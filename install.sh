@@ -46,7 +46,6 @@ fi
 while true; do
     case "$1" in
         -a|--auto)
-            zshsharedir=
             if [[ ${UID} -eq 0 ]]; then
                 set -- "--global" "${@:2}"
             else
@@ -214,13 +213,20 @@ mkdir -p ${destdir}${zshsharedir} || exit 1
 install -v -m 0755 ./bin/_j ${destdir}${zshsharedir} || exit 1
 
 # DISPLAY ADD MESSAGE
-echo
+rc_file="~/.${shell}rc"
 if [[ `uname` == "Darwin" ]] && [[ ${shell} == "bash" ]]; then
-    echo "Please add the line to ~/.bash_profile :"
-else
-    echo "Please add the line to ~/.${shell}rc :"
+    rc_file="~/.bash_profile"
 fi
+
+aj_shell_file="${destdir}etc/profile.d/autojump.${shell}"
+if [[ ${local} ]]; then
+    aj_shell_file="~/.autojump/etc/profile.d/autojump.${shell}"
+fi
+
 echo
-echo -e "[[ -s ${destdir}etc/profile.d/autojump.sh ]] && source ${destdir}etc/profile.d/autojump.sh"
+echo "Please add the line to ${rc_file} :"
 echo
-echo "You need to run 'source ~/.${shell}rc' before you can start using autojump. To remove autojump, run './uninstall.sh'"
+echo -e "[[ -s ${aj_shell_file} ]] && . ${aj_shell_file}"
+echo
+echo "You need to run 'source ${rc_file}' before you can start using autojump. To remove autojump, run './uninstall.sh'"
+echo
