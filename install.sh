@@ -40,22 +40,21 @@ destdir=
 prefix="usr/local"
 zshsharedir=
 
+# If no arguments passed, default to --auto.
+if [[ ${#} == 0 ]]; then
+    set -- "--auto"
+fi
+
 # Command line parsing
 while true; do
     case "$1" in
         -a|--auto)
-            auto=true
-            force=
-            shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
-            if [[ ${UID} -eq 0 ]]; then
-                destdir=
-                prefix=usr
-            else
-                destdir=~/.autojump
-                prefix=
-            fi
             zshsharedir=
-            shift
+            if [[ ${UID} -eq 0 ]]; then
+                set -- "--global" "${@:2}"
+            else
+                set -- "--local" "${@:2}"
+            fi
             ;;
         -b|--bash)
             shell="bash"
@@ -159,22 +158,7 @@ fi
 
 # zsh functions
 if [[ -z $shell ]] || [[ $shell == "zsh" ]]; then
-    if [[ $auto ]]; then
-        # look for writable dir in fpath
-        success=
-        fpath=`/usr/bin/env zsh -c 'echo $fpath'`
-        for f in ${fpath}; do
-            if [[ -d $f ]] && [[ -w $f ]]; then
-                zshsharedir=${f:1}
-                success=true
-                break
-            fi
-        done
-        if [[ ! $success ]]; then
-            echo "Error: failed to determine zsh functions dir" 1>&2
-            exit 1
-        fi
-    elif [[ -z $zshsharedir ]]; then
+    if [[ -z $zshsharedir ]]; then
         # if not set, use a default
         if [[ $local ]]; then
             zshsharedir="${prefix}functions"
