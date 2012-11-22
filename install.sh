@@ -16,7 +16,7 @@ function help_msg {
     echo " (If neither are specified, both bash & zsh support are installed)"
     echo
     echo " -f, --force          Ignore python version check"
-    echo " -P, --show_path      Only show installation paths, don't install anything"
+    echo " -n, --dry_run        Only show installation paths, don't install anything"
     echo
     echo "Will install autojump into:"
     echo ' Binaries:        $destdir$prefix/bin'
@@ -31,7 +31,7 @@ function help_msg {
     echo ' - $destdir$prefix/share/zsh/site-functions'
 }
 
-show_path=
+dry_run=
 auto=
 local=
 force=
@@ -86,8 +86,8 @@ while true; do
             prefix=
             shift
             ;;
-        -P|--show_paths)
-            show_path=true
+        -n|--dry_run)
+            dry_run=true
             shift
             ;;
         -p|--prefix)
@@ -208,8 +208,8 @@ if [[ -z $shell ]] || [[ $shell == "zsh" ]]; then
 fi
 echo
 
-if [[ $show_path ]]; then
-    echo "--show_path (-P) used, stopping"
+if [[ $dry_run ]]; then
+    echo "--dry_run (-n) used, stopping"
     exit
 fi
 
