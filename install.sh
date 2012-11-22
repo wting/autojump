@@ -11,7 +11,7 @@ function help_msg {
     echo " -p, --prefix PATH    Use PATH as prefix"
     echo " -Z, --zshshare PATH  Use PATH as zsh share destination"
     echo
-    echo " -f, --force          Ignore python version check"
+    echo " -f, --force          Ignore Python version check"
     echo " -n, --dry_run        Only show installation paths, don't install anything"
     echo
     echo "Will install autojump into:"
@@ -23,9 +23,8 @@ function help_msg {
     echo ' zsh functions:   $destdir$zshsharedir'
     echo
     echo 'Unless specified, $zshshare will be :'
-    echo ' - First writable directory in $fpath when --auto was used'
-    echo ' - $destdir$prefix/functions if --local was used'
-    echo ' - $destdir$prefix/share/zsh/site-functions'
+    echo ' - $destdir$prefix/functions for local installations'
+    echo ' - $destdir$prefix/share/zsh/site-functions for all other installations'
 }
 
 dry_run=
@@ -142,7 +141,7 @@ fi
 
 # check shell support
 if [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]]; then
-    echo "Unsupported shell (${shell}). Only bash and zsh shells are supported."
+    echo "Unsupported shell (${shell}). Only Bash and Zsh shells are supported."
     exit 1
 fi
 
