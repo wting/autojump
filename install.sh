@@ -198,20 +198,20 @@ if [[ $dry_run ]]; then
 fi
 
 # INSTALL AUTOJUMP
-mkdir -p ${destdir}${prefix}share/autojump/
-mkdir -p ${destdir}${prefix}bin/
-mkdir -p ${destdir}${prefix}share/man/man1/
-cp -v ./bin/icon.png ${destdir}${prefix}share/autojump/
-cp -v ./bin/jumpapplet ${destdir}${prefix}bin/
-cp -v ./bin/autojump ${destdir}${prefix}bin/
-cp -v ./bin/autojump_argparse.py ${destdir}${prefix}bin/
-cp -v ./docs/autojump.1 ${destdir}${prefix}share/man/man1/
-mkdir -p ${destdir}etc/profile.d/
-cp -v ./bin/autojump.sh ${destdir}etc/profile.d/
-cp -v ./bin/autojump.bash ${destdir}etc/profile.d/
-cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/
-mkdir -p ${destdir}${zshsharedir}
-install -v -m 0755 ./bin/_j ${destdir}${zshsharedir}
+mkdir -p ${destdir}${prefix}share/autojump/ || exit 1
+mkdir -p ${destdir}${prefix}bin/ || exit 1
+mkdir -p ${destdir}${prefix}share/man/man1/ || exit 1
+cp -v ./bin/icon.png ${destdir}${prefix}share/autojump/ || exit 1
+cp -v ./bin/jumpapplet ${destdir}${prefix}bin/ || exit 1
+cp -v ./bin/autojump ${destdir}${prefix}bin/ || exit 1
+cp -v ./bin/autojump_argparse.py ${destdir}${prefix}bin/ || exit 1
+cp -v ./docs/autojump.1 ${destdir}${prefix}share/man/man1/ || exit 1
+mkdir -p ${destdir}etc/profile.d/ || exit 1
+cp -v ./bin/autojump.sh ${destdir}etc/profile.d/ || exit 1
+cp -v ./bin/autojump.bash ${destdir}etc/profile.d/ || exit 1
+cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/ || exit 1
+mkdir -p ${destdir}${zshsharedir} || exit 1
+install -v -m 0755 ./bin/_j ${destdir}${zshsharedir} || exit 1
 
 # DISPLAY ADD MESSAGE
 echo
