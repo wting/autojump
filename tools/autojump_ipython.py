@@ -1,36 +1,32 @@
-# This module was contributed by Mario Pastorelli <pastorelli.mario@gmail.com>
-# It is released in the public domain
+"""
+IPython autojump magic
 
-# This tool provides "j" for ipython
-# To use it, copy it in your ~/.ipython directory
-# and add the following line to ipy_user_conf.py:
-# import autojump_ipython
+Written by keith hughitt <keith.hughitt@gmail.com>, based on an earlier
+version by Mario Pastorelli <pastorelli.mario@gmail.com>.
 
+To install, `create a new IPython user profile <http://ipython.org/ipython-doc/stable/config/ipython.html#configuring-ipython>`_
+if you have not already done so by running:
+
+    ipython profile create
+    
+And copy this file into the "startup" folder of your new profile (e.g. 
+"$HOME/.config/ipython/profile_default/startup/").
+
+@TODO: extend %cd to call "autojump -a"
+"""
 import os
 import subprocess as sub
-from IPython.ipapi import get
-from IPython.iplib import InteractiveShell
+from IPython.core.magic import (register_line_magic, register_cell_magic,
+                                register_line_cell_magic)
 
-ip = get()
+ip = get_ipython()
 
-def magic_j(self,parameter_s=''):
-    cmd = ['autojump']+parameter_s.split()
-    # print 'executing autojump with args %s' % str(cmd)
-    newpath=sub.Popen(cmd,stdout=sub.PIPE,shell=False).communicate()[0][:-1] # delete last '\n'
-    # print 'Autojump answer: \'%s\'' % newpath
+@register_line_magic
+def j(path):
+    cmd = ['autojump'] + path.split()
+    newpath = sub.Popen(cmd, stdout=sub.PIPE, shell=False).communicate()[0][:-1] # delete last '\n'
     if newpath:
-        ip.magic('cd \'%s\'' % newpath)
+        ip.magic('cd %s' % newpath)
 
-def cd_decorator(f):
-    def autojump_cd_monitor(self,parameter_s=''):
-        f(self,parameter_s)
-        sub.call(['autojump','-a',os.getcwd()])
-    return autojump_cd_monitor
-
-# Add the new magic function to the class dict and decorate magic_cd:
-InteractiveShell.magic_j = magic_j
-InteractiveShell.magic_cd = cd_decorator(InteractiveShell.magic_cd)
-
-# And remove the global name to keep global namespace clean.
-del magic_j
-del cd_decorator
+# remove from namespace
+del j
