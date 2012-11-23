@@ -84,6 +84,9 @@ while true; do
         -n|--dry_run)
             dry_run=true
             shift
+            if [[ ${#} == 0 ]]; then
+                set -- "--auto"
+            fi
             ;;
         -p|--prefix)
             if [ $# -gt 1 ]; then
