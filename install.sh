@@ -41,6 +41,11 @@ if [[ ${#} == 0 ]]; then
     set -- "--auto"
 fi
 
+# Only dry-run should also default to --auto
+if [[ ${#} == 1 ]] && ([[ $1 = "-n" ]] || [[ $1 = "--dry-run" ]]); then
+    set -- "-n" "--auto"
+fi
+
 # Command line parsing
 while true; do
     case "$1" in
@@ -84,9 +89,6 @@ while true; do
         -n|--dry_run)
             dry_run=true
             shift
-            if [[ ${#} == 0 ]]; then
-                set -- "--auto"
-            fi
             ;;
         -p|--prefix)
             if [ $# -gt 1 ]; then
