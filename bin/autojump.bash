@@ -63,7 +63,7 @@ autojump_add_to_database() {
 
 case $PROMPT_COMMAND in
     *autojump*)    ;;
-    *)   export PROMPT_COMMAND="autojump_add_to_database; ${PROMPT_COMMAND:-:}";;
+    *)   export PROMPT_COMMAND="${PROMPT_COMMAND:+$(echo "${PROMPT_COMMAND}" | awk '{gsub(/; *$/,"")}1') ; }autojump_add_to_database";;
 esac
 
 function j {
