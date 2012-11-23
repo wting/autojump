@@ -24,11 +24,11 @@ from __future__ import division, print_function
 import sys
 import os
 try:
-  import argparse
+    import argparse
 except ImportError:
-  sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-  import autojump_argparse as argparse
-  sys.path.pop()
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    import autojump_argparse as argparse
+    sys.path.pop()
 from operator import itemgetter
 import re
 import shutil
@@ -114,7 +114,7 @@ class Database:
         """
         if os.path.exists(self.filename):
             try:
-                if sys.version > (2, 6):
+                if sys.version_info >= (3, 0):
                     with open(self.filename, 'r', encoding = 'utf-8') as f:
                         for line in f.readlines():
                             weight, path = line[:-1].split("\t", 1)
