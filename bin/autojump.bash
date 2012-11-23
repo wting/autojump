@@ -27,7 +27,10 @@ _autojump_files()
 EOF
     fi
 }
-complete -o default -o bashdefault -F _autojump_files cp mv meld diff kdiff3 vim emacs
+
+if [[ -n ${AUTOJUMP_AUTOCOMPLETE_CMDS} ]]; then
+    complete -o default -o bashdefault -F _autojump_files ${AUTOJUMP_AUTOCOMPLETE_CMDS}
+fi
 
 #determine the data directory according to the XDG Base Directory Specification
 if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} =~ ${USER} ]]; then

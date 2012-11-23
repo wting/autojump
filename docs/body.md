@@ -52,6 +52,15 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
         export AUTOJUMP_KEEP_SYMLINKS=1
 
+- Autocomplete Additional Commands (Bash only)
+
+    Autojump can be used to autocomplete other commands (e.g. cp or vim). To use
+    this feature, add the following environmental variable in your ~/.bashrc:
+
+        export AUTOJUMP_AUTOCOMPLETE_CMDS='cp vim'
+
+    Changes require reloading autojump to take into effect.
+
 ## ADVANCED USAGE
 
 - Using Multiple Arguments
