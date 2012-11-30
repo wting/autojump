@@ -6,7 +6,7 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     --purge             deletes database entries that no longer exist on system
 
-    -s, --stat              show database entries and their key weights
+    -s, --stat          show database entries and their key weights
 
     --version           show version information and exit
 
@@ -67,7 +67,8 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     Let's assume the following database:
 
-        30   /home/user/mail/inbox 10   /home/user/work/inbox
+        30   /home/user/mail/inbox
+        10   /home/user/work/inbox
 
     `j in` would jump into /home/user/mail/inbox as the higher weighted entry.
     However you can pass multiple arguments to autojump to prefer a different
