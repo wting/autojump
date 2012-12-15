@@ -34,7 +34,7 @@ import re
 import shutil
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v21.1.4'
+VERSION = 'release-v21.2.0'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'

@@ -2,13 +2,18 @@
 # Summary of release changes, see commit history for more details:
 # https://github.com/joelthelion/autojump/commits/master/
 
-* Release v21.1:
+* Release v21.2.0:
+
+	- Add `jc` command (jump child). Jumps to a subdirectory of the current
+	working directory.
+
+* Release v21.1.0:
 
   - install.sh is rewritten to add support for --path and --destdir options,
   making it easier for package maintainers to install autojump specifically into
   certain locations. Thanks to jjk-jacky for his contributions.
 
-* Release v21:
+* Release v21.0.0:
 
   - New mailing list for developer discussion and announcements:
 
@@ -83,7 +88,7 @@
 
   - Miscellaneous refactoring, bug fixes, documentation updates.
 
-* Release v20:
+* Release v20.0.0:
 
   - Python versions supported is now v2.7+ and v3.2+ due to rewrite using
   argparse.
@@ -112,13 +117,13 @@
 
   - Miscellaneous bug fixes.
 
-* Release v19:
+* Release v19.0.0:
 
   - prototype `cp` and `mv` directory tab completion
   - Debian post-installation instructions
   - minor Mac OS X fixes
 
-* Release v18:
+* Release v18.0.0:
 
   - add automated version numbering
   - performance tweaks to reduce filesystem checks

@@ -4,11 +4,20 @@
 autojump - a faster way to navigate your filesystem
 .SS SYNOPSIS
 .PP
-Jump to a previously visited directory \[aq]foobar\[aq]:
+Jump to a previously visited directory that contains \[aq]foo\[aq]:
 .IP
 .nf
 \f[C]
 j\ foo
+\f[]
+.fi
+.PP
+Jump to a previously visited subdirectory of the current working
+directory:
+.IP
+.nf
+\f[C]
+jc\ bar
 \f[]
 .fi
 .PP

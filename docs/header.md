@@ -3,9 +3,13 @@
 autojump - a faster way to navigate your filesystem
 
 ## SYNOPSIS
-Jump to a previously visited directory 'foobar':
+Jump to a previously visited directory that contains 'foo':
 
     j foo
+
+Jump to a previously visited subdirectory of the current working directory:
+
+    jc bar
 
 Show all database entries and their respective key weights:
 

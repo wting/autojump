@@ -42,7 +42,7 @@ function j {
         return
     fi
 
-    local new_path="$(autojump $@)"
+    local new_path="$(autojump ${@})"
     if [ -d "${new_path}" ]; then
         echo -e "\\033[31m${new_path}\\033[0m"
         cd "${new_path}"
@@ -50,5 +50,13 @@ function j {
         echo "autojump: directory '${@}' not found"
         echo "Try \`autojump --help\` for more information."
         false
+    fi
+}
+
+function jc {
+    if [[ ${@} == -* ]]; then
+        j ${@}
+    else
+        j $(pwd) ${@}
     fi
 }
