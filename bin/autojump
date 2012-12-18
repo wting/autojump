@@ -356,6 +356,9 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
 
             # collisions: ignore lower weight paths
             if end not in end_dirs and (os.path.exists(d[0]) or TESTING):
+                # avoid jumping to current directory
+                if current_dir == os.path.realpath(d[0]):
+                    continue
                 end_dirs[end] = d[0]
 
         # find the first match (heighest weight)
