@@ -380,7 +380,7 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
         if found and (os.path.exists(path) or TESTING):
             # avoid jumping to current directory
             # (call out to realpath this late to not stat all dirs)
-            if current_dir == decode(os.path.realpath(path)) :
+            if current_dir == os.path.realpath(path):
                 continue
 
             if path not in results:
