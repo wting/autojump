@@ -34,7 +34,7 @@ import re
 import shutil
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v21.2.2'
+VERSION = 'release-v21.2.3'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -355,11 +355,21 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
                 end = d[0].split('/')[-1]
 
             # collisions: ignore lower weight paths
-            if end not in end_dirs and (os.path.exists(d[0]) or TESTING):
+            if end not in end_dirs:
                 end_dirs[end] = d[0]
 
         # find the first match (heighest weight)
-        found = get_close_matches(patterns[-1], end_dirs, 1, .6)
+        while True:
+            found = get_close_matches(patterns[-1], end_dirs, n=1, cutoff=.6)
+            if not found:
+                break
+            # avoid jumping to current directory
+            if (os.path.exists(found[0]) or TESTING) and \
+                current_dir != os.path.realpath(found[0]):
+                break
+            # continue with the last found directory removed
+            del end_dirs[found[0]]
+
         if found:
             found = found[0]
             results.append(end_dirs[found])
@@ -368,12 +378,6 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
             return []
 
     for path, _ in dirs:
-        # avoid jumping to current directory
-        if KEEP_SYMLINKS and current_dir == decode(os.path.realpath(path)):
-                continue
-        elif current_dir == path:
-                continue
-
         found, tmp = True, path
         for n, p in enumerate(patterns):
             # for single/last pattern, only check end of path
@@ -384,6 +388,11 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
             if not found: break
 
         if found and (os.path.exists(path) or TESTING):
+            # avoid jumping to current directory
+            # (call out to realpath this late to not stat all dirs)
+            if current_dir == os.path.realpath(path):
+                continue
+
             if path not in results:
                 results.append(path)
             if len(results) >= max_matches:
