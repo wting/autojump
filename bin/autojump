@@ -34,7 +34,7 @@ import re
 import shutil
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v21.2.1'
+VERSION = 'release-v21.2.2'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -369,8 +369,10 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
 
     for path, _ in dirs:
         # avoid jumping to current directory
-        if current_dir == decode(os.path.realpath(path)) :
-            continue
+        if KEEP_SYMLINKS and current_dir == decode(os.path.realpath(path)):
+                continue
+        elif current_dir == path:
+                continue
 
         found, tmp = True, path
         for n, p in enumerate(patterns):
@@ -455,4 +457,5 @@ def shell_utility():
     return True
 
 if __name__ == "__main__":
-    if not shell_utility(): sys.exit(1)
+    if not shell_utility():
+        sys.exit(1)
