@@ -86,7 +86,7 @@ Grab a copy of autojump:
 Run the installation script:
 
     cd autojump
-    ./install.sh [ --local ] [ --zsh ]
+    ./install.sh [ --local ]
 
 and follow on screen instructions.
 
