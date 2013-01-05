@@ -2,6 +2,11 @@
 # Summary of release changes, see commit history for more details:
 # https://github.com/joelthelion/autojump/commits/master/
 
+* Release v21.3.0:
+
+	- `jumpapplet` removed.
+	- performance improvements when using network mounts (e.g. sshfs)
+
 * Release v21.2.0:
 
 	- Add `jc` command (jump child). Jumps to a subdirectory of the current

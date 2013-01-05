@@ -242,10 +242,6 @@ KNOWN ISSUES
     `-`. If you want to jump a directory called `--music`, try using
     `j music` instead of `j   --music`.
 
--   jumpapplet (bug \#59)
-
-    Does not work in Gnome 3 shell or LDXE.
-
 FILES
 -----
 

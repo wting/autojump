@@ -54,7 +54,6 @@ if [ -d "${prefix}/share/autojump/" ]; then
     echo "Uninstalling from ${prefix} ..."
     echo
     sudo rm -rv ${prefix}/share/autojump/
-    sudo rm -v ${prefix}/bin/jumpapplet
     sudo rm -v ${prefix}/bin/autojump
     sudo rm -v ${prefix}/share/man/man1/autojump.1
     sudo rm -v /etc/profile.d/autojump.sh

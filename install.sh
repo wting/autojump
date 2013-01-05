@@ -209,7 +209,6 @@ mkdir -p ${destdir}${prefix}share/autojump/ || exit 1
 mkdir -p ${destdir}${prefix}bin/ || exit 1
 mkdir -p ${destdir}${prefix}share/man/man1/ || exit 1
 cp -v ./bin/icon.png ${destdir}${prefix}share/autojump/ || exit 1
-cp -v ./bin/jumpapplet ${destdir}${prefix}bin/ || exit 1
 cp -v ./bin/autojump ${destdir}${prefix}bin/ || exit 1
 cp -v ./bin/autojump_argparse.py ${destdir}${prefix}bin/ || exit 1
 cp -v ./docs/autojump.1 ${destdir}${prefix}share/man/man1/ || exit 1
