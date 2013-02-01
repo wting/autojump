@@ -23,8 +23,7 @@ command -v brew &>/dev/null \
     && [[ -d "`brew --prefix`/share/zsh/site-functions" ]] \
     && fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
 
-# TODO: switch this to a chpwd hook instead (2013.02.01_1319, ting)
-function autojump_preexec() {
+function autojump_chpwd() {
     if [[ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]]; then
         _PWD_ARGS=""
     else
@@ -33,8 +32,8 @@ function autojump_preexec() {
     { (autojump -a "$(pwd ${_PWD_ARGS})"&)>/dev/null 2>>|${AUTOJUMP_DATA_DIR}/.autojump_errors ; } 2>/dev/null
 }
 
-typeset -ga preexec_functions
-preexec_functions+=autojump_preexec
+typeset -ga chpwd_functions
+chpwd_functions+=autojump_chpwd
 
 function j {
     # Cannot use =~ due to MacPorts zsh v4.2, see issue #125.
