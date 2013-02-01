@@ -10,93 +10,98 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     --version           show version information and exit
 
-## INTERNAL OPTIONS
+ADVANCED USAGE
+--------------
 
-    -b, --bash          enclose directory with quotes to prevent errors
-
-    --complete          used for tab completion
-
-## ADDITIONAL CONFIGURATION
-
-- Enable ZSH Tab Completion
-
-    ZSH tab completion requires the `compinit` module to be loaded. Please add
-    the following line to your ~/.zshrc:
-
-        autoload -U compinit; compinit
-
-- Always Ignore Case
-
-    Default behavior is to prioritize exact matches over all else. For example,
-    `j foo` will prefer /foobar over /FooBar even if the latter has a higher
-    weight. To change this behavior and ignore case, add the following
-    environmental variable in your ~/.bashrc:
-
-        export AUTOJUMP_IGNORE_CASE=1
-
-- Prevent Database Entries' Decay
-
-    Default behavior is to decay unused database entries slowly over time.
-    Eventually when database limits are hit and maintenance is run, autojump
-    will purge older less used entries. To prevent decay, add the following
-    variable in your ~/.bashrc:
-
-        export AUTOJUMP_KEEP_ALL_ENTRIES=1
-
-- Prefer Symbolic Links
-
-    Default behavior is to evaluate symbolic links into full paths as to reduce
-    duplicate entries in the database. However, some users prefer a shorter
-    working directory path in their shell prompt. To switch behavior to prefer
-    symbolic links, add the following environmental variable in your ~/.bashrc:
-
-        export AUTOJUMP_KEEP_SYMLINKS=1
-
-- Autocomplete Additional Commands (Bash only)
-
-    Autojump can be used to autocomplete other commands (e.g. cp or vim). To use
-    this feature, add the following environmental variable in your ~/.bashrc:
-
-        export AUTOJUMP_AUTOCOMPLETE_CMDS='cp vim'
-
-    Changes require reloading autojump to take into effect.
-
-- Use a File Manager to Open Jumped-to Directories
-
-    You can modify your ~/.bashrc or ~/.zsh to make autojump open a directory for you. Add the following lines in your ~/.bashrc or ~/.zshrc:
-
-        function jo { xdg-open $(autojump $@); }
-        complete -F _autojump jo
-
-    If you're using Mac OS X, you can replace `xdg-open` with `open`.
-
-    After executing `source ~/.bashrc` or `source ~/.zshrc`, you can try `jo foo`, which behaves like `j foo` except that it opens the `foo` directory with a file manager.
-
-## ADVANCED USAGE
-
-- Using Multiple Arguments
+-   Using Multiple Arguments
 
     Let's assume the following database:
 
         30   /home/user/mail/inbox
         10   /home/user/work/inbox
 
-    `j in` would jump into /home/user/mail/inbox as the higher weighted entry.
-    However you can pass multiple arguments to autojump to prefer a different
-    entry. In the above example, `j w in` would then jump you into
-    /home/user/work/inbox.
+    `j in` would jump into /home/user/mail/inbox as the higher weighted
+    entry. However you can pass multiple arguments to autojump to prefer
+    a different entry. In the above example, `j w in` would then jump
+    you into /home/user/work/inbox.
 
-- ZSH Tab Completion
+-   Jump to a Child Directory.
 
-    Tab completion requires two tabs before autojump will display the completion
-    menu. However if `setopt nolistambiguous` is enabled, then only one tab is
-    required.
+    Sometimes it's convenient to jump to a child directory (sub-directory of
+    current directory) rather than typing out the full name.
 
-- Change Directory Weight
+        jc images
+
+-   Open File Manager To Directories (instead of jumping)
+
+    Instead of jumping to a directory, you can open a file explorer window (Mac
+    Finder, Windows Explorer, GNOME Nautilus, etc) to the directory instead.
+
+        jo music
+
+    Opening a file manager to a child directory is also supported.
+
+        jco images
+
+-   ZSH Tab Completion
+
+    Tab completion requires two tabs before autojump will display the
+    completion menu. However if `setopt nolistambiguous` is enabled,
+    then only one tab is required.
+
+ADDITIONAL CONFIGURATION
+------------------------
+
+-   Enable ZSH Tab Completion
+
+    ZSH tab completion requires the `compinit` module to be loaded.
+    Please add the following line to your \~/.zshrc:
+
+        autoload -U compinit; compinit
+
+-   Always Ignore Case
+
+    Default behavior is to prioritize exact matches over all else. For
+    example, `j foo` will prefer /foobar over /FooBar even if the latter
+    has a higher weight. To change this behavior and ignore case, add
+    the following environmental variable in your \~/.bashrc:
+
+        export AUTOJUMP_IGNORE_CASE=1
+
+-   Prevent Database Entries' Decay
+
+    Default behavior is to decay unused database entries slowly over
+    time. Eventually when database limits are hit and maintenance is
+    run, autojump will purge older less used entries. To prevent decay,
+    add the following variable in your \~/.bashrc:
+
+        export AUTOJUMP_KEEP_ALL_ENTRIES=1
+
+-   Prefer Symbolic Links
+
+    Default behavior is to evaluate symbolic links into full paths as to
+    reduce duplicate entries in the database. However, some users prefer
+    a shorter working directory path in their shell prompt. To switch
+    behavior to prefer symbolic links, add the following environmental
+    variable in your \~/.bashrc:
+
+        export AUTOJUMP_KEEP_SYMLINKS=1
+
+-   Autocomplete Additional Commands (Bash only)
+
+    Autojump can be used to autocomplete other commands (e.g. cp or
+    vim). To use this feature, add the following environmental variable
+    in your \~/.bashrc:
+
+        export AUTOJUMP_AUTOCOMPLETE_CMDS='cp vim'
+
+    Changes require reloading autojump to take into effect.
+
+-   Change Directory Weight
 
     To manually change a directory's key weight, you can edit the file
-    _$XDG_DATA_HOME/autojump/autojump.txt_. Each entry has two columns. The
-    first is the key weight and the second is the path:
+    *$XDG\_DATA\_HOME/autojump/autojump.txt*. Each entry has two
+    columns. The first is the key weight and the second is the path:
 
         29.3383211216   /home/user/downloads
 

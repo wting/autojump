@@ -138,12 +138,46 @@ Options must be passed to 'autojump' and not the 'j' wrapper function.
 
     --version           show version information and exit
 
-INTERNAL OPTIONS
-----------------
+ADVANCED USAGE
+--------------
 
-    -b, --bash          enclose directory with quotes to prevent errors
+-   Using Multiple Arguments
 
-    --complete          used for tab completion
+    Let's assume the following database:
+
+        30   /home/user/mail/inbox
+        10   /home/user/work/inbox
+
+    `j in` would jump into /home/user/mail/inbox as the higher weighted
+    entry. However you can pass multiple arguments to autojump to prefer
+    a different entry. In the above example, `j w in` would then jump
+    you into /home/user/work/inbox.
+
+-   Jump to a Child Directory.
+
+    Sometimes it's convenient to jump to a child directory
+    (sub-directory of current directory) rather than typing out the full
+    name.
+
+        jc images
+
+-   Open File Manager To Directories (instead of jumping)
+
+    Instead of jumping to a directory, you can open a file explorer
+    window (Mac Finder, Windows Explorer, GNOME Nautilus, etc) to the
+    directory instead.
+
+        jo music
+
+    Opening a file manager to a child directory is also supported.
+
+        jco images
+
+-   ZSH Tab Completion
+
+    Tab completion requires two tabs before autojump will display the
+    completion menu. However if `setopt nolistambiguous` is enabled,
+    then only one tab is required.
 
 ADDITIONAL CONFIGURATION
 ------------------------
@@ -192,46 +226,6 @@ ADDITIONAL CONFIGURATION
         export AUTOJUMP_AUTOCOMPLETE_CMDS='cp vim'
 
     Changes require reloading autojump to take into effect.
-
-
-ADVANCED USAGE
---------------
-
--   Open File Manager To Directories (instead of jumping)
-
-    Instead of jumping to a directory, you can open a file explorer window (Mac
-    Finder, Windows Explorer, GNOME Nautilus, etc) to the directory instead.
-
-        jo music
-
--   Jump to a Child Directory.
-
-    Sometimes it's convenient to jump to a child directory (sub-directory of
-    current directory) rather than typing out the full name.
-
-        jc images
-
-    Opening a file manager to a child directory is also supported.
-
-        jco images
-
--   Using Multiple Arguments
-
-    Let's assume the following database:
-
-        30   /home/user/mail/inbox
-        10   /home/user/work/inbox
-
-    `j in` would jump into /home/user/mail/inbox as the higher weighted
-    entry. However you can pass multiple arguments to autojump to prefer
-    a different entry. In the above example, `j w in` would then jump
-    you into /home/user/work/inbox.
-
--   ZSH Tab Completion
-
-    Tab completion requires two tabs before autojump will display the
-    completion menu. However if `setopt nolistambiguous` is enabled,
-    then only one tab is required.
 
 -   Change Directory Weight
 
