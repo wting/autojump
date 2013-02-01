@@ -217,6 +217,7 @@ cp -v ./bin/autojump.sh ${destdir}etc/profile.d/ || exit 1
 cp -v ./bin/autojump.bash ${destdir}etc/profile.d/ || exit 1
 cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/ || exit 1
 mkdir -p ${destdir}${zshsharedir} || exit 1
+# TODO: remove unused _j function (2013.02.01_1348, ting)
 install -v -m 0755 ./bin/_j ${destdir}${zshsharedir} || exit 1
 
 # MODIFY AUTOJUMP.SH FOR CUSTOM INSTALLS

@@ -23,6 +23,7 @@ command -v brew &>/dev/null \
     && [[ -d "`brew --prefix`/share/zsh/site-functions" ]] \
     && fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
 
+# TODO: switch this to a chpwd hook instead (2013.02.01_1319, ting)
 function autojump_preexec() {
     if [[ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]]; then
         _PWD_ARGS=""
@@ -37,6 +38,7 @@ preexec_functions+=autojump_preexec
 
 function j {
     # Cannot use =~ due to MacPorts zsh v4.2, see issue #125.
+    echo "j()"
     if [[ ${@} == -* ]]; then
         autojump ${@}
         return
@@ -54,9 +56,35 @@ function j {
 }
 
 function jc {
+    echo "j()"
     if [[ ${@} == -* ]]; then
         j ${@}
     else
         j $(pwd) ${@}
+    fi
+}
+
+function jo {
+    case ${OSTYPE} in
+        linux-gnu)
+            xdg-open $(autojump $@)
+            ;;
+        darwin*)
+            open $(autojump $@)
+            ;;
+        cygwin)
+            cmd /C start "" $(cygpath -w -a $(pwd))
+            ;;
+        *)
+            echo "Unknown operating system." 1>&2
+            ;;
+    esac
+}
+
+function jco {
+    if [[ ${@} == -* ]]; then
+        j ${@}
+    else
+        jo $(pwd) ${@}
     fi
 }

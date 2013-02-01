@@ -93,3 +93,28 @@ function jc {
         j $(pwd) ${@}
     fi
 }
+
+function jo {
+    case ${OSTYPE} in
+        linux-gnu)
+            xdg-open $(autojump $@)
+            ;;
+        darwin*)
+            open $(autojump $@)
+            ;;
+        cygwin)
+            cmd /C start "" $(cygpath -w -a $(pwd))
+            ;;
+        *)
+            echo "Unknown operating system." 1>&2
+            ;;
+    esac
+}
+
+function jco {
+    if [[ ${@} == -* ]]; then
+        j ${@}
+    else
+        jo $(pwd) ${@}
+    fi
+}
