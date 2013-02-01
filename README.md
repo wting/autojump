@@ -193,23 +193,27 @@ ADDITIONAL CONFIGURATION
 
     Changes require reloading autojump to take into effect.
 
--   Use a File Manager to Open Jumped-to Directories
-
-    You can modify your \~/.bashrc or \~/.zsh to make autojump open a
-    directory for you. Add the following lines in your \~/.bashrc or
-    \~/.zshrc:
-
-        function jo { xdg-open $(autojump $@); }
-        complete -F _autojump jo
-
-    If you're using Mac OS X, you can replace `xdg-open` with `open`.
-
-    After executing `source ~/.bashrc` or `source ~/.zshrc`, you can try
-    `jo foo`, which behaves like `j foo` except that it opens the `foo`
-    directory with a file manager.
 
 ADVANCED USAGE
 --------------
+
+-   Open File Manager To Directories (instead of jumping)
+
+    Instead of jumping to a directory, you can open a file explorer window (Mac
+    Finder, Windows Explorer, GNOME Nautilus, etc) to the directory instead.
+
+        jo music
+
+-   Jump to a Child Directory.
+
+    Sometimes it's convenient to jump to a child directory (sub-directory of
+    current directory) rather than typing out the full name.
+
+        jc images
+
+    Opening a file manager to a child directory is also supported.
+
+        jco images
 
 -   Using Multiple Arguments
 
