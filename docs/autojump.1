@@ -140,6 +140,28 @@ export\ AUTOJUMP_AUTOCOMPLETE_CMDS=\[aq]cp\ vim\[aq]
 .PP
 Changes require reloading autojump to take into effect.
 .RE
+.IP \[bu] 2
+Use a File Manager to Open Jumped-to Directories
+.RS 2
+.PP
+You can modify your ~/.bashrc or ~/.zsh to make autojump open a
+directory for you.
+Add the following lines in your ~/.bashrc or ~/.zshrc:
+.IP
+.nf
+\f[C]
+function\ jo\ {\ xdg-open\ $(autojump\ $\@);\ }
+complete\ -F\ _autojump\ jo
+\f[]
+.fi
+.PP
+If you\[aq]re using Mac OS X, you can replace \f[C]xdg-open\f[] with
+\f[C]open\f[].
+.PP
+After executing \f[C]source\ ~/.bashrc\f[] or \f[C]source\ ~/.zshrc\f[],
+you can try \f[C]jo\ foo\f[], which behaves like \f[C]j\ foo\f[] except
+that it opens the \f[C]foo\f[] directory with a file manager.
+.RE
 .SS ADVANCED USAGE
 .IP \[bu] 2
 Using Multiple Arguments

@@ -86,7 +86,7 @@ Grab a copy of autojump:
 Run the installation script:
 
     cd autojump
-    ./install.sh [ --local ]
+    ./install.sh [ --local ] [ --zsh ]
 
 and follow on screen instructions.
 
@@ -192,6 +192,21 @@ ADDITIONAL CONFIGURATION
         export AUTOJUMP_AUTOCOMPLETE_CMDS='cp vim'
 
     Changes require reloading autojump to take into effect.
+
+-   Use a File Manager to Open Jumped-to Directories
+
+    You can modify your \~/.bashrc or \~/.zsh to make autojump open a
+    directory for you. Add the following lines in your \~/.bashrc or
+    \~/.zshrc:
+
+        function jo { xdg-open $(autojump $@); }
+        complete -F _autojump jo
+
+    If you're using Mac OS X, you can replace `xdg-open` with `open`.
+
+    After executing `source ~/.bashrc` or `source ~/.zshrc`, you can try
+    `jo foo`, which behaves like `j foo` except that it opens the `foo`
+    directory with a file manager.
 
 ADVANCED USAGE
 --------------
