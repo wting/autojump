@@ -100,10 +100,10 @@ function jc {
 function jo {
     case ${OSTYPE} in
         linux-gnu)
-            xdg-open $(autojump $@)
+            xdg-open "$(autojump $@)"
             ;;
         darwin*)
-            open $(autojump $@)
+            open "$(autojump $@)"
             ;;
         cygwin)
             cmd /C start "" $(cygpath -w -a $(pwd))
