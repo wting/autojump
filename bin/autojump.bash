@@ -93,7 +93,7 @@ function jc {
     if [[ ${@} == -* ]]; then
         j ${@}
     else
-        j $(pwd) ${@}
+        j $(pwd)/ ${@}
     fi
 }
 
