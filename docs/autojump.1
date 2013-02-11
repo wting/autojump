@@ -124,11 +124,12 @@ Enable ZSH Tab Completion
 .RS 2
 .PP
 ZSH tab completion requires the \f[C]compinit\f[] module to be loaded.
-Please add the following line to your ~/.zshrc:
+Please add the following line to your ~/.zshrc \f[I]after\f[] loading
+autojump:
 .IP
 .nf
 \f[C]
-autoload\ -U\ compinit;\ compinit
+autoload\ -U\ compinit\ &&\ compinit
 \f[]
 .fi
 .RE

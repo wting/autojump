@@ -55,9 +55,9 @@ ADDITIONAL CONFIGURATION
 -   Enable ZSH Tab Completion
 
     ZSH tab completion requires the `compinit` module to be loaded.
-    Please add the following line to your \~/.zshrc:
+    Please add the following line to your \~/.zshrc *after* loading autojump:
 
-        autoload -U compinit; compinit
+        autoload -U compinit && compinit
 
 -   Always Ignore Case
 
