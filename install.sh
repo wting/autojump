@@ -3,12 +3,13 @@
 function help_msg {
     echo "./install.sh [OPTION..]"
     echo
-    echo " -a, --auto           Try to determine destdir, prefix"
+    echo " -a, --auto           Try to determine destdir, prefix (and zshshare if applicable)"
     echo " -g, --global         Use default global settings (destdir=/; prefix=usr)"
     echo " -l, --local          Use default local settings (destdir=~/.autojump)"
     echo
     echo " -d, --destdir PATH   Set install destination to PATH"
     echo " -p, --prefix PATH    Use PATH as prefix"
+    echo " -Z, --zshshare PATH  Use PATH as zsh share destination"
     echo
     echo " -f, --force          Ignore Python version check"
     echo " -n, --dry_run        Only show installation paths, don't install anything"
@@ -19,6 +20,11 @@ function help_msg {
     echo ' Documentation:   $destdir$prefix/share/man/man1'
     echo ' Icon:            $destdir$prefix/share/autojump'
     echo ' Shell scripts:   $destdir/etc/profile.d'
+    echo ' zsh functions:   $destdir$zshsharedir'
+    echo
+    echo 'Unless specified, $zshshare will be :'
+    echo ' - $destdir$prefix/functions for local installations'
+    echo ' - $destdir$prefix/share/zsh/site-functions for all other installations'
 }
 
 dry_run=
@@ -28,6 +34,7 @@ force=
 shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
 destdir=
 prefix="usr/local"
+zshsharedir=
 
 # If no arguments passed, default to --auto.
 if [[ ${#} == 0 ]]; then
@@ -91,6 +98,14 @@ while true; do
                 exit 1
             fi
             ;;
+        -Z|--zshshare)
+            if [ $# -gt 1 ]; then
+                zshsharedir=$2; shift 2
+            else
+                echo "--zshshare or -Z requires an argument" 1>&2
+                exit 1
+            fi
+            ;;
         --)
             shift
             break
@@ -137,6 +152,18 @@ if [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]]; then
     exit 1
 fi
 
+# zsh functions
+if [[ $shell == "zsh" ]]; then
+    if [[ -z $zshsharedir ]]; then
+        # if not set, use a default
+        if [[ $local ]]; then
+            zshsharedir="${prefix}functions"
+        else
+            zshsharedir="${prefix}share/zsh/site-functions"
+        fi
+    fi
+fi
+
 # check Python version
 if [ ! ${force} ]; then
     python_version=`python -c 'import sys; print(sys.version_info[:])'`
@@ -167,6 +194,9 @@ echo "Binary:           ${destdir}${prefix}bin/"
 echo "Documentation:    ${destdir}${prefix}share/man/man1/"
 echo "Icon:             ${destdir}${prefix}share/autojump/"
 echo "Shell scripts:    ${destdir}etc/profile.d/"
+if [[ -z $shell ]] || [[ $shell == "zsh" ]]; then
+    echo "zsh functions:    ${destdir}${zshsharedir}"
+fi
 echo
 
 if [[ $dry_run ]]; then
@@ -186,6 +216,9 @@ mkdir -p ${destdir}etc/profile.d/ || exit 1
 cp -v ./bin/autojump.sh ${destdir}etc/profile.d/ || exit 1
 cp -v ./bin/autojump.bash ${destdir}etc/profile.d/ || exit 1
 cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/ || exit 1
+mkdir -p ${destdir}${zshsharedir} || exit 1
+# TODO: remove unused _j function (2013.02.01_1348, ting)
+install -v -m 0755 ./bin/_j ${destdir}${zshsharedir} || exit 1
 
 # MODIFY AUTOJUMP.SH FOR CUSTOM INSTALLS
 if [[ -z ${local} ]] && [[ -z ${global} ]]; then
