@@ -377,6 +377,7 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
         else:
             return []
 
+    current_dir_match = False
     for path, _ in dirs:
         found, tmp = True, path
         for n, p in enumerate(patterns):
@@ -391,12 +392,18 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
             # avoid jumping to current directory
             # (call out to realpath this late to not stat all dirs)
             if current_dir == os.path.realpath(path):
+                current_dir_match = True
                 continue
 
             if path not in results:
                 results.append(path)
             if len(results) >= max_matches:
                 break
+
+    # if current directory is the only match, add it to results
+    if len(results) == 0 and current_dir_match:
+        results.append(current_dir)
+
     return results
 
 def shell_utility():
