@@ -98,20 +98,26 @@ function jc {
 }
 
 function jo {
-    case ${OSTYPE} in
-        linux-gnu)
-            xdg-open "$(autojump $@)"
-            ;;
-        darwin*)
-            open "$(autojump $@)"
-            ;;
-        cygwin)
-            cmd /C start "" $(cygpath -w -a $(pwd))
-            ;;
-        *)
-            echo "Unknown operating system." 1>&2
-            ;;
-    esac
+    if [ -z $(autojump $@) ]; then
+        echo "autojump: directory '${@}' not found"
+        echo "Try \`autojump --help\` for more information."
+        false
+    else
+        case ${OSTYPE} in
+            linux-gnu)
+                xdg-open "$(autojump $@)"
+                ;;
+            darwin*)
+                open "$(autojump $@)"
+                ;;
+            cygwin)
+                cmd /C start "" $(cygpath -w -a $(pwd))
+                ;;
+            *)
+                echo "Unknown operating system." 1>&2
+                ;;
+        esac
+    fi
 }
 
 function jco {
