@@ -37,7 +37,6 @@ chpwd_functions+=autojump_chpwd
 
 function j {
     # Cannot use =~ due to MacPorts zsh v4.2, see issue #125.
-    echo "j()"
     if [[ ${@} == -* ]]; then
         autojump ${@}
         return
@@ -55,7 +54,6 @@ function j {
 }
 
 function jc {
-    echo "j()"
     if [[ ${@} == -* ]]; then
         j ${@}
     else
