@@ -59,6 +59,11 @@ ADDITIONAL CONFIGURATION
 
         autoload -U compinit && compinit
 
+    For security compinit checks completion system if files will be owned by
+    root or the current user. This check can be ignored by using the -u flag:
+
+        autoload -U compinit && compinit -u
+
 -   Always Ignore Case
 
     Default behavior is to prioritize exact matches over all else. For

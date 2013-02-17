@@ -132,6 +132,16 @@ autojump:
 autoload\ -U\ compinit\ &&\ compinit
 \f[]
 .fi
+.PP
+For security compinit checks completion system if files will be owned by
+root or the current user.
+This check can be ignored by using the -u flag:
+.IP
+.nf
+\f[C]
+autoload\ -U\ compinit\ &&\ compinit\ -u
+\f[]
+.fi
 .RE
 .IP \[bu] 2
 Always Ignore Case
