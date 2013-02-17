@@ -140,12 +140,6 @@ For any usage related issues or feature requests please visit:
 
 _https://github.com/joelthelion/autojump/issues_
 
-## MAILING LIST
-
-For release announcements and development related discussion please visit:
-
-_https://groups.google.com/forum/?fromgroups#!forum/autojump_
-
 ## THANKS
 
 Special thanks goes out to: Pierre Gueth, Simon Marache-Francisco, Daniel

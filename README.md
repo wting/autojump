@@ -276,14 +276,6 @@ For any usage related issues or feature requests please visit:
 
 *https://github.com/joelthelion/autojump/issues*
 
-MAILING LIST
-------------
-
-For release announcements and development related discussion please
-visit:
-
-*https://groups.google.com/forum/?fromgroups\#!forum/autojump*
-
 THANKS
 ------
 
