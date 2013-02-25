@@ -34,7 +34,7 @@ import re
 import shutil
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v21.5.1'
+VERSION = 'release-v21.5.2'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -297,8 +297,11 @@ def options():
         dirs.sort(key=itemgetter(1))
         for path, count in dirs[-100:]:
             output(unico("%.1f:\t%s") % (count, path))
-        print("Total key weight: %d. Number of stored dirs: %d" %
-                (sum(db.data.values()), len(dirs)))
+
+        print("________________________________________\n")
+        print("%d:\t total key weight" % sum(db.data.values()))
+        print("%d:\t stored directories" % len(dirs))
+        print("db file: %s" % DB_FILE)
         return True
     return False
 
