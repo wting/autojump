@@ -239,14 +239,15 @@ def options():
             directory passed as an argument.',
             epilog="Please see autojump(1) man pages for full documentation.")
     parser.add_argument(
-            'directory', metavar='DIR', nargs='*', default='',
+            'directory', metavar='DIRECTORY', nargs='*', default='',
             help='directory to jump to')
     parser.add_argument(
-            '-a', '--add', '--increase', metavar='DIR',
+            '-a', '--add', '--increase', metavar='DIRECTORY',
             help='manually add path to database, or increase path weight for \
             existing paths')
     parser.add_argument(
-            '-d', '--decrease', nargs='?', type=int, const=15, default=False,
+            '-d', '--decrease', metavar='WEIGHT', nargs='?', type=int,
+            const=15, default=False,
             help='manually decrease path weight in database')
     parser.add_argument(
             '-b', '--bash', action="store_true", default=False,
