@@ -34,7 +34,7 @@ import re
 import shutil
 from tempfile import NamedTemporaryFile
 
-VERSION = 'release-v21.5.0'
+VERSION = 'release-v21.5.1'
 MAX_KEYWEIGHT = 1000
 MAX_STORED_PATHS = 1000
 COMPLETION_SEPARATOR = '__'
@@ -48,19 +48,23 @@ TESTING = False
 if 'AUTOJUMP_DATA_DIR' in os.environ:
     CONFIG_DIR = os.environ.get('AUTOJUMP_DATA_DIR')
 else:
-    xdg_data_dir = os.environ.get('XDG_DATA_HOME') or os.path.join(os.environ['HOME'], '.local', 'share')
+    xdg_data_dir = os.environ.get('XDG_DATA_HOME') or \
+        os.path.join(os.environ['HOME'], '.local', 'share')
     CONFIG_DIR = os.path.join(xdg_data_dir, 'autojump')
 
 KEEP_ALL_ENTRIES = False
-if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ and os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == '1':
+if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ and \
+        os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == '1':
     KEEP_ALL_ENTRIES = True
 
 ALWAYS_IGNORE_CASE = False
-if 'AUTOJUMP_IGNORE_CASE' in os.environ and os.environ.get('AUTOJUMP_IGNORE_CASE') == '1':
+if 'AUTOJUMP_IGNORE_CASE' in os.environ and \
+        os.environ.get('AUTOJUMP_IGNORE_CASE') == '1':
     ALWAYS_IGNORE_CASE = True
 
 KEEP_SYMLINKS = False
-if 'AUTOJUMP_KEEP_SYMLINKS' in os.environ and os.environ.get('AUTOJUMP_KEEP_SYMLINKS') == '1':
+if 'AUTOJUMP_KEEP_SYMLINKS' in os.environ and \
+        os.environ.get('AUTOJUMP_KEEP_SYMLINKS') == '1':
     KEEP_SYMLINKS = True
 
 if CONFIG_DIR == os.path.expanduser('~'):
@@ -190,7 +194,8 @@ class Database:
                     reverse=True):
                 temp.write((unico("%s\t%s\n")%(weight, path)).encode("utf-8"))
 
-            # catching disk errors and skipping save when file handle can't be closed.
+            # catching disk errors and skipping save when file handle can't
+            # be closed.
             try:
                 # http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/
                 temp.flush()
@@ -205,7 +210,8 @@ class Database:
             try: # backup file
                 import time
                 if (not os.path.exists(self.filename+".bak") or
-                        time.time()-os.path.getmtime(self.filename+".bak") > 86400):
+                        time.time()-os.path.getmtime(self.filename+".bak") \
+                                > 86400):
                     shutil.copy(self.filename, self.filename+".bak")
             except OSError as ex:
                 print("Error while creating backup autojump file. (%s)" %
@@ -228,28 +234,40 @@ def options():
     """
     global ARGS
 
-    parser = argparse.ArgumentParser(description='Automatically jump to directory passed as an argument.',
+    parser = argparse.ArgumentParser(
+            description='Automatically jump to \
+            directory passed as an argument.',
             epilog="Please see autojump(1) man pages for full documentation.")
-    parser.add_argument('directory', metavar='DIR', nargs='*', default='',
+    parser.add_argument(
+            'directory', metavar='DIR', nargs='*', default='',
             help='directory to jump to')
-    parser.add_argument('-a', '--add', '--increase', metavar='DIR',
-            help='manually add path to database, or increase path weight for existing paths')
-    parser.add_argument('-d', '--decrease', nargs='?', type=int, const=15, default=False,
+    parser.add_argument(
+            '-a', '--add', '--increase', metavar='DIR',
+            help='manually add path to database, or increase path weight for \
+            existing paths')
+    parser.add_argument(
+            '-d', '--decrease', nargs='?', type=int, const=15, default=False,
             help='manually decrease path weight in database')
-    parser.add_argument('-b', '--bash', action="store_true", default=False,
+    parser.add_argument(
+            '-b', '--bash', action="store_true", default=False,
             help='enclose directory quotes to prevent errors')
-    parser.add_argument('--complete', action="store_true", default=False,
+    parser.add_argument(
+            '--complete', action="store_true", default=False,
             help='used for tab completion')
-    parser.add_argument('--purge', action="store_true", default=False,
+    parser.add_argument(
+            '--purge', action="store_true", default=False,
             help='delete all database entries that no longer exist on system')
-    parser.add_argument('-s', '--stat', action="store_true", default=False,
+    parser.add_argument(
+            '-s', '--stat', action="store_true", default=False,
             help='show database entries and their key weights')
-    parser.add_argument('-v', '--version', action="version", version="%(prog)s " + VERSION,
+    parser.add_argument(
+            '-v', '--version', action="version", version="%(prog)s " + VERSION,
             help='show version information and exit')
 
     ARGS = parser.parse_args()
 
-    # The home dir can be reached quickly by "cd" and may interfere with other directories
+    # The home dir can be reached quickly by "cd" and may interfere with other
+    # directories
     if (ARGS.add):
         if(ARGS.add != os.path.expanduser("~")):
             db = Database(DB_FILE)
@@ -353,7 +371,8 @@ def match(path, pattern, only_end=False, ignore_case=False):
 
 def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
     """
-    Find max_matches paths that match the pattern, and add them to the result_list.
+    Find max_matches paths that match the pattern, and add them to the
+    result_list.
     """
     try:
         current_dir = decode(os.path.realpath(os.curdir))
