@@ -83,7 +83,7 @@ class Database:
 
     def add(self, path, increment = 10):
         """
-        Increment existing paths or initialize new ones to 10.
+        Increase wheight of existing paths or initialize new ones to 10.
         """
         if path not in self.data:
             self.data[path] = increment
@@ -91,6 +91,15 @@ class Database:
             import math
             self.data[path] = math.sqrt((self.data[path]**2)+(increment**2))
         self.save()
+
+    def decrease(self, path, increment=10):
+        """
+        Decrease wheight of existing path. Unknown ones are ignored.
+        """
+        if path in self.data:
+            import math
+            self.data[path] = math.sqrt((self.data[path] ** 2) - (increment ** 2))
+            self.save()
 
     def decay(self):
         """
@@ -221,8 +230,10 @@ def options():
             epilog="Please see autojump(1) man pages for full documentation.")
     parser.add_argument('directory', metavar='DIR', nargs='*', default='',
             help='directory to jump to')
-    parser.add_argument('-a', '--add', metavar='DIR',
-            help='manually add path to database')
+    parser.add_argument('-a', '--add', '--increase', metavar='DIR',
+            help='manually add path to database, or increase path weight for existing paths')
+    parser.add_argument('-d', '--decrease', metavar='DIR',
+            help='manually decrease path weight in the database')
     parser.add_argument('-b', '--bash', action="store_true", default=False,
             help='enclose directory quotes to prevent errors')
     parser.add_argument('--complete', action="store_true", default=False,
@@ -241,6 +252,12 @@ def options():
         if(ARGS.add != os.path.expanduser("~")):
             db = Database(DB_FILE)
             db.add(decode(ARGS.add))
+        return True
+
+    if (ARGS.decrease):
+        if(ARGS.decrease != os.path.expanduser("~")):
+            db = Database(DB_FILE)
+            db.decrease(ARGS.decrease)
         return True
 
     if (ARGS.purge):
