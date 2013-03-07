@@ -33,7 +33,7 @@ if [[ -n ${AUTOJUMP_AUTOCOMPLETE_CMDS} ]]; then
 fi
 
 #determine the data directory according to the XDG Base Directory Specification
-if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} =~ ${USER} ]]; then
+if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} = ${USER} ]]; then
     export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
 else
     export AUTOJUMP_DATA_DIR=~/.local/share/autojump
@@ -73,7 +73,7 @@ case $PROMPT_COMMAND in
 esac
 
 function j {
-    if [[ ${@} =~ ^-{1,2}.* ]]; then
+    if [[ ${@} = -* ]]; then
         autojump ${@}
         return
     fi
