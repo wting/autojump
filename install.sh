@@ -49,6 +49,13 @@ if [[ ${#} == 1 ]] && ([[ $1 = "-n" ]] || [[ $1 = "--dry-run" ]]); then
     set -- "-n" "--auto"
 fi
 
+# `install` isn't supported on Windows
+if which install; then
+    install="install -v -m 0755"
+else
+    install="cp -r"
+fi
+
 # Command line parsing
 while true; do
     case "$1" in
@@ -229,7 +236,7 @@ cp -v ./bin/autojump.bash "${destdir}etc/profile.d/" || exit 1
 cp -v ./bin/autojump.zsh "${destdir}etc/profile.d/" || exit 1
 mkdir -p "${destdir}${zshsharedir}" || exit 1
 # TODO: remove unused _j function (2013.02.01_1348, ting)
-install -v -m 0755 ./bin/_j "${destdir}${zshsharedir}" || exit 1
+${install} ./bin/_j "${destdir}${zshsharedir}" || exit 1
 
 # MODIFY AUTOJUMP.SH FOR CUSTOM INSTALLS
 if [[ -z ${local} ]] && [[ -z ${global} ]]; then
