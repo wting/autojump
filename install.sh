@@ -11,6 +11,9 @@ function help_msg {
     echo " -p, --prefix PATH    Use PATH as prefix"
     echo " -Z, --zshshare PATH  Use PATH as zsh share destination"
     echo
+    echo " -b, --bash           Assume shell is bash"
+    echo " -z, --zsh            Assume shell is zsh"
+    echo
     echo " -f, --force          Ignore Python version check"
     echo " -n, --dry_run        Only show installation paths, don't install anything"
     echo
@@ -56,6 +59,10 @@ while true; do
                 set -- "--local" "${@:2}"
             fi
             ;;
+        -b|--bash)
+            shell="bash"
+            shift
+            ;;
         -d|--destdir)
             if [ $# -gt 1 ]; then
                 destdir=$2; shift 2
@@ -97,6 +104,10 @@ while true; do
                 echo "--prefix or -p requires an argument" 1>&2
                 exit 1
             fi
+            ;;
+        -z|--zsh)
+            shell="zsh"
+            shift
             ;;
         -Z|--zshshare)
             if [ $# -gt 1 ]; then
