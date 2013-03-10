@@ -272,7 +272,11 @@ def options():
     if (ARGS.add):
         if(ARGS.add != os.path.expanduser("~")):
             db = Database(DB_FILE)
-            db.add(decode(ARGS.add))
+            path = decode(ARGS.add)
+            if os.path.exists(path):
+                db.add(os.path.abspath(path))
+            else:
+                db.add(path)
         return True
 
     if (ARGS.decrease):
