@@ -89,6 +89,7 @@ class Database:
         """
         Increase weight of existing paths or initialize new ones to 10.
         """
+        path = path.rstrip(os.sep)
         if path not in self.data:
             self.data[path] = increment
         else:
