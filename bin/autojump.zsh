@@ -75,7 +75,7 @@ function jo {
                 open "$(autojump $@)"
                 ;;
             cygwin)
-                cmd /C start "" $(cygpath -w -a $(pwd))
+                cygstart "" $(cygpath -w -a $(pwd))
                 ;;
             *)
                 echo "Unknown operating system." 1>&2
