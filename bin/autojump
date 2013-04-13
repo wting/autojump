@@ -193,7 +193,7 @@ class Database:
             for path, weight in sorted(self.data.items(),
                     key=itemgetter(1),
                     reverse=True):
-                temp.write((unico("%s\t%s\n")%(weight, path)).encode("utf-8"))
+                temp.write((unico("%s\t%s\n" % (weight, path)).encode("utf-8")))
 
             # catching disk errors and skipping save when file handle can't
             # be closed.
