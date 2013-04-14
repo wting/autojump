@@ -173,7 +173,7 @@ class Database:
         Deletes all entries that no longer exist on system.
         """
         removed = []
-        for path in self.data.keys():
+        for path in list(self.data.keys()):
             if not os.path.exists(path):
                 removed.append(path)
                 del self.data[path]
