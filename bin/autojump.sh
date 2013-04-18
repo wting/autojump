@@ -2,8 +2,12 @@
 
 shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
 
+# prevent circular loop for sh shells
+if [ "${shell}" == "sh" ]; then
+	exit 0
+
 # check local install
-if [ -s ~/.autojump/etc/profile.d/autojump.${shell} ]; then
+elif [ -s ~/.autojump/etc/profile.d/autojump.${shell} ]; then
 	source ~/.autojump/etc/profile.d/autojump.${shell}
 
 # check global install
