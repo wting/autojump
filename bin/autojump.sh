@@ -3,8 +3,8 @@
 shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
 
 # prevent circular loop for sh shells
-if [ "${shell}" == "sh" ]; then
-	exit 0
+if [ "${shell}" = "sh" ]; then
+	return 0
 
 # check local install
 elif [ -s ~/.autojump/etc/profile.d/autojump.${shell} ]; then
