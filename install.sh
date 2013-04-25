@@ -222,7 +222,8 @@ install -v -m 0755 ./bin/_j ${destdir}${zshsharedir} || exit 1
 
 # MODIFY AUTOJUMP.SH FOR CUSTOM INSTALLS
 if [[ -z ${local} ]] && [[ -z ${global} ]]; then
-    sed -i "s:/destdir_.*_install:${destdir}etc/profile.d:g" ${destdir}etc/profile.d/autojump.sh
+    sed -i "s:#custom#\t::g" ${destdir}etc/profile.d/autojump.sh
+    sed -i "s:destdir_install\t:${destdir}etc/profile.d:g" ${destdir}etc/profile.d/autojump.sh
 fi
 
 # DISPLAY ADD MESSAGE

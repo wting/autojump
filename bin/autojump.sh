@@ -15,7 +15,7 @@ elif [ -s /etc/profile.d/autojump.${shell} ]; then
 	source /etc/profile.d/autojump.${shell}
 
 # check custom install locations (modified by Homebrew or using --destdir option)
-elif [ -s /destdir_${RANDOM}_install/autojump.${shell} ]; then
-	source /destdir_${RANDOM}_install/autojump.${shell}
+#custom#	elif [ -s destdir_install/autojump.${shell} ]; then
+#custom#		source destdir_install/autojump.${shell}
 
 fi
