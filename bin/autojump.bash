@@ -60,7 +60,7 @@ fi
 
 autojump_add_to_database() {
     if [[ "${AUTOJUMP_HOME}" == "${HOME}" ]]; then
-        autojump -a "$(pwd ${_PWD_ARGS})" 1>/dev/null 2>>"${AUTOJUMP_DATA_DIR}/.autojump_errors"
+        autojump -a "$(pwd ${_PWD_ARGS})" 1>/dev/null 2>>"${AUTOJUMP_DATA_DIR}/autojump_errors"
     fi
 }
 
