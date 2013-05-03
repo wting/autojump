@@ -11,6 +11,9 @@ function help_msg {
     echo " -p, --prefix PATH    Use PATH as prefix"
     echo " -Z, --zshshare PATH  Use PATH as zsh share destination"
     echo
+    echo " -b, --bash           Assume shell is bash"
+    echo " -z, --zsh            Assume shell is zsh"
+    echo
     echo " -f, --force          Ignore Python version check"
     echo " -n, --dry_run        Only show installation paths, don't install anything"
     echo
@@ -46,6 +49,13 @@ if [[ ${#} == 1 ]] && ([[ $1 = "-n" ]] || [[ $1 = "--dry-run" ]]); then
     set -- "-n" "--auto"
 fi
 
+# `install` isn't supported on Windows
+if which install; then
+    install="install -v -m 0755"
+else
+    install="cp -r"
+fi
+
 # Command line parsing
 while true; do
     case "$1" in
@@ -55,6 +65,10 @@ while true; do
             else
                 set -- "--local" "${@:2}"
             fi
+            ;;
+        -b|--bash)
+            shell="bash"
+            shift
             ;;
         -d|--destdir)
             if [ $# -gt 1 ]; then
@@ -97,6 +111,10 @@ while true; do
                 echo "--prefix or -p requires an argument" 1>&2
                 exit 1
             fi
+            ;;
+        -z|--zsh)
+            shell="zsh"
+            shift
             ;;
         -Z|--zshshare)
             if [ $# -gt 1 ]; then
@@ -205,20 +223,20 @@ if [[ $dry_run ]]; then
 fi
 
 # INSTALL AUTOJUMP
-mkdir -p ${destdir}${prefix}share/autojump/ || exit 1
-mkdir -p ${destdir}${prefix}bin/ || exit 1
-mkdir -p ${destdir}${prefix}share/man/man1/ || exit 1
-cp -v ./bin/icon.png ${destdir}${prefix}share/autojump/ || exit 1
-cp -v ./bin/autojump ${destdir}${prefix}bin/ || exit 1
-cp -v ./bin/autojump_argparse.py ${destdir}${prefix}bin/ || exit 1
-cp -v ./docs/autojump.1 ${destdir}${prefix}share/man/man1/ || exit 1
-mkdir -p ${destdir}etc/profile.d/ || exit 1
-cp -v ./bin/autojump.sh ${destdir}etc/profile.d/ || exit 1
-cp -v ./bin/autojump.bash ${destdir}etc/profile.d/ || exit 1
-cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/ || exit 1
-mkdir -p ${destdir}${zshsharedir} || exit 1
+mkdir -p "${destdir}${prefix}share/autojump/" || exit 1
+mkdir -p "${destdir}${prefix}bin/" || exit 1
+mkdir -p "${destdir}${prefix}share/man/man1/" || exit 1
+cp -v ./bin/icon.png "${destdir}${prefix}share/autojump/" || exit 1
+cp -v ./bin/autojump "${destdir}${prefix}bin/" || exit 1
+cp -v ./bin/autojump_argparse.py "${destdir}${prefix}bin/" || exit 1
+cp -v ./docs/autojump.1 "${destdir}${prefix}share/man/man1/" || exit 1
+mkdir -p "${destdir}etc/profile.d/" || exit 1
+cp -v ./bin/autojump.sh "${destdir}etc/profile.d/" || exit 1
+cp -v ./bin/autojump.bash "${destdir}etc/profile.d/" || exit 1
+cp -v ./bin/autojump.zsh "${destdir}etc/profile.d/" || exit 1
+mkdir -p "${destdir}${zshsharedir}" || exit 1
 # TODO: remove unused _j function (2013.02.01_1348, ting)
-install -v -m 0755 ./bin/_j ${destdir}${zshsharedir} || exit 1
+${install} ./bin/_j "${destdir}${zshsharedir}" || exit 1
 
 # MODIFY AUTOJUMP.SH FOR CUSTOM INSTALLS
 if [[ -z ${local} ]] && [[ -z ${global} ]]; then
