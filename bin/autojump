@@ -30,6 +30,7 @@ except ImportError:
     sys.path.pop()
 
 import collections
+import difflib
 import math
 import operator
 import os
@@ -387,22 +388,22 @@ def match(path, pattern, only_end=False, ignore_case=False):
     else:
         return (False, path[find_idx+len(pattern):])
 
-def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
+def find_matches(config, db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
     """
-    Find max_matches paths that match the pattern, and add them to the
-    result_list.
+    Find paths matching patterns up to max_matches.
     """
     try:
         current_dir = decode(os.path.realpath(os.curdir))
     except OSError:
         current_dir = None
 
-    dirs = list(db.data.items())
-    dirs.sort(key=operator.itemgetter(1), reverse=True)
+    dirs = sorted(db.data.items(), key=operator.itemgetter(1), reverse=True)
     results = []
-    if fuzzy:
-        from difflib import get_close_matches
 
+    if ignore_case:
+        patterns = [p.lower() for p in patterns]
+
+    if fuzzy:
         # create dictionary of end paths to compare against
         end_dirs = {}
         for d in dirs:
@@ -417,11 +418,11 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
 
         # find the first match (heighest weight)
         while True:
-            found = get_close_matches(patterns[-1], end_dirs, n=1, cutoff=.6)
+            found = difflib.get_close_matches(patterns[-1], end_dirs, n=1, cutoff=.6)
             if not found:
                 break
             # avoid jumping to current directory
-            if (os.path.exists(found[0]) or TESTING) and \
+            if (os.path.exists(found[0]) or config['debug']) and \
                 current_dir != os.path.realpath(found[0]):
                 break
             # continue with the last found directory removed
@@ -445,7 +446,7 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
                 found, tmp = match(tmp, p, False, ignore_case)
             if not found: break
 
-        if found and (os.path.exists(path) or TESTING):
+        if found and (os.path.exists(path) or config['debug']):
             # avoid jumping to current directory
             # (call out to realpath this late to not stat all dirs)
             if current_dir == os.path.realpath(path):
@@ -465,64 +466,66 @@ def find_matches(db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
 
 def main():
     config = parse_arg(parse_env(set_defaults()))
-    db = Database(config['db'], config)
+    db = Database(config)
 
     # if no directories, add empty string
-    if (ARGS.directory == ''):
-        patterns = [unico('')]
+    if config['args'].directory:
+        patterns = [decode(a) for a in config['args'].directory]
     else:
-        patterns = [decode(a) for a in ARGS.directory]
+        patterns = [unico('')]
 
     # check last pattern for full path
     # FIXME: disabled until zsh tab completion is fixed on the shell side
-    # if match_last(patterns): return True
+    # if match_last(patterns):
+        # return True
 
     # check for tab completion
     tab_choice = -1
-    tab_match = re.search(COMPLETION_SEPARATOR+"([0-9]+)", patterns[-1])
+    tab_match = re.search(config['separator']+"([0-9]+)", patterns[-1])
     if tab_match: # user has selected a tab completion entry
         tab_choice = int(tab_match.group(1))
-        patterns[-1] = re.sub(COMPLETION_SEPARATOR+"[0-9]+.*", "", patterns[-1])
+        patterns[-1] = re.sub(config['separator']+"[0-9]+.*", "", patterns[-1])
     else: # user hasn't selected a tab completion, display choices again
-        tab_match = re.match("(.*)"+COMPLETION_SEPARATOR, patterns[-1])
+        tab_match = re.match("(.*)"+config['separator'], patterns[-1])
         if tab_match:
             patterns[-1] = tab_match.group(1)
 
     # on tab completion always show all results
-    if ARGS.complete or tab_choice != -1:
+    if config['args'].complete or tab_choice != -1:
         max_matches = 9
     else:
         max_matches = 1
 
     results = []
-    if not ALWAYS_IGNORE_CASE:
-        results = find_matches(db, patterns, max_matches, ignore_case=False)
+    if not config['ignore_case']:
+        results = find_matches(config, db, patterns, max_matches, ignore_case=False)
 
     # if no results, try ignoring case
-    if ARGS.complete or not results:
-        results = find_matches(db, patterns, max_matches, ignore_case=True)
+    if config['args'].complete or not results:
+        results = find_matches(config, db, patterns, max_matches, ignore_case=True)
 
     # if no results, try approximate matching
     if not results:
-        results = find_matches(db, patterns, max_matches, ignore_case=True,
+        results = find_matches(config, db, patterns, max_matches, ignore_case=True,
                 fuzzy=True)
 
     quotes = ""
-    if ARGS.complete and ARGS.bash: quotes = "'"
+    if config['args'].complete and config['args'].bash:
+        quotes = "'"
 
     if tab_choice != -1:
         if len(results) > tab_choice-1:
             output(unico("%s%s%s") % (quotes,results[tab_choice-1],quotes))
-    elif len(results) > 1 and ARGS.complete:
+    elif len(results) > 1 and config['args'].complete:
         output("\n".join(("%s%s%d%s%s" % (patterns[-1],
-            COMPLETION_SEPARATOR, n+1, COMPLETION_SEPARATOR, r)
+            config['separator'], n+1, config['separator'], r)
             for n, r in enumerate(results[:8]))))
     elif results:
         output(unico("%s%s%s")%(quotes,results[0],quotes))
     else:
-        return False
+        return 1
 
-    if not KEEP_ALL_ENTRIES:
+    if not config['keep_entries']:
         db.maintenance()
 
     return 0
