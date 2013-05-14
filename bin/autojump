@@ -305,13 +305,14 @@ def parse_arg(config):
         sys.exit(0)
 
     if (args.stat):
-        for path, weight in sorted(db.data, key=db.data.get)[-100:]:
+        for path, weight in sorted(db.data.items(),
+                key=operator.itemgetter(1))[-100:]:
             output(unico("%.1f:\t%s") % (weight, path))
 
         print("________________________________________\n")
         print("%d:\t total key weight" % sum(db.data.values()))
-        print("%d:\t stored directories" % len(dirs))
-        print("db file: %s" % DB_FILE)
+        print("%d:\t stored directories" % len(db.data))
+        print("db file: %s" % config['db'])
 
         sys.exit(0)
 
