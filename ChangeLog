@@ -2,6 +2,24 @@
 # Summary of release changes, see commit history for more details:
 # https://github.com/joelthelion/autojump/commits/master/
 
+* Release v21.5.8:
+
+	- fix security bug:
+	http://www.openwall.com/lists/oss-security/2013/04/25/14
+	- minor documentation updates, optimization performances, bug fixes
+
+* Release v21.5.1:
+
+	- add options to manually increase or decrease weight of the current
+	directory with --increase or --decrease
+	- add `_j` back, necessary for zsh tab completion
+
+* Release v21.4.2:
+
+	- add options to open file explorer windows with `jo`, `jco` which
+	maps to jump open, jump child open.
+	- remove `_j`
+
 * Release v21.3.0:
 
 	- `jumpapplet` removed.
