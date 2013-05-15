@@ -37,7 +37,7 @@ import os
 import re
 import shutil
 import sys
-from tempfile import NamedTemporaryFile
+import tempfile
 
 class Database:
     """
@@ -165,7 +165,9 @@ class Database:
         if ((not os.path.exists(self.filename)) or
                 os.name == 'nt' or
                 os.getuid() == os.stat(self.filename)[4]):
-            temp = NamedTemporaryFile(dir=self.config['data'], delete=False)
+            temp = tempfile.NamedTemporaryFile(dir=self.config['data'],
+                    delete=False)
+
             for path, weight in sorted(self.data.items(),
                     key=operator.itemgetter(1),
                     reverse=True):
