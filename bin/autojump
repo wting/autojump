@@ -233,8 +233,7 @@ def parse_env(config):
 
 def parse_arg(config):
     parser = argparse.ArgumentParser(
-            description='Automatically jump to \
-            directory passed as an argument.',
+            description='Automatically jump to directory passed as an argument.',
             epilog="Please see autojump(1) man pages for full documentation.")
     parser.add_argument(
             'directory', metavar='DIRECTORY', nargs='*', default='',
@@ -445,9 +444,9 @@ def main():
     config = parse_arg(parse_env(set_defaults()))
     db = Database(config)
 
-    # if no directories, add empty string
+    # checking command line directory arguments
     if config['args'].directory:
-        patterns = [decode(a) for a in config['args'].directory]
+        patterns = [decode(d) for d in config['args'].directory]
     else:
         patterns = [unico('')]
 
@@ -462,7 +461,7 @@ def main():
         if tab_match:
             patterns[-1] = tab_match.group(1)
 
-    # on tab completion always show all results
+    # on tab completion show max results
     if config['args'].complete or tab_choice != -1:
         max_matches = 9
     else:
@@ -473,7 +472,7 @@ def main():
         results = find_matches(config, db, patterns, max_matches, ignore_case=False)
 
     # if no results, try ignoring case
-    if config['args'].complete or not results:
+    if not results or config['args'].complete:
         results = find_matches(config, db, patterns, max_matches, ignore_case=True)
 
     # if no results, try approximate matching
@@ -487,13 +486,13 @@ def main():
 
     if tab_choice != -1:
         if len(results) > tab_choice-1:
-            output(unico("%s%s%s") % (quotes,results[tab_choice-1],quotes))
+            output(unico("%s%s%s") % (quotes, results[tab_choice-1], quotes))
     elif len(results) > 1 and config['args'].complete:
         output("\n".join(("%s%s%d%s%s" % (patterns[-1],
             config['separator'], n+1, config['separator'], r)
             for n, r in enumerate(results[:8]))))
     elif results:
-        output(unico("%s%s%s")%(quotes,results[0],quotes))
+        output(unico("%s%s%s")%(quotes, results[0], quotes))
     else:
         return 1
 
