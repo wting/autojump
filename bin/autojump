@@ -289,7 +289,7 @@ def parse_arg(config):
 
         if len(removed):
             for dir in removed:
-                output(unico(dir))
+                output(dir)
 
         print("Number of database entries removed: %d" % len(removed))
 
@@ -298,7 +298,7 @@ def parse_arg(config):
     if args.stat:
         for path, weight in sorted(db.data.items(),
                 key=operator.itemgetter(1))[-100:]:
-            output(unico("%.1f:\t%s") % (weight, path))
+            output("%.1f:\t%s" % (weight, path))
 
         print("________________________________________\n")
         print("%d:\t total key weight" % sum(db.data.values()))
@@ -322,17 +322,24 @@ def decode(text, encoding=None, errors="strict"):
             encoding = sys.getfilesystemencoding()
         return text.decode(encoding, errors)
 
-def output(unicode_text, encoding=None):
+def output_quotes(config, text):
+    quotes = ""
+    if config['args'].complete and config['args'].bash:
+        quotes = "'"
+
+    output("%s%s%s" % (quotes, text, quotes))
+
+def output(text, encoding=None):
     """
     Wrapper for the print function, using the filesystem encoding by default
     to minimize encoding mismatch problems in directory names.
     """
     if sys.version_info[0] > 2:
-        print(unicode_text)
+        print(text)
     else:
         if encoding is None:
             encoding = sys.getfilesystemencoding()
-        print(unicode_text.encode(encoding))
+        print(unicode(text).encode(encoding))
 
 def unico(text):
     """
@@ -480,19 +487,13 @@ def main():
         results = find_matches(config, db, patterns, max_matches, ignore_case=True,
                 fuzzy=True)
 
-    quotes = ""
-    if config['args'].complete and config['args'].bash:
-        quotes = "'"
-
-    if tab_choice != -1:
-        if len(results) > tab_choice-1:
-            output(unico("%s%s%s") % (quotes, results[tab_choice-1], quotes))
+    if tab_choice and len(results) > (tab_choice-1):
+        output_quotes(results[tab_choice-1])
     elif len(results) > 1 and config['args'].complete:
-        output("\n".join(("%s%s%d%s%s" % (patterns[-1],
-            config['separator'], n+1, config['separator'], r)
-            for n, r in enumerate(results[:8]))))
+        for n, r in enumerate(results[:9]):
+            output_quotes('%s%s%d%s%s\n' % (patterns[-1], sep, n+1, sep, r))
     elif results:
-        output(unico("%s%s%s")%(quotes, results[0], quotes))
+        output_quotes(results[0])
     else:
         return 1
 
