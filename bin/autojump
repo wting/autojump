@@ -211,7 +211,7 @@ class Database:
 def set_defaults():
     config = {}
 
-    config['version'] = 'release-v21.6.2'
+    config['version'] = 'release-v21.6.3'
     config['max_weight'] = 1000
     config['max_paths'] = 1000
     config['separator'] = '__'
@@ -364,21 +364,6 @@ def unico(text):
     else:
         return unicode(text)
 
-def match_last(config, pattern):
-    """
-    If the last pattern contains a full path, jump there.
-    The regexp is because we need to support stuff like
-    "j wo jo__3__/home/joel/workspace/joel" for zsh.
-    """
-    last_pattern_path = re.sub("(.*)"+config['separator'], "", pattern[-1])
-    if (len(last_pattern_path) > 0 and
-            last_pattern_path[0] == "/" and
-            os.path.exists(last_pattern_path)):
-        if not config['args'].complete:
-            output(last_pattern_path)
-            return True
-    return False
-
 def match(path, pattern, only_end=False, ignore_case=False):
     """
     Check whether a path matches a particular pattern, and return
@@ -485,11 +470,6 @@ def main():
         patterns = [decode(a) for a in config['args'].directory]
     else:
         patterns = [unico('')]
-
-    # check last pattern for full path
-    # FIXME: disabled until zsh tab completion is fixed on the shell side
-    # if match_last(config, patterns):
-        # return True
 
     # check for tab completion
     tab_choice = -1
