@@ -211,7 +211,7 @@ class Database:
 def set_defaults():
     config = {}
 
-    config['version'] = 'release-v21.6.1'
+    config['version'] = 'release-v21.6.2'
     config['max_weight'] = 1000
     config['max_paths'] = 1000
     config['separator'] = '__'
