@@ -467,13 +467,16 @@ def main():
         patterns = [unico('')]
 
     # check for tab completion
-    tab_choice = -1
-    tab_match = re.search(config['separator']+"([0-9]+)", patterns[-1])
-    if tab_match: # user has selected a tab completion entry
+    tab_choice = None
+    tab_match = re.search(sep+'([0-9]+)', patterns[-1])
+
+    # user has selected a tab completion entry
+    if tab_match:
         tab_choice = int(tab_match.group(1))
-        patterns[-1] = re.sub(config['separator']+"[0-9]+.*", "", patterns[-1])
-    else: # user hasn't selected a tab completion, display choices again
-        tab_match = re.match("(.*)"+config['separator'], patterns[-1])
+        patterns[-1] = re.sub(sep+'[0-9]+.*', '', patterns[-1])
+    # user hasn't selected a tab completion, display choices again
+    else:
+        tab_match = re.match('(.*)'+sep, patterns[-1])
         if tab_match:
             patterns[-1] = tab_match.group(1)
 
