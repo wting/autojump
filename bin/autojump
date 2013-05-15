@@ -205,6 +205,7 @@ def set_defaults():
     config['ignore_case'] = False
     config['keep_symlinks'] = False
     config['debug'] = False
+    config['match_cnt'] = 1
 
     xdg_data = os.environ.get('XDG_DATA_HOME') or \
             os.path.join(config['home'], '.local', 'share')
@@ -308,6 +309,10 @@ def parse_arg(config):
         print("\ndb file: %s" % config['db'])
         sys.exit(0)
 
+    if args.complete:
+        config['match_cnt'] = 9
+        config['ignore_case'] = True
+
     config['args'] = args
     return config
 
@@ -371,7 +376,7 @@ def match(path, pattern, only_end=False, ignore_case=False):
     else:
         return (False, path[find_idx+len(pattern):])
 
-def find_matches(config, db, patterns, max_matches=1, ignore_case=False, fuzzy=False):
+def find_matches(config, db, patterns, ignore_case=False, fuzzy=False):
     """
     Find paths matching patterns up to max_matches.
     """
@@ -438,7 +443,8 @@ def find_matches(config, db, patterns, max_matches=1, ignore_case=False, fuzzy=F
 
             if path not in results:
                 results.append(path)
-            if len(results) >= max_matches:
+
+            if len(results) >= config['match_cnt']:
                 break
 
     # if current directory is the only match, add it to results
@@ -449,6 +455,7 @@ def find_matches(config, db, patterns, max_matches=1, ignore_case=False, fuzzy=F
 
 def main():
     config = parse_arg(parse_env(set_defaults()))
+    sep = config['separator']
     db = Database(config)
 
     # checking command line directory arguments
@@ -468,23 +475,16 @@ def main():
         if tab_match:
             patterns[-1] = tab_match.group(1)
 
-    # on tab completion show max results
-    if config['args'].complete or tab_choice != -1:
-        max_matches = 9
-    else:
-        max_matches = 1
-
-    results = []
-    if not config['ignore_case']:
-        results = find_matches(config, db, patterns, max_matches, ignore_case=False)
+    results = find_matches(config, db, patterns,
+            ignore_case=config['ignore_case'])
 
     # if no results, try ignoring case
-    if not results or config['args'].complete:
-        results = find_matches(config, db, patterns, max_matches, ignore_case=True)
+    if not results and not config['ignore_case']:
+        results = find_matches(config, db, patterns, ignore_case=True)
 
     # if no results, try approximate matching
     if not results:
-        results = find_matches(config, db, patterns, max_matches, ignore_case=True,
+        results = find_matches(config, db, patterns, ignore_case=True,
                 fuzzy=True)
 
     if tab_choice and len(results) > (tab_choice-1):
