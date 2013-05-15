@@ -475,9 +475,9 @@ def main():
         config['match_cnt'] = 9
         tab_choice = int(tab_match.group(1))
         patterns[-1] = re.sub(sep+r'[0-9]+.*', '', patterns[-1])
-    # user hasn't selected a tab completion, display choices again
     else:
         tab_match = re.match(r'(.*)'+sep, patterns[-1])
+        # partial tab match, display choices again
         if tab_match:
             config['match_cnt'] = 9
             patterns[-1] = tab_match.group(1)
@@ -498,8 +498,8 @@ def main():
         output_quotes(config, results[tab_choice-1])
     elif len(results) > 1 and config['args'].complete:
         for n, r in enumerate(results[:9]):
-            output_quotes(config, '%s%s%d%s%s' % (patterns[-1], sep, n+1,
-                sep, r))
+            output_quotes(config, '%s%s%d%s%s' %
+                    (patterns[-1], sep, n+1, sep, r))
     elif results:
         output_quotes(config, results[0])
     else:
