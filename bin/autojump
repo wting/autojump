@@ -125,8 +125,16 @@ class Database:
 
     def maintenance(self):
         """
-        If database has exceeded max_paths, remove bottom 10% entries.
+        Decay weights by 10%, periodically remove bottom 10% entries.
         """
+        try:
+            items = self.data.iteritems()
+        except AttributeError:
+            items = self.data.items()
+
+        for path, _ in items:
+            self.data[path] *= 0.9
+
         if len(self.data) > self.config['max_paths']:
             remove_cnt = int(0.1 * len(self.data))
             for path in sorted(self.data, key=self.data.get)[:remove_cnt]:
@@ -189,7 +197,7 @@ class Database:
 def set_defaults():
     config = {}
 
-    config['version'] = 'release-v21.6.4'
+    config['version'] = 'release-v21.6.5'
     config['max_paths'] = 1000
     config['separator'] = '__'
     config['home'] = os.path.expanduser('HOME')
