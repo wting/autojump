@@ -1,9 +1,5 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-"""
-    Tests autojump.
-"""
-
 from __future__ import division
 import autojump
 import contextlib

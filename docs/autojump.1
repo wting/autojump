@@ -12,8 +12,7 @@ j\ foo
 \f[]
 .fi
 .PP
-Jump to a previously visited subdirectory of the current working
-directory:
+Jump to a previously visited subdirectory of the current directory:
 .IP
 .nf
 \f[C]
@@ -21,7 +20,7 @@ jc\ bar
 \f[]
 .fi
 .PP
-Show all database entries and their respective key weights:
+Show database entries and their respective key weights:
 .IP
 .nf
 \f[C]
@@ -33,8 +32,6 @@ j\ --stat
 autojump is a faster way to navigate your filesystem.
 It works by maintaining a database of the directories you use the most
 from the command line.
-The \f[C]j\ --stat\f[] command shows you the current contents of the
-database.
 Directories must be visited first before they can be jumped to.
 .SS OPTIONS
 .PP
@@ -43,11 +40,13 @@ wrapper function.
 .IP
 .nf
 \f[C]
--a,\ --add\ DIR\ \ \ \ \ \ \ manually\ add\ path\ to\ database
+-i,\ --increase\ \ \ \ \ \ manually\ increase\ current\ directory\ weight
+
+-d,\ --decrease\ \ \ \ \ \ manually\ decrease\ current\ directory\ weight
 
 --purge\ \ \ \ \ \ \ \ \ \ \ \ \ deletes\ database\ entries\ that\ no\ longer\ exist\ on\ system
 
--s,\ --stat\ \ \ \ \ \ \ \ \ \ show\ database\ entries\ and\ their\ key\ weights
+-s,\ --stat\ \ \ \ \ \ \ \ \ \ show\ general\ stats\ and\ top\ 100\ database\ entries
 
 --version\ \ \ \ \ \ \ \ \ \ \ show\ version\ information\ and\ exit
 \f[]
@@ -74,7 +73,7 @@ In the above example, \f[C]j\ w\ in\f[] would then jump you into
 /home/user/work/inbox.
 .RE
 .IP \[bu] 2
-Jump to a Child Directory.
+Jump To A Child Directory.
 .RS 2
 .PP
 Sometimes it\[aq]s convenient to jump to a child directory
@@ -109,15 +108,6 @@ jco\ images
 \f[]
 .fi
 .RE
-.IP \[bu] 2
-ZSH Tab Completion
-.RS 2
-.PP
-Tab completion requires two tabs before autojump will display the
-completion menu.
-However if \f[C]setopt\ nolistambiguous\f[] is enabled, then only one
-tab is required.
-.RE
 .SS ADDITIONAL CONFIGURATION
 .IP \[bu] 2
 Enable ZSH Tab Completion
@@ -142,6 +132,11 @@ This check can be ignored by using the -u flag:
 autoload\ -U\ compinit\ &&\ compinit\ -u
 \f[]
 .fi
+.PP
+Tab completion requires two tabs before autojump will display the
+completion menu.
+However if \f[C]setopt\ nolistambiguous\f[] is enabled, then only one
+tab is required.
 .RE
 .IP \[bu] 2
 Always Ignore Case
@@ -207,23 +202,6 @@ export\ AUTOJUMP_AUTOCOMPLETE_CMDS=\[aq]cp\ vim\[aq]
 .fi
 .PP
 Changes require reloading autojump to take into effect.
-.RE
-.IP \[bu] 2
-Change Directory Weight
-.RS 2
-.PP
-To manually change a directory\[aq]s key weight, you can edit the file
-\f[I]$XDG_DATA_HOME/autojump/autojump.txt\f[].
-Each entry has two columns.
-The first is the key weight and the second is the path:
-.IP
-.nf
-\f[C]
-29.3383211216\ \ \ /home/user/downloads
-\f[]
-.fi
-.PP
-All negative key weights are purged automatically.
 .RE
 .SS KNOWN ISSUES
 .IP \[bu] 2

@@ -10,12 +10,11 @@ Jump to a previously visited directory that contains 'foo':
 
     j foo
 
-Jump to a previously visited subdirectory of the current working
-directory:
+Jump to a previously visited subdirectory of the current directory:
 
     jc bar
 
-Show all database entries and their respective key weights:
+Show database entries and their respective key weights:
 
     j --stat
 
@@ -24,8 +23,7 @@ DESCRIPTION
 
 autojump is a faster way to navigate your filesystem. It works by
 maintaining a database of the directories you use the most from the
-command line. The `j --stat` command shows you the current contents of
-the database. Directories must be visited first before they can be
+command line. Directories must be visited first before they can be
 jumped to.
 
 INSTALLATION
@@ -130,11 +128,13 @@ OPTIONS
 
 Options must be passed to 'autojump' and not the 'j' wrapper function.
 
-    -a, --add DIR       manually add path to database
+    -i, --increase      manually increase current directory weight
+
+    -d, --decrease      manually decrease current directory weight
 
     --purge             deletes database entries that no longer exist on system
 
-    -s, --stat          show database entries and their key weights
+    -s, --stat          show general stats and top 100 database entries
 
     --version           show version information and exit
 
@@ -153,7 +153,7 @@ ADVANCED USAGE
     a different entry. In the above example, `j w in` would then jump
     you into /home/user/work/inbox.
 
--   Jump to a Child Directory.
+-   Jump To A Child Directory.
 
     Sometimes it's convenient to jump to a child directory
     (sub-directory of current directory) rather than typing out the full
@@ -173,12 +173,6 @@ ADVANCED USAGE
 
         jco images
 
--   ZSH Tab Completion
-
-    Tab completion requires two tabs before autojump will display the
-    completion menu. However if `setopt nolistambiguous` is enabled,
-    then only one tab is required.
-
 ADDITIONAL CONFIGURATION
 ------------------------
 
@@ -195,6 +189,10 @@ ADDITIONAL CONFIGURATION
     using the -u flag:
 
         autoload -U compinit && compinit -u
+
+    Tab completion requires two tabs before autojump will display the
+    completion menu. However if `setopt nolistambiguous` is enabled,
+    then only one tab is required.
 
 -   Always Ignore Case
 
@@ -233,16 +231,6 @@ ADDITIONAL CONFIGURATION
         export AUTOJUMP_AUTOCOMPLETE_CMDS='cp vim'
 
     Changes require reloading autojump to take into effect.
-
--   Change Directory Weight
-
-    To manually change a directory's key weight, you can edit the file
-    *$XDG\_DATA\_HOME/autojump/autojump.txt*. Each entry has two
-    columns. The first is the key weight and the second is the path:
-
-        29.3383211216   /home/user/downloads
-
-    All negative key weights are purged automatically.
 
 KNOWN ISSUES
 ------------
