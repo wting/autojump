@@ -7,9 +7,6 @@ fi
 
 if [[ ! -e ${AUTOJUMP_DATA_DIR} ]]; then
     mkdir -p "${AUTOJUMP_DATA_DIR}"
-    mv ${HOME}/.autojump_py "${AUTOJUMP_DATA_DIR}/autojump_py" 2>>/dev/null #migration
-    mv ${HOME}/.autojump_py.bak "${AUTOJUMP_DATA_DIR}/autojump_py.bak" 2>>/dev/null
-    mv ${HOME}/.autojump_errors "${AUTOJUMP_DATA_DIR}/autojump_errors" 2>>/dev/null
 fi
 
 # set paths if necessary for local installations
