@@ -199,7 +199,7 @@ class Database:
 def set_defaults():
     config = {}
 
-    config['version'] = 'release-v21.6.5'
+    config['version'] = 'release-v21.6.6'
     config['max_paths'] = 1000
     config['separator'] = '__'
     config['home'] = os.path.expanduser('HOME')
@@ -468,16 +468,18 @@ def main():
 
     # check for tab completion
     tab_choice = None
-    tab_match = re.search(sep+'([0-9]+)', patterns[-1])
+    tab_match = re.search(sep+r'([0-9]+)', patterns[-1])
 
     # user has selected a tab completion entry
     if tab_match:
+        config['match_cnt'] = 9
         tab_choice = int(tab_match.group(1))
-        patterns[-1] = re.sub(sep+'[0-9]+.*', '', patterns[-1])
+        patterns[-1] = re.sub(sep+r'[0-9]+.*', '', patterns[-1])
     # user hasn't selected a tab completion, display choices again
     else:
-        tab_match = re.match('(.*)'+sep, patterns[-1])
+        tab_match = re.match(r'(.*)'+sep, patterns[-1])
         if tab_match:
+            config['match_cnt'] = 9
             patterns[-1] = tab_match.group(1)
 
     results = find_matches(config, db, patterns,
@@ -496,7 +498,7 @@ def main():
         output_quotes(config, results[tab_choice-1])
     elif len(results) > 1 and config['args'].complete:
         for n, r in enumerate(results[:9]):
-            output_quotes(config, '%s%s%d%s%s\n' % (patterns[-1], sep, n+1,
+            output_quotes(config, '%s%s%d%s%s' % (patterns[-1], sep, n+1,
                 sep, r))
     elif results:
         output_quotes(config, results[0])
