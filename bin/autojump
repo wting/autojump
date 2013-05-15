@@ -493,12 +493,13 @@ def main():
                 fuzzy=True)
 
     if tab_choice and len(results) > (tab_choice-1):
-        output_quotes(results[tab_choice-1])
+        output_quotes(config, results[tab_choice-1])
     elif len(results) > 1 and config['args'].complete:
         for n, r in enumerate(results[:9]):
-            output_quotes('%s%s%d%s%s\n' % (patterns[-1], sep, n+1, sep, r))
+            output_quotes(config, '%s%s%d%s%s\n' % (patterns[-1], sep, n+1,
+                sep, r))
     elif results:
-        output_quotes(results[0])
+        output_quotes(config, results[0])
     else:
         return 1
 
