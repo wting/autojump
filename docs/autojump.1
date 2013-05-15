@@ -155,21 +155,6 @@ export\ AUTOJUMP_IGNORE_CASE=1
 .fi
 .RE
 .IP \[bu] 2
-Prevent Database Entries\[aq] Decay
-.RS 2
-.PP
-Default behavior is to decay unused database entries slowly over time.
-Eventually when database limits are hit and maintenance is run, autojump
-will purge older less used entries.
-To prevent decay, add the following variable in your ~/.bashrc:
-.IP
-.nf
-\f[C]
-export\ AUTOJUMP_KEEP_ALL_ENTRIES=1
-\f[]
-.fi
-.RE
-.IP \[bu] 2
 Prefer Symbolic Links
 .RS 2
 .PP

@@ -203,15 +203,6 @@ ADDITIONAL CONFIGURATION
 
         export AUTOJUMP_IGNORE_CASE=1
 
--   Prevent Database Entries' Decay
-
-    Default behavior is to decay unused database entries slowly over
-    time. Eventually when database limits are hit and maintenance is
-    run, autojump will purge older less used entries. To prevent decay,
-    add the following variable in your \~/.bashrc:
-
-        export AUTOJUMP_KEEP_ALL_ENTRIES=1
-
 -   Prefer Symbolic Links
 
     Default behavior is to evaluate symbolic links into full paths as to

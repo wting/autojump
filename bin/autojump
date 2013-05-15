@@ -83,18 +83,6 @@ class Database:
 
         self.save()
 
-    def decay(self):
-        """
-        Decay database entries.
-        """
-        try:
-            items = self.data.iteritems()
-        except AttributeError:
-            items = self.data.items()
-
-        for path, _ in items:
-            self.data[path] *= 0.9
-
     def get_weight(self, path):
         """
         Return path weight.
@@ -137,14 +125,14 @@ class Database:
 
     def maintenance(self):
         """
-        Trims and decays database entries when exceeding settings.
+        If database has exceeded max_paths, remove bottom 10% entries.
         """
-        if sum(self.data.values()) > self.config['max_weight']:
-            self.decay()
         if len(self.data) > self.config['max_paths']:
-            self.trim()
+            remove_cnt = int(0.1 * len(self.data))
+            for path in sorted(self.data, key=self.data.get)[:remove_cnt]:
+                del self.data[path]
 
-        self.save()
+            self.save()
 
     def purge(self):
         """
@@ -198,27 +186,15 @@ class Database:
                 print("Error while creating backup autojump file. (%s)" %
                         ex, file=sys.stderr)
 
-    def trim(self, percent=0.1):
-        """
-        If database has exceeded MAX_STORED_PATHS, removes bottom 10%.
-        """
-        dirs = list(self.data.items())
-        dirs.sort(key=operator.itemgetter(1))
-        remove_cnt = int(percent * len(dirs))
-        for path, _ in dirs[:remove_cnt]:
-            del self.data[path]
-
 def set_defaults():
     config = {}
 
-    config['version'] = 'release-v21.6.3'
-    config['max_weight'] = 1000
+    config['version'] = 'release-v21.6.4'
     config['max_paths'] = 1000
     config['separator'] = '__'
     config['home'] = os.path.expanduser('HOME')
 
     config['ignore_case'] = False
-    config['keep_entries'] = False
     config['keep_symlinks'] = False
     config['debug'] = False
 
@@ -236,10 +212,6 @@ def parse_env(config):
 
     if config['data'] == config['home']:
         config['db'] = config['data'] + '/.autojump.txt'
-
-    if 'AUTOJUMP_KEEP_ALL_ENTRIES' in os.environ and \
-            os.environ.get('AUTOJUMP_KEEP_ALL_ENTRIES') == '1':
-        config['keep_entries'] = True
 
     if 'AUTOJUMP_IGNORE_CASE' in os.environ and \
             os.environ.get('AUTOJUMP_IGNORE_CASE') == '1':
@@ -517,8 +489,7 @@ def main():
     else:
         return 1
 
-    if not config['keep_entries']:
-        db.maintenance()
+    db.maintenance()
 
     return 0
 
