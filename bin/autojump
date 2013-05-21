@@ -21,14 +21,6 @@
 
 from __future__ import division, print_function
 
-try:
-    import argparse
-except ImportError:
-    # Python 2.6 support
-    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-    import autojump_argparse as argparse
-    sys.path.pop()
-
 import collections
 import difflib
 import math
@@ -38,6 +30,14 @@ import re
 import shutil
 import sys
 import tempfile
+
+try:
+    import argparse
+except ImportError:
+    # Python 2.6 support
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    import autojump_argparse as argparse
+    sys.path.pop()
 
 class Database:
     """
@@ -199,7 +199,7 @@ class Database:
 def set_defaults():
     config = {}
 
-    config['version'] = 'release-v21.6.6'
+    config['version'] = 'release-v21.6.7'
     config['max_paths'] = 1000
     config['separator'] = '__'
     config['home'] = os.path.expanduser('HOME')
