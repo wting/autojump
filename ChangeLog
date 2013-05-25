@@ -2,6 +2,12 @@
 # Summary of release changes, see commit history for more details:
 # https://github.com/joelthelion/autojump/commits/master/
 
+* Release v21.6.8:
+
+	- fix --increase and --decrease options
+	- heavy refactoring
+	- remove unused unit tests
+
 * Release v21.5.8:
 
 	- fix security bug:
