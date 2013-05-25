@@ -13,7 +13,7 @@ end
 
 # local installation
 if test -d ~/.autojump
-    export PATH ~/.autojump/bin $PATH
+    set -x PATH ~/.autojump/bin $PATH
 end
 
 set -x AUTOJUMP_HOME $HOME
