@@ -147,7 +147,8 @@ if [[ -n ${prefix} ]]; then
 fi
 
 # check shell support
-if [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]]; then
+if [[ ${shell} != "bash" ]] && [[ ${shell} != "zsh" ]] \
+    && [[ ${shell} != "fish" ]]; then
     echo "Unsupported shell (${shell}). Only Bash and Zsh shells are supported."
     exit 1
 fi
@@ -216,6 +217,7 @@ mkdir -p ${destdir}etc/profile.d/ || exit 1
 cp -v ./bin/autojump.sh ${destdir}etc/profile.d/ || exit 1
 cp -v ./bin/autojump.bash ${destdir}etc/profile.d/ || exit 1
 cp -v ./bin/autojump.zsh ${destdir}etc/profile.d/ || exit 1
+cp -v ./bin/autojump.fish ${destdir}etc/profile.d/ || exit 1
 mkdir -p ${destdir}${zshsharedir} || exit 1
 # TODO: remove unused _j function (2013.02.01_1348, ting)
 install -v -m 0755 ./bin/_j ${destdir}${zshsharedir} || exit 1
@@ -232,9 +234,9 @@ if [[ `uname` == "Darwin" ]] && [[ ${shell} == "bash" ]]; then
     rc_file="~/.bash_profile"
 fi
 
-aj_shell_file="${destdir}etc/profile.d/autojump.sh"
+aj_shell_file="${destdir}etc/profile.d/autojump.${shell}"
 if [[ ${local} ]]; then
-    aj_shell_file="~/.autojump/etc/profile.d/autojump.sh"
+    aj_shell_file="~/.autojump/etc/profile.d/autojump.${shell}"
 fi
 
 echo
