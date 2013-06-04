@@ -199,7 +199,7 @@ class Database:
 def set_defaults():
     config = {}
 
-    config['version'] = 'release-v21.6.8'
+    config['version'] = 'release-v21.7.0'
     config['max_paths'] = 1000
     config['separator'] = '__'
     config['home'] = os.path.expanduser('~')

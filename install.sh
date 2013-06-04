@@ -234,9 +234,9 @@ if [[ `uname` == "Darwin" ]] && [[ ${shell} == "bash" ]]; then
     rc_file="~/.bash_profile"
 fi
 
-aj_shell_file="${destdir}etc/profile.d/autojump.sh"
+aj_shell_file="${destdir}etc/profile.d/autojump.${shell}"
 if [[ ${local} ]]; then
-    aj_shell_file="~/.autojump/etc/profile.d/autojump.sh"
+    aj_shell_file="~/.autojump/etc/profile.d/autojump.${shell}"
 fi
 
 echo
