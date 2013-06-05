@@ -8,7 +8,7 @@ To install, `create a new IPython user profile <http://ipython.org/ipython-doc/s
 if you have not already done so by running:
 
     ipython profile create
-    
+
 And copy this file into the "startup" folder of your new profile (e.g. 
 "$HOME/.config/ipython/profile_default/startup/").
 
@@ -24,9 +24,9 @@ ip = get_ipython()
 @register_line_magic
 def j(path):
     cmd = ['autojump'] + path.split()
-    newpath = sub.Popen(cmd, stdout=sub.PIPE, shell=False).communicate()[0][:-1] # delete last '\n'
+    newpath = sub.Popen(cmd, stdout=sub.PIPE, shell=False).communicate()[0].strip()
     if newpath:
-        ip.magic('cd %s' % newpath)
+        ip.magic('cd %s' % newpath.decode('utf-8'))
 
 # remove from namespace
 del j
