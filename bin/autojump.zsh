@@ -29,8 +29,10 @@ function autojump_chpwd() {
     { (autojump -a "$(pwd ${_PWD_ARGS})"&)>/dev/null 2>>|${AUTOJUMP_DATA_DIR}/autojump_errors ; } 2>/dev/null
 }
 
-typeset -ga chpwd_functions
-chpwd_functions+=autojump_chpwd
+if [ -n "$PS1" ]; then
+	typeset -ga chpwd_functions
+	chpwd_functions+=autojump_chpwd
+fi
 
 function j {
     # Cannot use =~ due to MacPorts zsh v4.2, see issue #125.
