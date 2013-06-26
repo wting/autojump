@@ -65,7 +65,9 @@ case $PROMPT_COMMAND in
     *autojump*)
         ;;
     *)
-        PROMPT_COMMAND="${PROMPT_COMMAND:+$(echo "${PROMPT_COMMAND}" | awk '{gsub(/; *$/,"")}1') ; }autojump_add_to_database"
+        if [ -n "$PS1" ]; then
+                PROMPT_COMMAND="${PROMPT_COMMAND:+$(echo "${PROMPT_COMMAND}" | awk '{gsub(/; *$/,"")}1') ; }autojump_add_to_database"
+        fi
         ;;
 esac
 
