@@ -41,7 +41,7 @@ except ImportError:
 
 class Database:
     """
-    Object for interfacing with autojump database file.
+    Abstraction for interfacing with with autojump database file.
     """
 
     def __init__(self, config):
@@ -52,42 +52,6 @@ class Database:
 
     def __len__(self):
         return len(self.data)
-
-    def add(self, path, increment=10):
-        """
-        Increase weight of existing paths or initialize new ones to 10.
-        """
-        if path == self.config['home']:
-            return
-
-        path = path.rstrip(os.sep)
-
-        if self.data[path]:
-            self.data[path] = math.sqrt((self.data[path]**2) + (increment**2))
-        else:
-            self.data[path] = increment
-
-        self.save()
-
-    def decrease(self, path, increment=15):
-        """
-        Decrease weight of existing path. Unknown ones are ignored.
-        """
-        if path == self.config['home']:
-            return
-
-        if self.data[path] < increment:
-            self.data[path] = 0
-        else:
-            self.data[path] -= increment
-
-        self.save()
-
-    def get_weight(self, path):
-        """
-        Return path weight.
-        """
-        return self.data[path]
 
     def load(self, error_recovery = False):
         """
@@ -122,39 +86,6 @@ class Database:
                         trying to recover from backup...', file=sys.stderr)
                 shutil.copy(self.filename + '.bak', self.filename)
                 return self.load(True)
-
-    def maintenance(self):
-        """
-        Decay weights by 10%, periodically remove bottom 10% entries.
-        """
-        try:
-            items = self.data.iteritems()
-        except AttributeError:
-            items = self.data.items()
-
-        for path, _ in items:
-            self.data[path] *= 0.9
-
-        if len(self.data) > self.config['max_paths']:
-            remove_cnt = int(0.1 * len(self.data))
-            for path in sorted(self.data, key=self.data.get)[:remove_cnt]:
-                del self.data[path]
-
-            self.save()
-
-    def purge(self):
-        """
-        Deletes all entries that no longer exist on system.
-        """
-        removed = []
-
-        for path in list(self.data.keys()):
-            if not os.path.exists(path):
-                removed.append(path)
-                del self.data[path]
-
-        self.save()
-        return removed
 
     def save(self):
         """
@@ -195,6 +126,72 @@ class Database:
             except OSError as ex:
                 print("Error while creating backup autojump file. (%s)" %
                         ex, file=sys.stderr)
+
+    def add(self, path, increment=10):
+        """
+        Increase weight of existing paths or initialize new ones to 10.
+        """
+        if path == self.config['home']:
+            return
+
+        path = path.rstrip(os.sep)
+
+        if self.data[path]:
+            self.data[path] = math.sqrt((self.data[path]**2) + (increment**2))
+        else:
+            self.data[path] = increment
+
+        self.save()
+
+    def decrease(self, path, increment=15):
+        """
+        Decrease weight of existing path. Unknown paths are ignored.
+        """
+        if path == self.config['home']:
+            return
+
+        if self.data[path] < increment:
+            self.data[path] = 0
+        else:
+            self.data[path] -= increment
+
+        self.save()
+
+    def get_weight(self, path):
+        return self.data[path]
+
+    def maintenance(self):
+        """
+        Decay weights by 10%, periodically remove bottom 10% entries.
+        """
+        try:
+            items = self.data.iteritems()
+        except AttributeError:
+            items = self.data.items()
+
+        for path, _ in items:
+            self.data[path] *= 0.9
+
+        if len(self.data) > self.config['max_paths']:
+            remove_cnt = int(0.1 * len(self.data))
+            for path in sorted(self.data, key=self.data.get)[:remove_cnt]:
+                del self.data[path]
+
+            self.save()
+
+    def purge(self):
+        """
+        Remove non-existent paths.
+        """
+        removed = []
+
+        for path in list(self.data.keys()):
+            if not os.path.exists(path):
+                removed.append(path)
+                del self.data[path]
+
+        self.save()
+        return removed
 
 def set_defaults():
     config = {}
