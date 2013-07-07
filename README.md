@@ -35,12 +35,9 @@ INSTALLATION
 -   Bash v4.0 for tab completion (or zsh)
 
 If you are unable to update Python to a supported version, older
-versions of autojump can be
-[downloaded](https://github.com/joelthelion/autojump/downloads) and
-installed manually.
+versions of autojump can be [downloaded][dl] and installed manually.
 
--   Python v2.4 is supported by [release
-    v12](https://github.com/downloads/joelthelion/autojump/autojump_v12.tar.gz).
+-   Python v2.4 is supported by [release v12][v12].
 
 ### AUTOMATIC INSTALLATION
 
@@ -72,8 +69,7 @@ MacPorts also available:
 
 **Other**
 
-Please check the [Wiki](https://github.com/joelthelion/autojump/wiki)
-for an up to date listing of installation methods.
+Please check the [Wiki][wiki] for an up to date listing of installation methods.
 
 ### MANUAL INSTALLATION
 
@@ -119,7 +115,8 @@ with the command:
 
     make docs
 
-Unit tests are available in `./tests/`. Run unit tests with the command:
+Tests are available in `./tests/` and require Python 3.3 or Python 2.7 with
+[mock][mock]. Run unit tests with the command:
 
     make test
 
@@ -269,7 +266,12 @@ maintained by William Ting.
 COPYRIGHT
 ---------
 
-Copyright © 2012 Free Software Foundation, Inc. License GPLv3+: GNU GPL
+Copyright © 2013 Free Software Foundation, Inc. License GPLv3+: GNU GPL
 version 3 or later <http://gnu.org/licenses/gpl.html>. This is free
 software: you are free to change and redistribute it. There is NO
 WARRANTY, to the extent permitted by law.
+
+[dl]: https://github.com/joelthelion/autojump/downloads
+[mock]: https://pypi.python.org/pypi/mock
+[v12]: https://github.com/downloads/joelthelion/autojump/autojump_v12.tar.gz
+[wiki]: https://github.com/joelthelion/autojump/wiki
