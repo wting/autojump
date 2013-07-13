@@ -11,6 +11,7 @@ import sys
 import unittest
 
 from autojump import config_defaults
+from autojump import decode
 from autojump import is_python2
 from autojump import output
 from autojump import output_quotes
@@ -58,7 +59,13 @@ class TestUtilities(unittest.TestCase):
         mock_version.__getitem__.side_effect = self.PythonVersion(2, 6, 7)
         self.assertEqual(unico('cookie monster'), u'cookie monster')
 
-    @unittest.skip("unfinished")
+    @mock.patch.object(sys, 'version_info')
+    @mock.patch.object(sys, 'getfilesystemencoding')
+    def test_decode_converts_python2_string(self, mock_version, mock_encoding):
+        mock_version.__getitem__.side_effect = self.PythonVersion(2, 6, 7)
+        mock_encoding.return_value = 'UTF-8'
+        self.assertEqual(decode('banana man'), u'banana man')
+
     def test_output_quotes(self):
         output = lambda x: x
         from pprint import pprint as pp; import ipdb; ipdb.set_trace()
