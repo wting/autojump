@@ -19,7 +19,8 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 """
 
-from __future__ import division, print_function
+from __future__ import division
+from __future__ import print_function
 
 import collections
 import difflib
@@ -193,7 +194,11 @@ class Database:
         self.save()
         return removed
 
-def set_defaults():
+#
+# Environment Functions
+#
+
+def config_defaults():
     config = {}
 
     config['version'] = 'release-v21.7.0'
@@ -203,6 +208,7 @@ def set_defaults():
 
     config['ignore_case'] = False
     config['keep_symlinks'] = False
+    # TODO(ting|2013-07-06): remove debug flag
     config['debug'] = False
     config['match_cnt'] = 1
 
@@ -213,7 +219,8 @@ def set_defaults():
 
     return config
 
-def parse_env(config):
+def parse_env_args(config):
+    # TODO(ting|2013-07-06): refactor with .get() defaults
     if 'AUTOJUMP_DATA_DIR' in os.environ:
         config['data'] = os.environ.get('AUTOJUMP_DATA_DIR')
         config['db'] = config['data'] + '/autojump.txt'
@@ -231,7 +238,7 @@ def parse_env(config):
 
     return config
 
-def parse_arg(config):
+def parse_args():
     parser = argparse.ArgumentParser(
             description='Automatically jump to directory passed as an argument.',
             epilog="Please see autojump(1) man pages for full documentation.")
@@ -264,6 +271,11 @@ def parse_arg(config):
     parser.add_argument(
             '-v', '--version', action="version", version="%(prog)s " +
             config['version'], help='show version information and exit')
+
+    # TODO(ting|2013-07-06): move logic outside of function
+    # return parser.parse_args()
+    # config = parse_env_args(config_defaults())
+    # args = parse_args()
 
     args = parser.parse_args()
     db = Database(config)
@@ -464,7 +476,11 @@ def find_matches(config, db, patterns, ignore_case=False, fuzzy=False):
     return results
 
 def main():
-    config = parse_arg(parse_env(set_defaults()))
+    # TODO(ting|2013-07-06): replace with ChainMap (Python 3.3+)
+    # config = parse_env_args(config_defaults())
+    # args = parse_args()
+    config = parse_args(parse_env_args(config_defaults()))
+
     sep = config['separator']
     db = Database(config)
 

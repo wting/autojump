@@ -36,4 +36,4 @@ tar:
 	sha1sum autojump_v$(VERSION).tar.gz
 
 test:
-	@tests/runtests.py
+	@python tests/autojump_test.py
