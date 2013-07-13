@@ -345,6 +345,15 @@ def decode(text, encoding=None, errors='strict'):
     else:
         return text
 
+def unico(text):
+    """
+    If Python 2, convert to a unicode object.
+    """
+    if is_python2():
+        return unicode(text)
+    else:
+        return text
+
 def output_quotes(config, text):
     quotes = ""
     if config['args'].complete and config['args'].bash:
@@ -364,14 +373,6 @@ def output(text, encoding=None):
     else:
         print(text)
 
-def unico(text):
-    """
-    If Python 2, convert to a unicode object.
-    """
-    if is_python2():
-        return unicode(text)
-    else:
-        return text
 
 #
 # Main Logic
