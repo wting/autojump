@@ -354,13 +354,6 @@ def unico(text):
     else:
         return text
 
-def output_quotes(config, text):
-    quotes = ""
-    if config['args'].complete and config['args'].bash:
-        quotes = "'"
-
-    output("%s%s%s" % (quotes, text, quotes))
-
 def output(text, encoding=None):
     """
     Wrapper for the print function, using the filesystem encoding by default
@@ -373,6 +366,14 @@ def output(text, encoding=None):
     else:
         print(text)
 
+def output_quotes(config, text):
+    quotes = ""
+    if config['args'].complete and config['args'].bash:
+        quotes = "'"
+
+    result = "%s%s%s" % (quotes, text, quotes)
+    output(result)
+    return result
 
 #
 # Main Logic

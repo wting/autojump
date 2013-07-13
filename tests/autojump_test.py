@@ -67,17 +67,15 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(decode('banana man'), u'banana man')
 
     def test_output_quotes(self):
-        output = lambda x: x
-        from pprint import pprint as pp; import ipdb; ipdb.set_trace()
-        pp(self.config)
-        self.config['args'].complete = False
-        self.config['args'].bash = False
+        args = mock.Mock()
+        args.bash = True
+        args.complete = True
+        config = {'args': args}
+
         normal = "foo"
         quotes = "'foo'"
 
-        self.assertEqual(
-                test_output_quotes(config, normal),
-                normal)
+        self.assertEqual(output_quotes(config, normal), quotes)
 
 
 if __name__ == "__main__":
