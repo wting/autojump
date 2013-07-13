@@ -315,16 +315,23 @@ def parse_arg(config):
     config['args'] = args
     return config
 
-def decode(text, encoding=None, errors="strict"):
+#
+# Utilities
+#
+
+def is_python2():
+    return sys.version_info[0] == 2
+
+def decode(text, encoding=None, errors='strict'):
     """
     Decoding step for Python 2 which does not default to unicode.
     """
-    if sys.version_info[0] > 2:
-        return text
-    else:
-        if encoding is None:
+    if is_python2():
+        if not encoding:
             encoding = sys.getfilesystemencoding()
         return text.decode(encoding, errors)
+    else:
+        return text
 
 def output_quotes(config, text):
     quotes = ""
@@ -338,21 +345,25 @@ def output(text, encoding=None):
     Wrapper for the print function, using the filesystem encoding by default
     to minimize encoding mismatch problems in directory names.
     """
-    if sys.version_info[0] > 2:
-        print(text)
-    else:
-        if encoding is None:
+    if is_python2():
+        if not encoding:
             encoding = sys.getfilesystemencoding()
         print(unicode(text).encode(encoding))
+    else:
+        print(text)
 
 def unico(text):
     """
     If Python 2, convert to a unicode object.
     """
-    if sys.version_info[0] > 2:
-        return text
-    else:
+    if is_python2():
         return unicode(text)
+    else:
+        return text
+
+#
+# Main Logic
+#
 
 def match(path, pattern, only_end=False, ignore_case=False):
     """
