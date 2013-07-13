@@ -16,6 +16,7 @@ from autojump import output
 from autojump import output_quotes
 from autojump import parse_env_args
 from autojump import parse_args
+from autojump import unico
 
 # TODO(ting|2013-07-06): skip certain tests depending on Python version
 
@@ -51,6 +52,11 @@ class TestUtilities(unittest.TestCase):
     def test_is_python2_fails_python3(self, mock_version):
         mock_version.__getitem__.side_effect = self.PythonVersion(3, 2, 3)
         self.assertFalse(is_python2())
+
+    @mock.patch.object(sys, 'version_info')
+    def test_unico_converts_python2_string(self, mock_version):
+        mock_version.__getitem__.side_effect = self.PythonVersion(2, 6, 7)
+        self.assertEqual(unico('cookie monster'), u'cookie monster')
 
     @unittest.skip("unfinished")
     def test_output_quotes(self):
