@@ -162,7 +162,7 @@ class Database:
     def get_weight(self, path):
         return self.data[path]
 
-    def maintenance(self):
+    def maintenance(self, max_paths=1000, decay_rate=0.1):
         """
         Decay weights by 10%, periodically remove bottom 10% entries.
         """
@@ -172,9 +172,9 @@ class Database:
             items = self.data.items()
 
         for path, _ in items:
-            self.data[path] *= 0.9
+            self.data[path] *= (1 - decay_rate)
 
-        if len(self.data) > self.config['max_paths']:
+        if len(self.data) > max_paths:
             remove_cnt = int(0.1 * len(self.data))
             for path in sorted(self.data, key=self.data.get)[:remove_cnt]:
                 del self.data[path]
@@ -195,43 +195,47 @@ class Database:
         self.save()
         return removed
 
-def config_defaults():
-    config = {}
+def get_env_var(env_var, default=None):
+    """
+    If an environment variable is present, '0' or 'false' will evaluate to
+    False, everything else is True.
 
-    config['version'] = 'release-v21.7.0'
-    config['max_paths'] = 1000
-    config['separator'] = '__'
-    config['home'] = os.path.expanduser('~')
+    If an environment variable is not present, will return default.
+    """
+    value = os.environ.get(env_var)
+    if value:
+        if value == '0' or value.lower() == 'false':
+            return False
+        else:
+            return True
+    else:
+        return default
 
-    config['ignore_case'] = False
-    config['keep_symlinks'] = False
-    # TODO(ting|2013-07-06): remove debug flag
-    config['debug'] = False
-    config['match_cnt'] = 1
+def get_config():
+    """
+    Set defaults and update with environmental variables.
+    """
+    config = dict(
+            version = 'release-v21.7.0',
+            separator = '__',
+            home = os.path.expanduser('~'),
+            match_cnt = 1,
+            ignore_case = get_env_var('AUTOJUMP_IGNORE_CASE', False),
+            keep_symlinks = get_env_var('AUTOJUMP_KEEP_SYMLINKS', False),
+            )
 
-    xdg_data = os.environ.get('XDG_DATA_HOME') or \
+    xdg_data = os.environ.get(
+            'XDG_DATA_HOME',
             os.path.join(config['home'], '.local', 'share')
-    config['data'] = os.path.join(xdg_data, 'autojump')
+            )
+
+    config['data'] = os.environ.get(
+            'AUTOJUMP_DATA_DIR',
+            os.path.join(xdg_data, 'autojump')
+            )
+
+    # TODO(ting|2013-07-13): switch to database.txt
     config['db'] = config['data'] + '/autojump.txt'
-
-    return config
-
-def parse_env_args(config):
-    # TODO(ting|2013-07-06): refactor with .get() defaults
-    if 'AUTOJUMP_DATA_DIR' in os.environ:
-        config['data'] = os.environ.get('AUTOJUMP_DATA_DIR')
-        config['db'] = config['data'] + '/autojump.txt'
-
-    if config['data'] == config['home']:
-        config['db'] = config['data'] + '/.autojump.txt'
-
-    if 'AUTOJUMP_IGNORE_CASE' in os.environ and \
-            os.environ.get('AUTOJUMP_IGNORE_CASE') == '1':
-        config['ignore_case'] = True
-
-    if 'AUTOJUMP_KEEP_SYMLINKS' in os.environ and \
-            os.environ.get('AUTOJUMP_KEEP_SYMLINKS') == '1':
-        config['keep_symlinks'] = True
 
     return config
 
@@ -268,6 +272,8 @@ def parse_args():
     parser.add_argument(
             '-v', '--version', action="version", version="%(prog)s " +
             config['version'], help='show version information and exit')
+
+    return parser.parse_args()
 
     # TODO(ting|2013-07-06): move logic outside of function
     # return parser.parse_args()
@@ -429,10 +435,10 @@ def find_matches(config, db, patterns, ignore_case=False, fuzzy=False):
     return results
 
 def main():
-    # TODO(ting|2013-07-06): replace with ChainMap (Python 3.3+)
-    # config = parse_env_args(config_defaults())
-    # args = parse_args()
-    config = parse_args(parse_env_args(config_defaults()))
+    config = get_config()
+    args = parse_args()
+
+    # config = parse_args(parse_env_args(config_defaults()))
 
     sep = config['separator']
     db = Database(config)
