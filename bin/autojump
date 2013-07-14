@@ -21,6 +21,7 @@
 
 from __future__ import division
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import collections
 import difflib
@@ -194,10 +195,6 @@ class Database:
         self.save()
         return removed
 
-#
-# Environment Functions
-#
-
 def config_defaults():
     config = {}
 
@@ -301,7 +298,7 @@ def parse_args():
 
         if len(removed):
             for dir in removed:
-                output(dir)
+                print(dir)
 
         print("Number of database entries removed: %d" % len(removed))
 
@@ -310,7 +307,7 @@ def parse_args():
     if args.stat:
         for path, weight in sorted(db.data.items(),
                 key=operator.itemgetter(1))[-100:]:
-            output("%.1f:\t%s" % (weight, path))
+            print("%.1f:\t%s" % (weight, path))
 
         print("________________________________________\n")
         print("%d:\t total key weight" % sum(db.data.values()))
@@ -327,57 +324,11 @@ def parse_args():
     config['args'] = args
     return config
 
-#
-# Utilities
-#
-
-def is_python2():
-    return sys.version_info[0] == 2
-
-def decode(text, encoding=None, errors='strict'):
-    """
-    Decoding step for Python 2 which does not default to unicode.
-    """
-    if is_python2():
-        if not encoding:
-            encoding = sys.getfilesystemencoding()
-        return text.decode(encoding, errors)
-    else:
-        return text
-
-def unico(text):
-    """
-    If Python 2, convert to a unicode object.
-    """
-    if is_python2():
-        return unicode(text)
-    else:
-        return text
-
-def output(text, encoding=None):
-    """
-    Wrapper for the print function, using the filesystem encoding by default
-    to minimize encoding mismatch problems in directory names.
-    """
-    if is_python2():
-        if not encoding:
-            encoding = sys.getfilesystemencoding()
-        print(unicode(text).encode(encoding))
-    else:
-        print(text)
-
-def output_quotes(config, text):
-    quotes = ""
+def surround_quotes(config, text):
     if config['args'].complete and config['args'].bash:
-        quotes = "'"
-
-    result = "%s%s%s" % (quotes, text, quotes)
-    output(result)
-    return result
-
-#
-# Main Logic
-#
+        return "'%s'" % text
+    else:
+        return text
 
 def match(path, pattern, only_end=False, ignore_case=False):
     """
@@ -521,13 +472,13 @@ def main():
                 fuzzy=True)
 
     if tab_choice and len(results) > (tab_choice-1):
-        output_quotes(config, results[tab_choice-1])
+        print(surround_quotes(config, results[tab_choice-1]))
     elif len(results) > 1 and config['args'].complete:
         for n, r in enumerate(results[:9]):
-            output_quotes(config, '%s%s%d%s%s' %
-                    (patterns[-1], sep, n+1, sep, r))
+            print(surround_quotes(config, '%s%s%d%s%s' %
+                    (patterns[-1], sep, n+1, sep, r)))
     elif results:
-        output_quotes(config, results[0])
+        print(surround_quotes(config, results[0]))
     else:
         return 1
 
