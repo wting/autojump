@@ -33,13 +33,9 @@ import shutil
 import sys
 import tempfile
 
-try:
-    import argparse
-except ImportError:
-    # Python 2.6 support
-    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-    import autojump_argparse as argparse
-    sys.path.pop()
+# Include our own copy of argparse for Python 2.6 support
+from lib import argparse
+
 
 class Database:
     """
