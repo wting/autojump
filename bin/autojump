@@ -33,7 +33,7 @@ import shutil
 import sys
 import tempfile
 
-# Include our own copy of argparse for Python 2.6 support
+# including own copy for Python 2.6 support
 from lib import argparse
 
 VERSION = 'release-v21.7.0'
@@ -276,55 +276,6 @@ def parse_args():
     # config = parse_env_args(config_defaults())
     # args = parse_args()
 
-    args = parser.parse_args()
-    db = Database(config)
-
-    if args.add:
-        db.add(decode(args.add))
-        sys.exit(0)
-
-    if args.increase:
-        print("%.2f:\t old directory weight" % db.get_weight(os.getcwd()))
-        db.add(os.getcwd(), args.increase)
-        print("%.2f:\t new directory weight" % db.get_weight(os.getcwd()))
-        sys.exit(0)
-
-    if args.decrease:
-        print("%.2f:\t old directory weight" % db.get_weight(os.getcwd()))
-        db.decrease(os.getcwd(), args.decrease)
-        print("%.2f:\t new directory weight" % db.get_weight(os.getcwd()))
-        sys.exit(0)
-
-    if args.purge:
-        removed = db.purge()
-
-        if len(removed):
-            for dir in removed:
-                print(dir)
-
-        print("Number of database entries removed: %d" % len(removed))
-
-        sys.exit(0)
-
-    if args.stat:
-        for path, weight in sorted(db.data.items(),
-                key=operator.itemgetter(1))[-100:]:
-            print("%.1f:\t%s" % (weight, path))
-
-        print("________________________________________\n")
-        print("%d:\t total key weight" % sum(db.data.values()))
-        print("%d:\t stored directories" % len(db.data))
-        print("%.2f:\t current directory weight" % db.get_weight(os.getcwd()))
-
-        print("\ndb file: %s" % config['db'])
-        sys.exit(0)
-
-    if args.complete:
-        config['match_cnt'] = 9
-        config['ignore_case'] = True
-
-    config['args'] = args
-    return config
 
 def surround_quotes(config, text):
     if config['args'].complete and config['args'].bash:
@@ -430,9 +381,68 @@ def find_matches(config, db, patterns, ignore_case=False, fuzzy=False):
 
     return results
 
+
+def eval_args(config, args):
+    """
+    Evaluate command line arguments.
+
+    Returns True if exiting.
+    """
+    args = parser.parse_args()
+    db = Database(config)
+
+    if args.add:
+        db.add(args.add)
+        return True
+
+    if args.increase:
+        cwd = os.getcwd()
+        print("%.2f:\t old directory weight" % db.get_weight(cwd))
+        db.add(cwd, args.increase)
+        print("%.2f:\t new directory weight" % db.get_weight(cwd))
+        return True
+
+    if args.decrease:
+        cwd = os.getcwd()
+        print("%.2f:\t old directory weight" % db.get_weight(cwd))
+        db.decrease(cwd, args.decrease)
+        print("%.2f:\t new directory weight" % db.get_weight(cwd))
+        return True
+
+    if args.purge:
+        print("Removed:")
+        map(print, db.purge())
+        return True
+
+    if args.stat:
+        data = db.data.copy()
+        for path, weight in sorted(db.data.items(),
+                key=operator.itemgetter(1))[-100:]:
+            print("%.1f:\t%s" % (weight, path))
+
+        print("________________________________________\n")
+        print("%d:\t total key weight" % sum(db.data.values()))
+        print("%d:\t stored directories" % len(db.data))
+        print("%.2f:\t current directory weight" % db.get_weight(os.getcwd()))
+
+        print("\ndb file: %s" % config['db'])
+        return True
+
+    if args.complete:
+        result = config.copy()
+        result['match_cnt'] = 9
+        result['ignore_case'] = True
+
+    return result, False
+
+
 def main():
     config = get_config()
     args = parse_args()
+
+    config, exit = eval_args(config, args)
+    if exit:
+        sys.exit(0)
 
     # config = parse_args(parse_env_args(config_defaults()))
 
