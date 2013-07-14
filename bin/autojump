@@ -36,6 +36,7 @@ import tempfile
 # Include our own copy of argparse for Python 2.6 support
 from lib import argparse
 
+VERSION = 'release-v21.7.0'
 
 class Database:
     """
@@ -212,7 +213,6 @@ def get_config():
     Set defaults and update with environmental variables.
     """
     config = dict(
-            version = 'release-v21.7.0',
             separator = '__',
             home = os.path.expanduser('~'),
             match_cnt = 1,
@@ -267,7 +267,7 @@ def parse_args():
             help='show database entries and their key weights')
     parser.add_argument(
             '-v', '--version', action="version", version="%(prog)s " +
-            config['version'], help='show version information and exit')
+            VERSION, help='show version information and exit')
 
     return parser.parse_args()
 
