@@ -29,7 +29,7 @@ function autojump_chpwd() {
     { (autojump -a "$(pwd ${_PWD_ARGS})"&)>/dev/null 2>>|${AUTOJUMP_DATA_DIR}/autojump_errors ; } 2>/dev/null
 }
 
-typeset -ga chpwd_functions
+typeset -gaU chpwd_functions
 chpwd_functions+=autojump_chpwd
 
 function j {
