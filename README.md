@@ -16,7 +16,7 @@ Jump to a previously visited subdirectory of the current directory:
 
 Show database entries and their respective key weights:
 
-    j --stat
+    autojump --stat
 
 DESCRIPTION
 -----------
