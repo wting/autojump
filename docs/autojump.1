@@ -191,9 +191,8 @@ Changes require reloading autojump to take into effect.
 .SS KNOWN ISSUES
 .IP \[bu] 2
 For bash users, autojump keeps track of directories as a pre\-command
-hook by modifying
-\f[I]P\f[]\f[I]R\f[]\f[I]O\f[]\f[I]M\f[]\f[I]P\f[]\f[I]T\f[]~\f[I]C\f[]~\f[I]O\f[]\f[I]M\f[]\f[I]M\f[]\f[I]A\f[]\f[I]N\f[]\f[I]D\f[]. \f[I]I\f[]\f[I]f\f[]\f[I]y\f[]\f[I]o\f[]\f[I]u\f[]\f[I]o\f[]\f[I]v\f[]\f[I]e\f[]\f[I]r\f[]\f[I]w\f[]\f[I]r\f[]\f[I]i\f[]\f[I]t\f[]\f[I]e\f[]PROMPT_COMMAND
-in ~/.bashrc you can cause problems.
+hook by modifying $PROMPT_COMMAND.
+If you overwrite $PROMPT_COMMAND in ~/.bashrc you can cause problems.
 Don\[aq]t do this:
 .RS 2
 .IP
@@ -221,7 +220,7 @@ If you want to jump a directory called \f[C]\-\-music\f[], try using
 If installed locally, autojump is self\-contained in
 \f[I]~/.autojump/\f[].
 .PP
-The database is stored in \f[I]$XDG\f[]DATA_HOME/autojump/autojump.txt_.
+The database is stored in \f[I]$XDG_DATA_HOME/autojump/autojump.txt\f[].
 .SS REPORTING BUGS
 .PP
 For any usage related issues or feature requests please visit:
