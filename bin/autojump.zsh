@@ -59,6 +59,11 @@ function jc {
 }
 
 function jo {
+    if [[ ${@} == -* ]]; then
+        j ${@}
+        return
+    fi
+
     if [ -z $(autojump $@) ]; then
         echo "autojump: directory '${@}' not found"
         echo "Try \`autojump --help\` for more information."
