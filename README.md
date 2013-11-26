@@ -219,8 +219,9 @@ KNOWN ISSUES
 ------------
 
 -   For bash users, autojump keeps track of directories as a pre-command
-    hook by modifying $PROMPT_COMMAND. If you overwrite $PROMPT\_COMMAND
-    in \~/.bashrc you can cause problems. Don't do this:
+    hook by modifying \$PROMPT\_COMMAND. If you overwrite
+    \$PROMPT\_COMMAND in \~/.bashrc you can cause problems. Don't do
+    this:
 
         export PROMPT_COMMAND="history -a"
 
@@ -237,7 +238,7 @@ FILES
 
 If installed locally, autojump is self-contained in *\~/.autojump/*.
 
-The database is stored in *\$XDG*DATA\_HOME/autojump/autojump.txt\_.
+The database is stored in *\$XDG\_DATA\_HOME/autojump/autojump.txt*.
 
 REPORTING BUGS
 --------------
