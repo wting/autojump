@@ -115,11 +115,6 @@ with the command:
 
     make docs
 
-Tests are available in `./tests/` and require Python 3.3 or Python 2.7 with
-[mock][mock]. Run unit tests with the command:
-
-    make test
-
 OPTIONS
 -------
 

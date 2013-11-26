@@ -7,7 +7,3 @@ Documentation is in various files under `./docs/`. Build documentation with the
 command:
 
     make docs
-
-Unit tests are available in `./tests/`. Run unit tests with the command:
-
-    make test
