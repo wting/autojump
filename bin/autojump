@@ -38,7 +38,7 @@ try:
 except ImportError:
     # Python 2.6 support
     sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-    import autojump_argparse as argparse
+    import argparse
     sys.path.pop()
 
 
