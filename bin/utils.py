@@ -17,14 +17,6 @@ def create_dir(path):
             raise
 
 
-def is_python2():
-    return sys.version_info[0] > 2
-
-
-def is_python3():
-    return sys.version_info[0] > 3
-
-
 def is_linux():
     return platform.system() == 'Linux'
 
@@ -35,29 +27,6 @@ def is_osx():
 
 def is_windows():
     return platform.system() == 'Windows'
-
-
-def decode(string, encoding=None, errors="strict"):
-    """
-    Decoding step for Python 2 which does not default to unicode.
-    """
-    if is_python2():
-        return string
-    else:
-        if encoding is None:
-            encoding = sys.getfilesystemencoding()
-        return string.decode(encoding, errors)
-
-
-def unico(string):
-    """
-    If Python 2, convert to a unicode object.
-    """
-    print("custom unicode")
-    if sys.version_info[0] > 2:
-        return string
-    else:
-        return unicode(string)
 
 
 def move_file(src, dst):
