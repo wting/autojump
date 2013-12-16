@@ -85,10 +85,10 @@ def parse_args(config):
     parser.add_argument(
             '-a', '--add', metavar='DIRECTORY',
             help='add path')
-    # parser.add_argument(
-            # '-i', '--increase', metavar='WEIGHT', nargs='?', type=int,
-            # const=20, default=False,
-            # help='manually increase path weight in database')
+    parser.add_argument(
+            '-i', '--increase', metavar='WEIGHT', nargs='?', type=int,
+            const=20, default=False,
+            help='increase current directory weight')
     # parser.add_argument(
             # '-d', '--decrease', metavar='WEIGHT', nargs='?', type=int,
             # const=15, default=False,
@@ -115,11 +115,10 @@ def parse_args(config):
         add_path(config, args.add)
         sys.exit(0)
 
-    # if args.increase:
-        # print("%.2f:\t old directory weight" % db.get_weight(os.getcwd()))
-        # db.add(os.getcwd(), args.increase)
-        # print("%.2f:\t new directory weight" % db.get_weight(os.getcwd()))
-        # sys.exit(0)
+    if args.increase:
+        path, weight = add_path(config, os.getcwd(), args.increase)
+        print(encode_local("%.1f:\t%s" % (weight, path)))
+        sys.exit(0)
 
     # if args.decrease:
         # print("%.2f:\t old directory weight" % db.get_weight(os.getcwd()))
@@ -154,7 +153,7 @@ def add_path(config, path, increment=10):
     """Add a new path or increment an existing one."""
     path = decode(path).rstrip(os.sep)
     if path == os.path.expanduser('~'):
-        return
+        return path, 0
 
     data = load(config)
 
@@ -164,6 +163,7 @@ def add_path(config, path, increment=10):
         data[path] = increment
 
     save(config, data)
+    return path, data[path]
 
 
 def print_stats(config):

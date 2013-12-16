@@ -58,7 +58,7 @@ def migrate_osx_xdg_data(config):
     Older versions incorrectly used Linux XDG_DATA_HOME paths on OS X. This
     migrates autojump files from ~/.local/share/autojump to ~/Library/autojump
     """
-    assert is_osx(), "Expecting OSX."
+    assert is_osx(), "This function should only be run on OS X."
 
     xdg_data_home = os.path.join(os.path.expanduser('~'), '.local', 'share')
     xdg_aj_home = os.path.join(xdg_data_home, 'autojump')
