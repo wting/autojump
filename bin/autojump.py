@@ -65,11 +65,7 @@ def set_defaults():
 
 
 def parse_env(config):
-    # TODO(ting|2013-12-15): what if data_home doesn't exist?
-    # if 'AUTOJUMP_DATA_DIR' in os.environ:
-        # config['data_home'] = os.environ.get('AUTOJUMP_DATA_DIR')
-        # config['data_file'] = os.path.join(config['data_home'], 'autojump.pkl')
-
+    # TODO(ting|2013-12-16): add autojump_data_dir support
     # TODO(ting|2013-12-15): add ignore case / smartcase support
     # TODO(ting|2013-12-15): add symlink support
 
@@ -117,12 +113,20 @@ def parse_args(config):
         sys.exit(0)
 
     if args.increase:
-        print_dir(add_path(config, os.getcwd(), args.increase))
-        sys.exit(0)
+        try:
+            print_dir(add_path(config, os.getcwdu(), args.increase))
+            sys.exit(0)
+        except OSError:
+            print("Current directory no longer exists.", file=sys.stderr)
+            sys.exit(1)
 
     if args.decrease:
-        print_dir(decrease_path(config, os.getcwd(), args.decrease))
-        sys.exit(0)
+        try:
+            print_dir(decrease_path(config, os.getcwdu(), args.decrease))
+            sys.exit(0)
+        except OSError:
+            print("Current directory no longer exists.", file=sys.stderr)
+            sys.exit(1)
 
     if args.purge:
         print("Purged %d entries." % purge_missing_paths(config))
@@ -186,13 +190,17 @@ def print_stats(config):
     print("________________________________________\n")
     print("%d:\t total weight" % sum(data.itervalues()))
     print("%d:\t number of entries" % len(data))
-    print("%.2f:\t current directory weight" % data.get(os.getcwd(), 0))
+
+    try:
+        print("%.2f:\t current directory weight" % data.get(os.getcwdu(), 0))
+    except OSError:
+        pass
 
     print("\ndata:\t %s" % config['data_path'])
 
 
 def main():
-    config = parse_args(parse_env(set_defaults()))
+    parse_args(parse_env(set_defaults()))
     return 0
 
 if __name__ == "__main__":
