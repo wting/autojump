@@ -21,6 +21,7 @@
 
 from __future__ import division, print_function
 
+from itertools import ifilter
 from math import sqrt
 from operator import itemgetter
 import os
@@ -32,8 +33,8 @@ from argparse import ArgumentParser
 from data import save
 from data import load
 from utils import decode
-from utils import encode_local
 from utils import is_osx
+from utils import print_dir
 
 VERSION = 'release-v21.8.0'
 
@@ -99,9 +100,9 @@ def parse_args(config):
     # parser.add_argument(
             # '--complete', action="store_true", default=False,
             # help='used for tab completion')
-    # parser.add_argument(
-            # '--purge', action="store_true", default=False,
-            # help='delete all database entries that no longer exist on system')
+    parser.add_argument(
+            '--purge', action="store_true", default=False,
+            help='remove non-existent paths from database')
     parser.add_argument(
             '-s', '--stat', action="store_true", default=False,
             help='show database entries and their key weights')
@@ -116,25 +117,16 @@ def parse_args(config):
         sys.exit(0)
 
     if args.increase:
-        path, weight = add_path(config, os.getcwd(), args.increase)
-        print(encode_local("%.1f:\t%s" % (weight, path)))
+        print_dir(add_path(config, os.getcwd(), args.increase))
         sys.exit(0)
 
     if args.decrease:
-        path, weight = decrease_path(config, os.getcwd(), args.decrease)
-        print(encode_local("%.1f:\t%s" % (weight, path)))
+        print_dir(decrease_path(config, os.getcwd(), args.decrease))
         sys.exit(0)
 
-    # if args.purge:
-        # removed = db.purge()
-
-        # if len(removed):
-            # for dir in removed:
-                # output(dir)
-
-        # print("Number of database entries removed: %d" % len(removed))
-
-        # sys.exit(0)
+    if args.purge:
+        print("Purged %d entries." % purge_missing_paths(config))
+        sys.exit(0)
 
     if args.stat:
         print_stats(config)
@@ -176,11 +168,20 @@ def decrease_path(config, path, increment=15):
     return path, data[path]
 
 
+def purge_missing_paths(config):
+    """Remove non-existent paths."""
+    exists = lambda x: os.path.exists(x[0])
+    old_data = load(config)
+    new_data = dict(ifilter(exists, old_data.iteritems()))
+    save(config, new_data)
+    return len(old_data) - len(new_data)
+
+
 def print_stats(config):
     data = load(config)
 
     for path, weight in sorted(data.iteritems(), key=itemgetter(1)):
-        print(encode_local("%.1f:\t%s" % (weight, path)))
+        print_dir(path, weight)
 
     print("________________________________________\n")
     print("%d:\t total weight" % sum(data.itervalues()))

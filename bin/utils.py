@@ -67,3 +67,7 @@ def move_file(src, dst):
         # raises exception if file is in use on Windows
         os.remove(dst)
     shutil.move(src, dst)
+
+
+def print_dir(path, weight):
+    print(encode_local("%.1f:\t%s" % (weight, path)))
