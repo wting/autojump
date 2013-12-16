@@ -3,8 +3,10 @@
 
 from __future__ import print_function
 
+import errno
 import os
 import platform
+import shutil
 import sys
 
 

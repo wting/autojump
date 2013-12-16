@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 from codecs import open
+from itertools import ifilter
 from itertools import imap
 from operator import itemgetter
 import os
@@ -37,11 +38,11 @@ def load(config):
 
         # example: u'10.0\t/home/user\n' -> ['10.0', u'/home/user']
         parse = lambda x: x.strip().split('\t')
-
         # example: ['10.0', u'/home/user'] -> (u'/home/user', 10.0)
         convert = lambda x: (x[1], float(x[0]))
+        correct_length = lambda x: len(x) == 2
 
-        return dict(imap(convert, imap(parse, lines)))
+        return dict(imap(convert, ifilter(correct_length, imap(parse, lines))))
     return {}
 
 
@@ -83,10 +84,7 @@ def save(config, data):
     try:
         # write to temp file
         with open(config['tmp_path'], 'w', encoding='utf-8', errors='replace') as f:
-            for path, weight in sorted(
-                    data.iteritems(),
-                    key=itemgetter(1),
-                    reverse=True):
+            for path, weight in data.iteritems():
                 f.write((unicode("%s\t%s\n" % (weight, path)).encode('utf-8')))
 
             f.flush()
@@ -101,4 +99,4 @@ def save(config, data):
         move_file(config['data_path'], config['backup_path'])
 
     # move temp_file -> autojump.txt
-    move_file(temp_file.name, config['data_path'])
+    move_file(config['tmp_path'], config['data_path'])
