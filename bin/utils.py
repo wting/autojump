@@ -1,10 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import division, print_function
+from __future__ import print_function
 
+import os
 import platform
 import sys
+
+
+def create_dir(path):
+    """Creates a directory atomically."""
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
 
 
 def is_python2():
@@ -21,6 +31,10 @@ def is_linux():
 
 def is_osx():
     return platform.system() == 'Darwin'
+
+
+def is_windows():
+    return platform.system() == 'Windows'
 
 
 def decode(string, encoding=None, errors="strict"):
@@ -44,3 +58,16 @@ def unico(string):
         return string
     else:
         return unicode(string)
+
+
+def move_file(src, dst):
+    """
+    Atomically move file.
+
+    Windows does not allow for atomic file renaming (which is used by
+    os.rename / shutil.move) so destination paths must first be deleted.
+    """
+    if is_windows() and os.path.exists(dst):
+        # raises exception if file is in use on Windows
+        os.remove(dst)
+    shutil.move(src, dst)
