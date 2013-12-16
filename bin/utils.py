@@ -17,6 +17,31 @@ def create_dir(path):
             raise
 
 
+def decode(string):
+    """Converts byte string to Unicode string."""
+    if is_python2():
+        return string.decode('utf-8', errors='replace')
+    return string
+
+
+def encode(string):
+    """Converts Unicode string to byte string."""
+    if is_python2():
+        return string.encode('utf-8', errors='replace')
+    return string
+
+
+def encode_local(string, encoding=None):
+    """Converts string into local filesystem encoding."""
+    if is_python2():
+        return decode(string).encode(encoding or sys.getfilesystemencoding())
+    return string
+
+
+def is_python2():
+    return sys.version_info[0] == 2
+
+
 def is_linux():
     return platform.system() == 'Linux'
 

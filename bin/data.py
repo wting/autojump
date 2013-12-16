@@ -39,7 +39,7 @@ def load(config):
         parse = lambda x: x.strip().split('\t')
 
         # example: ['10.0', u'/home/user'] -> (u'/home/user', 10.0)
-        convert = lambda x: (x[1], float(x[0])
+        convert = lambda x: (x[1], float(x[0]))
 
         return dict(imap(convert, imap(parse, lines)))
     return {}
