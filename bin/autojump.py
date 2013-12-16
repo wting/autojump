@@ -89,10 +89,10 @@ def parse_args(config):
             '-i', '--increase', metavar='WEIGHT', nargs='?', type=int,
             const=20, default=False,
             help='increase current directory weight')
-    # parser.add_argument(
-            # '-d', '--decrease', metavar='WEIGHT', nargs='?', type=int,
-            # const=15, default=False,
-            # help='manually decrease path weight in database')
+    parser.add_argument(
+            '-d', '--decrease', metavar='WEIGHT', nargs='?', type=int,
+            const=15, default=False,
+            help='decrease current directory weight')
     # parser.add_argument(
             # '-b', '--bash', action="store_true", default=False,
             # help='enclose directory quotes to prevent errors')
@@ -120,11 +120,10 @@ def parse_args(config):
         print(encode_local("%.1f:\t%s" % (weight, path)))
         sys.exit(0)
 
-    # if args.decrease:
-        # print("%.2f:\t old directory weight" % db.get_weight(os.getcwd()))
-        # db.decrease(os.getcwd(), args.decrease)
-        # print("%.2f:\t new directory weight" % db.get_weight(os.getcwd()))
-        # sys.exit(0)
+    if args.decrease:
+        path, weight = decrease_path(config, os.getcwd(), args.decrease)
+        print(encode_local("%.1f:\t%s" % (weight, path)))
+        sys.exit(0)
 
     # if args.purge:
         # removed = db.purge()
@@ -161,6 +160,17 @@ def add_path(config, path, increment=10):
         data[path] = sqrt((data[path]**2) + (increment**2))
     else:
         data[path] = increment
+
+    save(config, data)
+    return path, data[path]
+
+
+def decrease_path(config, path, increment=15):
+    """Decrease weight of existing path."""
+    path = decode(path).rstrip(os.sep)
+    data = load(config)
+
+    data[path] = max(0, data[path]-increment)
 
     save(config, data)
     return path, data[path]
