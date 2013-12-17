@@ -193,9 +193,8 @@ def decrease_path(config, path, increment=15):
 def find_matches(config, needles, count=1):
     """Return [count] paths matching needles."""
     entriefy = lambda tup: Entry(*tup)
-    exists = lambda entry: os.path.exists(entry.path)
     data = sorted(
-            ifilter(exists, imap(entriefy, load(config).iteritems())),
+            imap(entriefy, load(config).iteritems()),
             key=attrgetter('weight'),
             reverse=True)
 
@@ -212,7 +211,8 @@ def find_matches(config, needles, count=1):
     else:
         exact_matches = match_regex(needles, data, ignore_case)
 
-    return first(exact_matches).path
+    exists = lambda entry: os.path.exists(entry.path)
+    return first(ifilter(exists, exact_matches)).path
 
 
 def match_end(needle, haystack, ignore_case=False):
