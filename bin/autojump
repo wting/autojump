@@ -23,6 +23,7 @@ from __future__ import print_function
 
 from collections import namedtuple
 from functools import partial
+from itertools import chain
 # FIXME(ting|2013-12-17): fix imports for Python 3 compatability
 from itertools import ifilter
 from itertools import imap
@@ -84,7 +85,7 @@ def parse_environment(config):
     return config
 
 
-def eval_arguments(config):
+def parse_arguments():
     """Evaluate arguments and run appropriate logic, returning an error code."""
     parser = ArgumentParser(
             description='Automatically jump to directory passed as an argument.',
@@ -119,49 +120,7 @@ def eval_arguments(config):
             '-v', '--version', action="version", version="%(prog)s " +
             VERSION, help='show version information')
 
-    args = parser.parse_args()
-
-    if args.add:
-        add_path(config, args.add)
-        return 0
-
-    # if args.complete:
-        # config['match_cnt'] = 9
-        # config['ignore_case'] = True
-
-    if args.decrease:
-        try:
-            print_entry(decrease_path(config, os.getcwdu(), args.decrease))
-            return 0
-        except OSError:
-            print("Current directory no longer exists.", file=sys.stderr)
-            return 1
-
-    if args.increase:
-        try:
-            print_entry(add_path(config, os.getcwdu(), args.increase))
-            return 0
-        except OSError:
-            print("Current directory no longer exists.", file=sys.stderr)
-            return 1
-
-    if args.purge:
-        print("Purged %d entries." % purge_missing_paths(config))
-        return 0
-
-    if args.stat:
-        print_stats(config)
-        return 0
-
-    # default behavior, no optional arguments
-    result = first(find_matches(config, args.directory))
-    if result:
-        print(encode_local(result.path))
-    else:
-        # always return something so the calling shell function has something
-        # to `cd` to
-        print(encode_local('.'))
-    return 0
+    return parser.parse_args()
 
 
 def add_path(config, path, increment=10):
@@ -206,7 +165,7 @@ def detect_smartcase(needles):
 
 
 def find_matches(config, needles):
-    """Return an iterator to a matching entries."""
+    """Return an iterator to matching entries."""
     entriefy = lambda tup: Entry(*tup)
     not_cwd = lambda entry: entry.path != os.getcwdu()
     data = sorted(
@@ -221,10 +180,11 @@ def find_matches(config, needles):
     needles = map(sanitize, needles)
     ignore_case = detect_smartcase(needles)
 
-    exact_matches = match_consecutive(needles, data, ignore_case)
+    consecutive_matches = match_consecutive(needles, data, ignore_case)
+    fuzzy_matches = match_fuzzy(needles, data, ignore_case)
 
     exists = lambda entry: os.path.exists(entry.path)
-    return ifilter(exists, exact_matches)
+    return ifilter(exists, chain(consecutive_matches, fuzzy_matches))
 
 
 def match_consecutive(needles, haystack, ignore_case=False):
@@ -267,24 +227,10 @@ def match_consecutive(needles, haystack, ignore_case=False):
     return ifilter(found, haystack)
 
 
-def match_regex(needles, haystack, ignore_case=False):
+def match_fuzzy(needles, haystack, ignore_case=False):
     """
-    Performs an exact match by combining all arguments into a single regex
-    expression and finding matches.
-
-    For example:
-        needles = ['qui', 'fox']
-        regex needle = r'.*qui.*fox.*'
-        haystack = [
-            (path="foobar", 10.0),
-            (path="The quick brown fox jumped over the lazy dog", 12.3)]
-
-        result = [(path="The quick brown fox jumped over the lazy dog", 12.3)]
     """
-    regex_needle = '.*' + '.*'.join(needles) + '.*'
-    regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
-    has_needle = lambda haystack: re.search(regex_needle, haystack.path, flags=regex_flags)
-    return ifilter(has_needle, haystack)
+    return []
 
 
 def purge_missing_paths(config):
@@ -315,7 +261,42 @@ def print_stats(config):
 
 
 def main():
-    return eval_arguments(parse_environment(set_defaults()))
+    config = parse_environment(set_defaults())
+    args = parse_arguments()
+
+    if args.add:
+        add_path(config, args.add)
+    # elif args.complete:
+        # config['match_cnt'] = 9
+        # config['ignore_case'] = True
+    elif args.decrease:
+        try:
+            print_entry(decrease_path(config, os.getcwdu(), args.decrease))
+        except OSError:
+            print("Current directory no longer exists.", file=sys.stderr)
+            return 1
+    elif args.increase:
+        try:
+            print_entry(add_path(config, os.getcwdu(), args.increase))
+        except OSError:
+            print("Current directory no longer exists.", file=sys.stderr)
+            return 1
+    elif args.purge:
+        print("Purged %d entries." % purge_missing_paths(config))
+    elif args.stat:
+        print_stats(config)
+    else:
+        # default behavior, no optional arguments
+        result = first(find_matches(load(config).iteritems(), args.directory))
+
+        if result:
+            print(encode_local(result.path))
+        else:
+            # always return something so the calling shell function has an
+            # argument to `cd` to
+            print(encode_local('.'))
+
+    return 0
 
 
 if __name__ == "__main__":
