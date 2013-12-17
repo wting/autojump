@@ -191,16 +191,15 @@ def find_matches(config, needles, count=1):
             key=attrgetter('weight'),
             reverse=True)
 
-    print(data[:3])
-
-    # if no arguments, return first path
     if not needles:
         return first(data).path
 
     sanitize = lambda x: decode(x).rstrip(os.sep)
-    needle = first(imap(sanitize, needles))
+    needles = imap(sanitize, needles)
 
-    exact_matches = match_exact(needle, data)
+    exact_matches = data
+    for needle in needles:
+        exact_matches = match_exact(needle, exact_matches)
 
     return first(exact_matches).path
 
