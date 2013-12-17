@@ -21,8 +21,12 @@
 
 from __future__ import division, print_function
 
+from collections import namedtuple
+from functools import partial
 from itertools import ifilter
+from itertools import imap
 from math import sqrt
+from operator import attrgetter
 from operator import itemgetter
 import os
 import platform
@@ -30,13 +34,16 @@ import sys
 
 from argparse import ArgumentParser
 
-from data import save
 from data import load
+from data import save
 from utils import decode
+from utils import encode_local
+from utils import first
 from utils import is_osx
-from utils import print_dir
+from utils import print_entry
 
 VERSION = 'release-v21.8.0'
+Entry = namedtuple('Entry', ['path', 'weight'])
 
 
 def set_defaults():
@@ -114,7 +121,7 @@ def parse_args(config):
 
     if args.increase:
         try:
-            print_dir(add_path(config, os.getcwdu(), args.increase))
+            print_entry(add_path(config, os.getcwdu(), args.increase))
             sys.exit(0)
         except OSError:
             print("Current directory no longer exists.", file=sys.stderr)
@@ -122,7 +129,7 @@ def parse_args(config):
 
     if args.decrease:
         try:
-            print_dir(decrease_path(config, os.getcwdu(), args.decrease))
+            print_entry(decrease_path(config, os.getcwdu(), args.decrease))
             sys.exit(0)
         except OSError:
             print("Current directory no longer exists.", file=sys.stderr)
@@ -135,6 +142,9 @@ def parse_args(config):
     if args.stat:
         print_stats(config)
         sys.exit(0)
+
+    print(encode_local(find_matches(config, args.directory)))
+    sys.exit(0)
 
     # if args.complete:
         # config['match_cnt'] = 9
@@ -172,6 +182,34 @@ def decrease_path(config, path, increment=15):
     return path, data[path]
 
 
+def find_matches(config, needles, count=1):
+    """Return [count] paths matching needles."""
+    entriefy = lambda tup: Entry(*tup)
+    exists = lambda entry: os.path.exists(entry.path)
+    data = sorted(
+            ifilter(exists, imap(entriefy, load(config).iteritems())),
+            key=attrgetter('weight'),
+            reverse=True)
+
+    print(data[:3])
+
+    # if no arguments, return first path
+    if not needles:
+        return first(data).path
+
+    sanitize = lambda x: decode(x).rstrip(os.sep)
+    needle = first(imap(sanitize, needles))
+
+    exact_matches = match_exact(needle, data)
+
+    return first(exact_matches).path
+
+
+def match_exact(needle, haystack):
+    find = lambda haystack: needle in haystack.path
+    return ifilter(find, haystack)
+
+
 def purge_missing_paths(config):
     """Remove non-existent paths."""
     exists = lambda x: os.path.exists(x[0])
@@ -185,7 +223,7 @@ def print_stats(config):
     data = load(config)
 
     for path, weight in sorted(data.iteritems(), key=itemgetter(1)):
-        print_dir(path, weight)
+        print_entry(path, weight)
 
     print("________________________________________\n")
     print("%d:\t total weight" % sum(data.itervalues()))

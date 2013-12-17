@@ -3,7 +3,9 @@
 
 from __future__ import print_function
 
+from collections import Iterable
 import errno
+from itertools import islice
 import os
 import platform
 import shutil
@@ -40,6 +42,14 @@ def encode_local(string, encoding=None):
     return string
 
 
+def first(xs):
+    it = iter(xs)
+    try:
+        return it.next()
+    except StopIteration:
+        return None
+
+
 def is_python2():
     return sys.version_info[0] == 2
 
@@ -69,5 +79,10 @@ def move_file(src, dst):
     shutil.move(src, dst)
 
 
-def print_dir(path, weight):
+def print_entry(path, weight):
     print(encode_local("%.1f:\t%s" % (weight, path)))
+
+
+def take(n, iterable):
+    """Return first n items of an iterable."""
+    return islice(iterable, n)
