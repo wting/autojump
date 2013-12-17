@@ -30,7 +30,7 @@ from operator import attrgetter
 from operator import itemgetter
 import os
 import platform
-from re import search
+import re
 import sys
 
 from argparse import ArgumentParser
@@ -208,7 +208,7 @@ def find_matches(config, needles, count=1):
     return first(exact_matches).path
 
 
-def match_exact_regex(needles, haystack):
+def match_exact_regex(needles, haystack, ignore_case=False):
     """
     Performs an exact match by combining all arguments into a single regex
     expression and finding matches.
@@ -222,9 +222,9 @@ def match_exact_regex(needles, haystack):
 
         result = [(path="The quick brown fox jumped over the lazy dog", 12.3)]
     """
-
     regex_needle = '.*' + '.*'.join(needles) + '.*'
-    find = lambda haystack: search(regex_needle, haystack.path)
+    regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
+    find = lambda haystack: re.search(regex_needle, haystack.path, flags=regex_flags)
     return ifilter(find, haystack)
 
 
