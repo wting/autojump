@@ -202,8 +202,9 @@ def detect_smartcase(needles):
 def find_matches(config, needles, count=1):
     """Return [count] paths matching needles."""
     entriefy = lambda tup: Entry(*tup)
+    not_cwd = lambda entry: entry.path != os.getcwdu()
     data = sorted(
-            imap(entriefy, load(config).iteritems()),
+            ifilter(not_cwd, imap(entriefy, load(config).iteritems())),
             key=attrgetter('weight'),
             reverse=True)
 
