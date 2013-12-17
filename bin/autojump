@@ -156,7 +156,12 @@ def parse_args(config):
 
 
 def add_path(config, path, increment=10):
-    """Add a new path or increment an existing one."""
+    """
+    Add a new path or increment an existing one.
+
+    os.path.realpath() is not used because users prefer to have short, symlinked
+    paths with duplicate entries in the database than a single canonical path.
+    """
     path = decode(path).rstrip(os.sep)
     if path == os.path.expanduser('~'):
         return path, 0
