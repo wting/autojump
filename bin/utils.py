@@ -79,6 +79,16 @@ def is_windows():
     return platform.system() == 'Windows'
 
 
+def last(xs):
+    it = iter(xs)
+    tmp = None
+    try:
+        while True:
+            tmp = it.next()
+    except StopIteration:
+        return tmp
+
+
 def move_file(src, dst):
     """
     Atomically move file.

@@ -21,6 +21,7 @@
 
 from __future__ import print_function
 
+from difflib import SequenceMatcher
 from functools import partial
 from itertools import chain
 # FIXME(ting|2013-12-17): fix imports for Python 3 compatability
@@ -47,11 +48,13 @@ from utils import first
 from utils import get_pwd
 from utils import has_uppercase
 from utils import is_osx
+from utils import last
 from utils import print_entry
 from utils import second
 from utils import take
 
 VERSION = 'release-v21.8.0'
+FUZZY_MATCH_THRESHOLD = 0.6
 
 
 def set_defaults():
@@ -180,10 +183,13 @@ def find_matches(entries, needles):
     ignore_case = detect_smartcase(needles)
 
     consecutive_matches = match_consecutive(needles, data, ignore_case)
+    quicksilver_matches = match_quicksilver(needles, data, ignore_case)
     fuzzy_matches = match_fuzzy(needles, data, ignore_case)
 
     exists = lambda entry: os.path.exists(entry.path)
-    return ifilter(exists, chain(consecutive_matches, fuzzy_matches))
+    return ifilter(
+            exists,
+            chain(consecutive_matches, quicksilver_matches, fuzzy_matches))
 
 
 def match_consecutive(needles, haystack, ignore_case=False):
@@ -193,10 +199,10 @@ def match_consecutive(needles, haystack, ignore_case=False):
     For example:
         needles = ['foo', 'baz']
         haystack = [
-            (path="/foo/bar/baz", 10),
-            (path="/foo/baz/moo", 10),
-            (path="/moo/foo/baz", 10),
-            (path="/foo/baz", 10)]
+            (path="/foo/bar/baz", weight=10),
+            (path="/foo/baz/moo", weight=10),
+            (path="/moo/foo/baz", weight=10),
+            (path="/foo/baz", weight=10)]
 
         regex_needle = re.compile(r'''
             foo     # needle #1
@@ -209,8 +215,8 @@ def match_consecutive(needles, haystack, ignore_case=False):
             ''')
 
         result = [
-            (path="/moo/foo/baz", 10),
-            (path="/foo/baz", 10)]
+            (path="/moo/foo/baz", weight=10),
+            (path="/foo/baz", weight=10)]
     """
     regex_no_sep = '[^' + os.sep + ']*'
     regex_one_sep = regex_no_sep + os.sep + regex_no_sep
@@ -219,14 +225,46 @@ def match_consecutive(needles, haystack, ignore_case=False):
     regex_needle = regex_one_sep.join(needles) + regex_no_sep_end
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
 
-    found = lambda haystack: re.search(
+    found = lambda entry: re.search(
             regex_needle,
-            haystack.path,
+            entry.path,
             flags=regex_flags)
     return ifilter(found, haystack)
 
 
 def match_fuzzy(needles, haystack, ignore_case=False):
+    """
+    Performs an approximate match with the last needle against the end of
+    every path past an acceptable threshold (FUZZY_MATCH_THRESHOLD).
+
+    For example:
+        needles = ['foo', 'bar']
+        haystack = [
+            (path="/foo/bar/baz", weight=11),
+            (path="/foo/baz/moo", weight=10),
+            (path="/moo/foo/baz", weight=10),
+            (path="/foo/baz", weight=10),
+            (path="/foo/bar", weight=10)]
+
+    result = [
+            (path="/foo/bar/baz", weight=11),
+            (path="/moo/foo/baz", weight=10),
+            (path="/foo/baz", weight=10),
+            (path="/foo/bar", weight=10)]
+
+    This is a weak heuristic and be used as a last resort to find matches.
+    """
+    needle = last(needles)
+    end_dir = lambda path: last(os.path.split(path))
+    match_percent = lambda entry: SequenceMatcher(
+            a=needle,
+            b=end_dir(entry.path)).ratio()
+    meets_threshold = lambda entry: match_percent(entry) \
+            >= FUZZY_MATCH_THRESHOLD
+    return ifilter(meets_threshold, haystack)
+
+
+def match_quicksilver(needles, haystack, ignore_case=False):
     """
     """
     return []
