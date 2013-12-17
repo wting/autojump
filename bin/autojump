@@ -254,11 +254,17 @@ def match_fuzzy(needles, haystack, ignore_case=False):
 
     This is a weak heuristic and be used as a last resort to find matches.
     """
-    needle = last(needles)
     end_dir = lambda path: last(os.path.split(path))
-    match_percent = lambda entry: SequenceMatcher(
-            a=needle,
-            b=end_dir(entry.path)).ratio()
+    if ignore_case:
+        needle = last(needles).lower()
+        match_percent = lambda entry: SequenceMatcher(
+                a=needle,
+                b=end_dir(entry.path.lower())).ratio()
+    else:
+        needle = last(needles)
+        match_percent = lambda entry: SequenceMatcher(
+                a=needle,
+                b=end_dir(entry.path)).ratio()
     meets_threshold = lambda entry: match_percent(entry) \
             >= FUZZY_MATCH_THRESHOLD
     return ifilter(meets_threshold, haystack)
