@@ -30,6 +30,7 @@ from operator import attrgetter
 from operator import itemgetter
 import os
 import platform
+from re import search
 import sys
 
 from argparse import ArgumentParser
@@ -197,15 +198,28 @@ def find_matches(config, needles, count=1):
     sanitize = lambda x: decode(x).rstrip(os.sep)
     needles = imap(sanitize, needles)
 
-    exact_matches = data
-    for needle in needles:
-        exact_matches = match_exact(needle, exact_matches)
+    exact_matches = match_exact_regex(needles, data)
 
     return first(exact_matches).path
 
 
-def match_exact(needle, haystack):
-    find = lambda haystack: needle in haystack.path
+def match_exact_regex(needles, haystack):
+    """
+    Performs an exact match by combining all arguments into a single regex
+    expression and finding matches.
+
+    For example:
+        needles = ['qui', 'fox']
+        regex needle = r'.*qui.*fox.*'
+        haystack = [
+            (path="foobar", 10.0),
+            (path="The quick brown fox jumped over the lazy dog", 12.3)]
+
+        result = [(path="The quick brown fox jumped over the lazy dog", 12.3)]
+    """
+
+    regex_needle = '.*' + '.*'.join(needles) + '.*'
+    find = lambda haystack: search(regex_needle, haystack.path)
     return ifilter(find, haystack)
 
 
