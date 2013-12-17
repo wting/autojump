@@ -50,12 +50,14 @@ from utils import has_uppercase
 from utils import is_osx
 from utils import last
 from utils import print_entry
+from utils import print_tab_completion_menu
 from utils import second
 from utils import surround_quotes
 from utils import take
 
 VERSION = 'release-v21.8.0'
 FUZZY_MATCH_THRESHOLD = 0.6
+TAB_COMPLETION_COUNT = 9
 
 
 def set_defaults():
@@ -102,12 +104,9 @@ def parse_arguments():
             '-d', '--decrease', metavar='WEIGHT', nargs='?', type=int,
             const=15, default=False,
             help='decrease current directory weight')
-    # parser.add_argument(
-            # '-b', '--bash', action="store_true", default=False,
-            # help='enclose directory quotes to prevent errors')
-    # parser.add_argument(
-            # '--complete', action="store_true", default=False,
-            # help='used for tab completion')
+    parser.add_argument(
+            '--complete', action="store_true", default=False,
+            help='used for tab completion')
     parser.add_argument(
             '--purge', action="store_true", default=False,
             help='remove non-existent paths from database')
@@ -287,8 +286,6 @@ def match_fuzzy(needles, haystack, ignore_case=False):
 
 
 def match_quicksilver(needles, haystack, ignore_case=False):
-    """
-    """
     return []
 
 
@@ -320,9 +317,12 @@ def main():
 
     if args.add:
         save(config, first(add_path(load(config), args.add)))
-    # elif args.complete:
-        # config['match_cnt'] = 9
-        # config['ignore_case'] = True
+    elif args.complete:
+        print_tab_completion_menu(
+                separator=config['tab_menu_separator'],
+                entries=take(
+                    TAB_COMPLETION_COUNT,
+                    find_matches(entriefy(load(config)), args.directory)))
     elif args.decrease:
         data, entry = decrease_path(load(config), get_pwd(), args.decrease)
         save(config, data)

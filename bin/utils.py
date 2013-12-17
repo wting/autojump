@@ -110,6 +110,16 @@ def print_entry(entry):
     print(encode_local("%.1f:\t%s" % (entry.weight, entry.path)))
 
 
+def print_tab_completion_menu(separator, entries):
+    for i, entry in enumerate(entries):
+        print(encode_local(surround_quotes(
+            '%s%d%s%s' % (
+                separator,
+                i,
+                separator,
+                entry.path))))
+
+
 def second(xs):
     it = iter(xs)
     try:
