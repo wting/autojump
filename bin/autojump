@@ -205,8 +205,8 @@ def find_matches(config, needles, count=1):
     needles = map(sanitize, needles)
     ignore_case = detect_smartcase(needles)
 
+    # if one needle, match only against the last directory of each path
     if len(needles) == 1:
-        # if one needle, match only against the last directory of each path
         exact_matches = match_end(first(needles), data, ignore_case)
     else:
         exact_matches = match_regex(needles, data, ignore_case)
@@ -219,7 +219,10 @@ def find_matches(config, needles, count=1):
 def match_end(needle, haystack, ignore_case=False):
     """Matches needle against the last directory of path."""
     get_last_dir = lambda entry: second(os.path.split(entry.path))
-    has_needle = lambda entry: needle in get_last_dir(entry)
+    if ignore_case:
+        has_needle = lambda entry: needle in get_last_dir(entry).lower()
+    else:
+        has_needle = lambda entry: needle in get_last_dir(entry)
     return ifilter(has_needle, haystack)
 
 
