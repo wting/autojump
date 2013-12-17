@@ -83,14 +83,6 @@ def set_defaults():
     return config
 
 
-def parse_environment(config):
-    # TODO(ting|2013-12-16): add autojump_data_dir support
-    # TODO(ting|2013-12-15): add ignore case / smartcase support
-    # TODO(ting|2013-12-15): add symlink support
-
-    return config
-
-
 def parse_arguments():
     """Evaluate arguments and run appropriate logic, returning an error code."""
     parser = ArgumentParser(
@@ -323,7 +315,7 @@ def print_stats(data, data_path):
 
 
 def main():
-    config = parse_environment(set_defaults())
+    config = set_defaults()
     args = parse_arguments()
 
     if args.add:
