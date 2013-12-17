@@ -321,7 +321,7 @@ def main():
         result = first(find_matches(entriefy(load(config)), args.directory))
 
         if result:
-            print(encode_local(result.path))
+            print(encode_local(surround_quotes(result.path)))
         else:
             # always return something so the calling shell function has an
             # argument to `cd` to

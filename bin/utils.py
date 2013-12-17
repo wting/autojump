@@ -63,6 +63,10 @@ def has_uppercase(string):
     return any(unicodedata.category(c) == 'Lu' for c in unicode(string))
 
 
+def in_bash():
+    return 'bash' in os.getenv('SHELL')
+
+
 def is_python2():
     return sys.version_info[0] == 2
 
@@ -113,6 +117,12 @@ def second(xs):
         return it.next()
     except StopIteration:
         return None
+
+
+def surround_quotes(string):
+    if in_bash():
+        return '"{}"'.format(string)
+    return string
 
 
 def take(n, iterable):
