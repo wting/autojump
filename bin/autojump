@@ -191,6 +191,14 @@ def decrease_path(config, path, increment=15):
     return path, data[path]
 
 
+def detect_smartcase(needles):
+    """
+    If any needles contain an uppercase letter then use case sensitive
+    searching. Otherwise use case insensitive searching.
+    """
+    return not any(imap(has_uppercase, needles))
+
+
 def find_matches(config, needles, count=1):
     """Return [count] paths matching needles."""
     entriefy = lambda tup: Entry(*tup)
