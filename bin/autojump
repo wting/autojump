@@ -19,10 +19,11 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 """
 
-from __future__ import division, print_function
+from __future__ import print_function
 
 from collections import namedtuple
 from functools import partial
+# FIXME(ting|2013-12-17): fix imports for Python 3 compatability
 from itertools import ifilter
 from itertools import imap
 from math import sqrt
@@ -44,6 +45,7 @@ from utils import has_uppercase
 from utils import is_osx
 from utils import print_entry
 from utils import second
+from utils import take
 
 VERSION = 'release-v21.8.0'
 Entry = namedtuple('Entry', ['path', 'weight'])
@@ -123,17 +125,21 @@ def eval_arguments(config):
         add_path(config, args.add)
         return 0
 
-    if args.increase:
+    # if args.complete:
+        # config['match_cnt'] = 9
+        # config['ignore_case'] = True
+
+    if args.decrease:
         try:
-            print_entry(add_path(config, os.getcwdu(), args.increase))
+            print_entry(decrease_path(config, os.getcwdu(), args.decrease))
             return 0
         except OSError:
             print("Current directory no longer exists.", file=sys.stderr)
             return 1
 
-    if args.decrease:
+    if args.increase:
         try:
-            print_entry(decrease_path(config, os.getcwdu(), args.decrease))
+            print_entry(add_path(config, os.getcwdu(), args.increase))
             return 0
         except OSError:
             print("Current directory no longer exists.", file=sys.stderr)
@@ -147,15 +153,15 @@ def eval_arguments(config):
         print_stats(config)
         return 0
 
-    print(encode_local(find_matches(config, args.directory)))
+    # default behavior, no optional arguments
+    result = first(find_matches(config, args.directory))
+    if result:
+        print(encode_local(result.path))
+    else:
+        # always return something so the calling shell function has something
+        # to `cd` to
+        print(encode_local('.'))
     return 0
-
-    # if args.complete:
-        # config['match_cnt'] = 9
-        # config['ignore_case'] = True
-
-    # config['args'] = args
-    return config
 
 
 def add_path(config, path, increment=10):
@@ -199,8 +205,8 @@ def detect_smartcase(needles):
     return not any(imap(has_uppercase, needles))
 
 
-def find_matches(config, needles, count=1):
-    """Return [count] paths matching needles."""
+def find_matches(config, needles):
+    """Return an iterator to a matching entries."""
     entriefy = lambda tup: Entry(*tup)
     not_cwd = lambda entry: entry.path != os.getcwdu()
     data = sorted(
@@ -218,12 +224,7 @@ def find_matches(config, needles, count=1):
     exact_matches = match_consecutive(needles, data, ignore_case)
 
     exists = lambda entry: os.path.exists(entry.path)
-    result = first(ifilter(exists, exact_matches))
-
-    # TODO(ting|2013-12-17): remove debug print
-    print(result)
-    sys.exit(0)
-    return result.path if result else u''
+    return ifilter(exists, exact_matches)
 
 
 def match_consecutive(needles, haystack, ignore_case=False):
@@ -238,7 +239,7 @@ def match_consecutive(needles, haystack, ignore_case=False):
             (path="/moo/foo/baz", 10),
             (path="/foo/baz", 10)]
 
-        regex needle = re.compile(r'''
+        regex_needle = re.compile(r'''
             foo     # needle #1
             [^/]*   # all characters except os.sep zero or more times
             /       # os.sep
@@ -246,7 +247,7 @@ def match_consecutive(needles, haystack, ignore_case=False):
             baz     # needle #2
             [^/]*   # all characters except os.sep zero or more times
             $       # end of string
-            '''
+            ''')
 
         result = [
             (path="/moo/foo/baz", 10),
@@ -256,11 +257,11 @@ def match_consecutive(needles, haystack, ignore_case=False):
     regex_one_sep = regex_no_sep + os.sep + regex_no_sep
     regex_no_sep_end = regex_no_sep + '$'
     # can't use compiled regex because of flags
-    needle = regex_one_sep.join(needles) + regex_no_sep_end
+    regex_needle = regex_one_sep.join(needles) + regex_no_sep_end
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
 
     found = lambda haystack: re.search(
-            needle,
+            regex_needle,
             haystack.path,
             flags=regex_flags)
     return ifilter(found, haystack)
