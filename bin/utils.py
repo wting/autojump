@@ -88,6 +88,15 @@ def print_entry(path, weight):
     print(encode_local("%.1f:\t%s" % (weight, path)))
 
 
+def second(xs):
+    it = iter(xs)
+    try:
+        it.next()
+        return it.next()
+    except StopIteration:
+        return None
+
+
 def take(n, iterable):
     """Return first n items of an iterable."""
     return islice(iterable, n)

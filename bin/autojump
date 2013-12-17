@@ -43,6 +43,7 @@ from utils import first
 from utils import has_uppercase
 from utils import is_osx
 from utils import print_entry
+from utils import second
 
 VERSION = 'release-v21.8.0'
 Entry = namedtuple('Entry', ['path', 'weight'])
@@ -201,16 +202,27 @@ def find_matches(config, needles, count=1):
     if not needles:
         return first(data).path
 
-    ignore_case = detect_smartcase(needles)
     sanitize = lambda x: decode(x).rstrip(os.sep)
-    needles = imap(sanitize, needles)
+    needles = map(sanitize, needles)
+    ignore_case = detect_smartcase(needles)
 
-    exact_matches = match_exact_regex(needles, data, ignore_case)
+    if len(needles) == 1:
+        # if one needle, match only against the last directory of each path
+        exact_matches = match_end(first(needles), data, ignore_case)
+    else:
+        exact_matches = match_regex(needles, data, ignore_case)
 
     return first(exact_matches).path
 
 
-def match_exact_regex(needles, haystack, ignore_case=False):
+def match_end(needle, haystack, ignore_case=False):
+    """Matches needle against the last directory of path."""
+    get_last_dir = lambda entry: second(os.path.split(entry.path))
+    has_needle = lambda entry: needle in get_last_dir(entry)
+    return ifilter(has_needle, haystack)
+
+
+def match_regex(needles, haystack, ignore_case=False):
     """
     Performs an exact match by combining all arguments into a single regex
     expression and finding matches.
@@ -226,8 +238,8 @@ def match_exact_regex(needles, haystack, ignore_case=False):
     """
     regex_needle = '.*' + '.*'.join(needles) + '.*'
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
-    find = lambda haystack: re.search(regex_needle, haystack.path, flags=regex_flags)
-    return ifilter(find, haystack)
+    has_needle = lambda haystack: re.search(regex_needle, haystack.path, flags=regex_flags)
+    return ifilter(has_needle, haystack)
 
 
 def purge_missing_paths(config):
