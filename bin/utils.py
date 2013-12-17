@@ -10,6 +10,7 @@ import os
 import platform
 import shutil
 import sys
+import unicodedata
 
 
 def create_dir(path):
@@ -48,6 +49,10 @@ def first(xs):
         return it.next()
     except StopIteration:
         return None
+
+
+def has_uppercase(string):
+    return any(unicodedata.category(c) == 'Lu' for c in unicode(string))
 
 
 def is_python2():

@@ -40,6 +40,7 @@ from data import save
 from utils import decode
 from utils import encode_local
 from utils import first
+from utils import has_uppercase
 from utils import is_osx
 from utils import print_entry
 
@@ -200,10 +201,11 @@ def find_matches(config, needles, count=1):
     if not needles:
         return first(data).path
 
+    ignore_case = detect_smartcase(needles)
     sanitize = lambda x: decode(x).rstrip(os.sep)
     needles = imap(sanitize, needles)
 
-    exact_matches = match_exact_regex(needles, data)
+    exact_matches = match_exact_regex(needles, data, ignore_case)
 
     return first(exact_matches).path
 
@@ -253,6 +255,11 @@ def print_stats(config):
         pass
 
     print("\ndata:\t %s" % config['data_path'])
+
+
+def detect_smartcase(strings):
+    """Detect if any uppercase letters are present in any of the strings."""
+    return not any(imap(has_uppercase, strings))
 
 
 def main():
