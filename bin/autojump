@@ -24,7 +24,7 @@ from __future__ import print_function
 from difflib import SequenceMatcher
 from functools import partial
 from itertools import chain
-# FIXME(ting|2013-12-17): fix imports for Python 3 compatability
+# FIXME(ting|2013-12-17): fix imports for Python 3 compatibility
 from itertools import ifilter
 from itertools import imap
 from math import sqrt
@@ -51,6 +51,7 @@ from utils import is_osx
 from utils import last
 from utils import print_entry
 from utils import second
+from utils import surround_quotes
 from utils import take
 
 VERSION = 'release-v21.8.0'
@@ -182,14 +183,37 @@ def find_matches(entries, needles):
     needles = map(sanitize, needles)
     ignore_case = detect_smartcase(needles)
 
-    consecutive_matches = match_consecutive(needles, data, ignore_case)
-    quicksilver_matches = match_quicksilver(needles, data, ignore_case)
-    fuzzy_matches = match_fuzzy(needles, data, ignore_case)
-
     exists = lambda entry: os.path.exists(entry.path)
     return ifilter(
             exists,
-            chain(consecutive_matches, quicksilver_matches, fuzzy_matches))
+            chain(
+                match_consecutive(needles, data, ignore_case),
+                match_quicksilver(needles, data, ignore_case),
+                match_fuzzy(needles, data, ignore_case),
+                match_anywhere(needles, data, ignore_case)))
+
+
+def match_anywhere(needles, haystack, ignore_case=False):
+    """
+    Matches needles anywhere in the path as long as they're in the same (but
+    not necessary consecutive) order.
+
+    For example:
+        needles = ['foo', 'baz']
+        regex needle = r'.*foo.*baz.*'
+        haystack = [
+            (path="/foo/bar/baz", weight=10),
+            (path="/baz/foo/bar", weight=10),
+            (path="/foo/baz", weight=10)]
+
+        result = [
+            (path="/moo/foo/baz", weight=10),
+            (path="/foo/baz", weight=10)]
+    """
+    regex_needle = '.*' + '.*'.join(needles) + '.*'
+    regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
+    found = lambda haystack: re.search(regex_needle, haystack.path, flags=regex_flags)
+    return ifilter(found, haystack)
 
 
 def match_consecutive(needles, haystack, ignore_case=False):
