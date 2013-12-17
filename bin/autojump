@@ -74,7 +74,7 @@ def set_defaults():
     return config
 
 
-def parse_env(config):
+def parse_environment(config):
     # TODO(ting|2013-12-16): add autojump_data_dir support
     # TODO(ting|2013-12-15): add ignore case / smartcase support
     # TODO(ting|2013-12-15): add symlink support
@@ -82,7 +82,8 @@ def parse_env(config):
     return config
 
 
-def parse_args(config):
+def eval_arguments(config):
+    """Evaluate arguments and run appropriate logic, returning an error code."""
     parser = ArgumentParser(
             description='Automatically jump to directory passed as an argument.',
             epilog="Please see autojump(1) man pages for full documentation.")
@@ -120,34 +121,34 @@ def parse_args(config):
 
     if args.add:
         add_path(config, args.add)
-        sys.exit(0)
+        return 0
 
     if args.increase:
         try:
             print_entry(add_path(config, os.getcwdu(), args.increase))
-            sys.exit(0)
+            return 0
         except OSError:
             print("Current directory no longer exists.", file=sys.stderr)
-            sys.exit(1)
+            return 1
 
     if args.decrease:
         try:
             print_entry(decrease_path(config, os.getcwdu(), args.decrease))
-            sys.exit(0)
+            return 0
         except OSError:
             print("Current directory no longer exists.", file=sys.stderr)
-            sys.exit(1)
+            return 1
 
     if args.purge:
         print("Purged %d entries." % purge_missing_paths(config))
-        sys.exit(0)
+        return 0
 
     if args.stat:
         print_stats(config)
-        sys.exit(0)
+        return 0
 
     print(encode_local(find_matches(config, args.directory)))
-    sys.exit(0)
+    return 0
 
     # if args.complete:
         # config['match_cnt'] = 9
@@ -303,14 +304,9 @@ def print_stats(config):
     print("\ndata:\t %s" % config['data_path'])
 
 
-def detect_smartcase(strings):
-    """Detect if any uppercase letters are present in any of the strings."""
-    return not any(imap(has_uppercase, strings))
-
-
 def main():
-    parse_args(parse_env(set_defaults()))
-    return 0
+    return eval_arguments(parse_environment(set_defaults()))
+
 
 if __name__ == "__main__":
     sys.exit(main())
