@@ -51,6 +51,14 @@ def first(xs):
         return None
 
 
+def get_pwd():
+    try:
+        return os.getcwdu()
+    except OSError:
+        print("Current directory no longer exists.", file=sys.stderr)
+        sys.exit(1)
+
+
 def has_uppercase(string):
     return any(unicodedata.category(c) == 'Lu' for c in unicode(string))
 
@@ -84,8 +92,8 @@ def move_file(src, dst):
     shutil.move(src, dst)
 
 
-def print_entry(path, weight):
-    print(encode_local("%.1f:\t%s" % (weight, path)))
+def print_entry(entry):
+    print(encode_local("%.1f:\t%s" % (entry.weight, entry.path)))
 
 
 def second(xs):

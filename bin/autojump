@@ -21,7 +21,6 @@
 
 from __future__ import print_function
 
-from collections import namedtuple
 from functools import partial
 from itertools import chain
 # FIXME(ting|2013-12-17): fix imports for Python 3 compatability
@@ -37,11 +36,15 @@ import sys
 
 from argparse import ArgumentParser
 
+from data import dictify
+from data import entriefy
+from data import Entry
 from data import load
 from data import save
 from utils import decode
 from utils import encode_local
 from utils import first
+from utils import get_pwd
 from utils import has_uppercase
 from utils import is_osx
 from utils import print_entry
@@ -49,7 +52,6 @@ from utils import second
 from utils import take
 
 VERSION = 'release-v21.8.0'
-Entry = namedtuple('Entry', ['path', 'weight'])
 
 
 def set_defaults():
@@ -123,7 +125,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def add_path(config, path, increment=10):
+def add_path(data, path, increment=10):
     """
     Add a new path or increment an existing one.
 
@@ -132,28 +134,21 @@ def add_path(config, path, increment=10):
     """
     path = decode(path).rstrip(os.sep)
     if path == os.path.expanduser('~'):
-        return path, 0
-
-    data = load(config)
+        return data, Entry(path, 0)
 
     if path in data:
         data[path] = sqrt((data[path]**2) + (increment**2))
     else:
         data[path] = increment
 
-    save(config, data)
-    return path, data[path]
+    return data, Entry(path, data[path])
 
 
-def decrease_path(config, path, increment=15):
+def decrease_path(data, path, increment=15):
     """Decrease weight of existing path."""
     path = decode(path).rstrip(os.sep)
-    data = load(config)
-
     data[path] = max(0, data[path]-increment)
-
-    save(config, data)
-    return path, data[path]
+    return data, Entry(path, data[path])
 
 
 def detect_smartcase(needles):
@@ -164,12 +159,16 @@ def detect_smartcase(needles):
     return not any(imap(has_uppercase, needles))
 
 
-def find_matches(config, needles):
+def find_matches(entries, needles):
     """Return an iterator to matching entries."""
-    entriefy = lambda tup: Entry(*tup)
-    not_cwd = lambda entry: entry.path != os.getcwdu()
+    try:
+        not_cwd = lambda entry: entry.path != os.getcwdu()
+    except OSError:
+        # tautology if current working directory no longer exists
+        not_cwd = lambda x: True
+
     data = sorted(
-            ifilter(not_cwd, imap(entriefy, load(config).iteritems())),
+            ifilter(not_cwd, entries),
             key=attrgetter('weight'),
             reverse=True)
 
@@ -233,20 +232,15 @@ def match_fuzzy(needles, haystack, ignore_case=False):
     return []
 
 
-def purge_missing_paths(config):
-    """Remove non-existent paths."""
-    exists = lambda x: os.path.exists(x[0])
-    old_data = load(config)
-    new_data = dict(ifilter(exists, old_data.iteritems()))
-    save(config, new_data)
-    return len(old_data) - len(new_data)
+def purge_missing_paths(entries):
+    """Remove non-existent paths from a list of entries."""
+    exists = lambda entry: os.path.exists(entry.path)
+    return ifilter(exists, entries)
 
 
-def print_stats(config):
-    data = load(config)
-
+def print_stats(data, data_path):
     for path, weight in sorted(data.iteritems(), key=itemgetter(1)):
-        print_entry(path, weight)
+        print_entry(Entry(path, weight))
 
     print("________________________________________\n")
     print("%d:\t total weight" % sum(data.itervalues()))
@@ -257,7 +251,7 @@ def print_stats(config):
     except OSError:
         pass
 
-    print("\ndata:\t %s" % config['data_path'])
+    print("\ndata:\t %s" % data_path)
 
 
 def main():
@@ -265,29 +259,28 @@ def main():
     args = parse_arguments()
 
     if args.add:
-        add_path(config, args.add)
+        save(config, first(add_path(load(config), args.add)))
     # elif args.complete:
         # config['match_cnt'] = 9
         # config['ignore_case'] = True
     elif args.decrease:
-        try:
-            print_entry(decrease_path(config, os.getcwdu(), args.decrease))
-        except OSError:
-            print("Current directory no longer exists.", file=sys.stderr)
-            return 1
+        data, entry = decrease_path(load(config), get_pwd(), args.decrease)
+        save(config, data)
+        print_entry(entry)
     elif args.increase:
-        try:
-            print_entry(add_path(config, os.getcwdu(), args.increase))
-        except OSError:
-            print("Current directory no longer exists.", file=sys.stderr)
-            return 1
+        data, entry = add_path(load(config), get_pwd(), args.decrease)
+        save(config, data)
+        print_entry(entry)
     elif args.purge:
-        print("Purged %d entries." % purge_missing_paths(config))
+        old_data = load(config)
+        new_data = dictify(purge_missing_paths(entriefy(old_data)))
+        save(config, new_data)
+        print("Purged %d entries." % (len(old_data)-len(new_data)))
     elif args.stat:
-        print_stats(config)
+        print_stats(load(config), config['data_path'])
     else:
         # default behavior, no optional arguments
-        result = first(find_matches(load(config).iteritems(), args.directory))
+        result = first(find_matches(entriefy(load(config)), args.directory))
 
         if result:
             print(encode_local(result.path))

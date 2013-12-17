@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 from codecs import open
+from collections import namedtuple
 from itertools import ifilter
 from itertools import imap
 from operator import itemgetter
@@ -17,9 +18,29 @@ from utils import move_file
 
 
 BACKUP_THRESHOLD = 24 * 60 * 60
+Entry = namedtuple('Entry', ['path', 'weight'])
+
+
+def dictify(entries):
+    """
+    Converts a list of entries into a dictionary where
+        key = path
+        value = weight
+    """
+    result = {}
+    for entry in entries:
+        result[entry.path] = entry.weight
+    return result
+
+
+def entriefy(data):
+    """Converts a dictionary into an iterator of entries."""
+    convert = lambda tup: Entry(*tup)
+    return imap(convert, data.iteritems())
 
 
 def load(config):
+    """Returns a dictonary (key=path, value=weight) loaded from data file."""
     xdg_aj_home = os.path.join(
             os.path.expanduser('~'),
             '.local',
@@ -30,19 +51,20 @@ def load(config):
         migrate_osx_xdg_data(config)
 
     if os.path.exists(config['data_path']):
+        # example: u'10.0\t/home/user\n' -> ['10.0', u'/home/user']
+        parse = lambda line: line.strip().split('\t')
+
+        correct_length = lambda x: len(x) == 2
+
+        # example: ['10.0', u'/home/user'] -> (u'/home/user', 10.0)
+        tupleize = lambda x: (x[1], float(x[0]))
+
         try:
             with open(config['data_path'], 'r', encoding='utf-8', errors='replace') as f:
-                lines = f.readlines()
+                return dict(imap(tupleize, ifilter(correct_length, imap(parse, f))))
         except (IOError, EOFError):
             return load_backup(config)
 
-        # example: u'10.0\t/home/user\n' -> ['10.0', u'/home/user']
-        parse = lambda x: x.strip().split('\t')
-        # example: ['10.0', u'/home/user'] -> (u'/home/user', 10.0)
-        convert = lambda x: (x[1], float(x[0]))
-        correct_length = lambda x: len(x) == 2
-
-        return dict(imap(convert, ifilter(correct_length, imap(parse, lines))))
     return {}
 
 
