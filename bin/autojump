@@ -45,12 +45,16 @@ from data import save
 from utils import decode
 from utils import encode_local
 from utils import first
+from utils import get_needle_and_index
 from utils import get_pwd
 from utils import has_uppercase
 from utils import is_osx
+from utils import is_tab_entry
+from utils import is_tab_partial_match
 from utils import last
 from utils import print_entry
-from utils import print_tab_completion_menu
+from utils import print_tab_menu
+from utils import sanitize
 from utils import second
 from utils import surround_quotes
 from utils import take
@@ -58,11 +62,11 @@ from utils import take
 VERSION = 'release-v21.8.0'
 FUZZY_MATCH_THRESHOLD = 0.6
 TAB_COMPLETION_COUNT = 9
+TAB_SEPARATOR = '__'
 
 
 def set_defaults():
     config = {}
-    config['tab_menu_separator'] = '__'
 
     if is_osx():
         data_home = os.path.join(
@@ -170,8 +174,6 @@ def find_matches(entries, needles):
     if not needles:
         return first(data).path
 
-    sanitize = lambda x: decode(x).rstrip(os.sep)
-    needles = map(sanitize, needles)
     ignore_case = detect_smartcase(needles)
 
     exists = lambda entry: os.path.exists(entry.path)
@@ -318,11 +320,11 @@ def main():
     if args.add:
         save(config, first(add_path(load(config), args.add)))
     elif args.complete:
-        print_tab_completion_menu(
-                separator=config['tab_menu_separator'],
-                entries=take(
-                    TAB_COMPLETION_COUNT,
-                    find_matches(entriefy(load(config)), args.directory)))
+        needle = first(sanitize(args.directory))
+        tab_entries = take(
+                TAB_COMPLETION_COUNT,
+                find_matches(entriefy(load(config)), needle))
+        print_tab_menu(needle, tab_entries, TAB_SEPARATOR)
     elif args.decrease:
         data, entry = decrease_path(load(config), get_pwd(), args.decrease)
         save(config, data)
@@ -340,14 +342,31 @@ def main():
         print_stats(load(config), config['data_path'])
     else:
         # default behavior, no optional arguments
-        result = first(find_matches(entriefy(load(config)), args.directory))
+        entries = entriefy(load(config))
+        needles = sanitize(args.directory)
+        needle = first(needles)
 
-        if result:
-            print(encode_local(surround_quotes(result.path)))
+        if is_tab_entry(needle, TAB_SEPARATOR):
+            # the needle is actually a tab entry here
+            needle, tab_index = get_needle_and_index(needle, TAB_SEPARATOR)
+            tab_entries = take(
+                    TAB_COMPLETION_COUNT,
+                    find_matches(entries, needle))
+
+            get_ith_path = lambda i, iterable: last(take(i, iterable)).path
+            print(encode_local(surround_quotes(
+                    get_ith_path(tab_index, tab_entries))))
+        elif is_tab_partial_match(needle, TAB_SEPARATOR):
+            print("tab_partial_match")
         else:
-            # always return something so the calling shell function has an
-            # argument to `cd` to
-            print(encode_local('.'))
+            result = first(find_matches(entries, needles))
+
+            if result:
+                print(encode_local(surround_quotes(result.path)))
+            else:
+                # always return something so the calling shell function has an
+                # argument to `cd` to
+                print(encode_local('.'))
 
     return 0
 

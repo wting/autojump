@@ -8,6 +8,7 @@ import errno
 from itertools import islice
 import os
 import platform
+import re
 import shutil
 import sys
 import unicodedata
@@ -51,6 +52,21 @@ def first(xs):
         return None
 
 
+def get_needle_and_index(tab_entry, separator):
+    """
+    Given a tab entry in the following format return the needle and index:
+
+        [needle]__[index]__[possible_match]
+    """
+    matches = re.search(
+            r'(.*)' + \
+            separator + \
+            r'([0-9]{1})' + \
+            separator, tab_entry)
+    return matches.group(1), int(matches.group(2))
+
+
+
 def get_pwd():
     try:
         return os.getcwdu()
@@ -77,6 +93,24 @@ def is_linux():
 
 def is_osx():
     return platform.system() == 'Darwin'
+
+
+def is_tab_entry(needle, separator):
+    """
+    Valid tab entry:
+
+        [needle]__[index]__[possible_match]
+    """
+    pattern = re.compile(
+            '.*' + \
+            separator + \
+            '[0-9]{1}' + \
+            separator)
+    return re.search(pattern, needle)
+
+
+def is_tab_partial_match(needle, separator):
+    return re.match(r'(.*)'+separator, needle)
 
 
 def is_windows():
@@ -110,14 +144,28 @@ def print_entry(entry):
     print(encode_local("%.1f:\t%s" % (entry.weight, entry.path)))
 
 
-def print_tab_completion_menu(separator, entries):
-    for i, entry in enumerate(entries):
+def print_tab_menu(needle, tab_entries, separator):
+    """
+    Prints the tab completion menu according to the following format:
+
+        [needle]__[index]__[possible_match]
+
+    The needle (search pattern) and index are necessary to recreate the results
+    on subsequent calls.
+    """
+    for i, entry in enumerate(tab_entries):
         print(encode_local(surround_quotes(
-            '%s%d%s%s' % (
+            '%s%s%d%s%s' % (
+                needle,
                 separator,
-                i,
+                i+1,
                 separator,
                 entry.path))))
+
+
+def sanitize(directories):
+    clean = lambda x: decode(x).rstrip(os.sep)
+    return map(clean, directories)
 
 
 def second(xs):
