@@ -61,7 +61,7 @@ from utils import take
 
 VERSION = 'release-v21.8.0'
 FUZZY_MATCH_THRESHOLD = 0.6
-TAB_COMPLETION_COUNT = 9
+TAB_ENTRIES_COUNT = 9
 TAB_SEPARATOR = '__'
 
 
@@ -322,7 +322,7 @@ def main():
     elif args.complete:
         needle = first(sanitize(args.directory))
         tab_entries = take(
-                TAB_COMPLETION_COUNT,
+                TAB_ENTRIES_COUNT,
                 find_matches(entriefy(load(config)), needle))
         print_tab_menu(needle, tab_entries, TAB_SEPARATOR)
     elif args.decrease:
@@ -350,7 +350,7 @@ def main():
             # the needle is actually a tab entry here
             needle, tab_index = get_needle_and_index(needle, TAB_SEPARATOR)
             tab_entries = take(
-                    TAB_COMPLETION_COUNT,
+                    TAB_ENTRIES_COUNT,
                     find_matches(entries, needle))
 
             get_ith_path = lambda i, iterable: last(take(i, iterable)).path
