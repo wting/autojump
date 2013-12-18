@@ -45,6 +45,7 @@ from data import save
 from utils import decode
 from utils import encode_local
 from utils import first
+from utils import get_needle
 from utils import get_needle_and_index
 from utils import get_pwd
 from utils import has_uppercase
@@ -347,7 +348,7 @@ def main():
         needle = first(needles)
 
         if is_tab_entry(needle, TAB_SEPARATOR):
-            # the needle is actually a tab entry here
+            # the needle is a tab_entry
             needle, tab_index = get_needle_and_index(needle, TAB_SEPARATOR)
             tab_entries = take(
                     TAB_ENTRIES_COUNT,
@@ -357,11 +358,16 @@ def main():
             print(encode_local(surround_quotes(
                     get_ith_path(tab_index, tab_entries))))
         elif is_tab_partial_match(needle, TAB_SEPARATOR):
-            print("tab_partial_match")
+            # the needle is a partial tab_entry
+            needle = get_needle(needle, TAB_SEPARATOR)
+            tab_entries = take(
+                    TAB_ENTRIES_COUNT,
+                    find_matches(entriefy(load(config)), needle))
+            print_tab_menu(needle, tab_entries, TAB_SEPARATOR)
         else:
             try:
                 print(encode_local(surround_quotes(
-                    first(find_matches(entries, needles)).path)))
+                        first(find_matches(entries, needles)).path)))
             except AttributeError:
                 # always return something so the calling shell function has an
                 # argument to `cd` to

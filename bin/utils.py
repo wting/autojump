@@ -52,6 +52,15 @@ def first(xs):
         return None
 
 
+def get_needle(tab_entry, separator):
+    """
+    Given a partial tab entry in the following format return the needle:
+
+        [needle]__
+    """
+    return re.match(r'(.*)'+separator, tab_entry).group(1)
+
+
 def get_needle_and_index(tab_entry, separator):
     """
     Given a tab entry in the following format return the needle and index:
@@ -64,7 +73,6 @@ def get_needle_and_index(tab_entry, separator):
             r'([0-9]{1})' + \
             separator, tab_entry)
     return matches.group(1), int(matches.group(2))
-
 
 
 def get_pwd():
