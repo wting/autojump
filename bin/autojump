@@ -314,9 +314,8 @@ def print_stats(data, data_path):
     print("\ndata:\t %s" % data_path)
 
 
-def main():
+def main(args):
     config = set_defaults()
-    args = parse_arguments()
 
     if args.add:
         save(config, first(add_path(load(config), args.add)))
@@ -342,7 +341,10 @@ def main():
     elif args.stat:
         print_stats(load(config), config['data_path'])
     else:
-        # no optional arguments
+        if not args.directory:
+            print(encode_local('.'))
+            return 0
+
         entries = entriefy(load(config))
         needles = sanitize(args.directory)
         needle = first(needles)
@@ -370,12 +372,12 @@ def main():
                 print(encode_local(surround_quotes(
                         first(find_matches(entries, needles)).path)))
             except AttributeError:
-                # always return something so the calling shell function has an
-                # argument to `cd` to
+                # no results, always return something so the calling shell
+                # function has an argument to `cd` to
                 print(encode_local('.'))
 
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(parse_arguments()))
