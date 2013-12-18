@@ -178,6 +178,10 @@ def second(xs):
 
 
 def surround_quotes(string):
+    """
+    Bash has problems dealing with certain paths so we're surrounding all
+    path outputs with quotes.
+    """
     if in_bash():
         return '"{}"'.format(string)
     return string
