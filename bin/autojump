@@ -359,11 +359,10 @@ def main():
         elif is_tab_partial_match(needle, TAB_SEPARATOR):
             print("tab_partial_match")
         else:
-            result = first(find_matches(entries, needles))
-
-            if result:
-                print(encode_local(surround_quotes(result.path)))
-            else:
+            try:
+                print(encode_local(surround_quotes(
+                    first(find_matches(entries, needles)).path)))
+            except AttributeError:
                 # always return something so the calling shell function has an
                 # argument to `cd` to
                 print(encode_local('.'))
