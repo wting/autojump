@@ -342,7 +342,7 @@ def main():
     elif args.stat:
         print_stats(load(config), config['data_path'])
     else:
-        # default behavior, no optional arguments
+        # no optional arguments
         entries = entriefy(load(config))
         needles = sanitize(args.directory)
         needle = first(needles)
@@ -365,6 +365,7 @@ def main():
                     find_matches(entriefy(load(config)), needle))
             print_tab_menu(needle, tab_entries, TAB_SEPARATOR)
         else:
+            # default behavior
             try:
                 print(encode_local(surround_quotes(
                         first(find_matches(entries, needles)).path)))
