@@ -4,16 +4,22 @@ from __future__ import print_function
 
 from codecs import open
 from collections import namedtuple
-from itertools import ifilter
-from itertools import imap
 from operator import itemgetter
 import os
 import shutil
 import sys
 from time import time
 
+if sys.version_info[0] == 3:
+    ifilter = filter
+    imap = map
+else:
+    from itertools import ifilter
+    from itertools import imap
+
 from utils import create_dir
 from utils import is_osx
+from utils import is_python3
 from utils import move_file
 
 
@@ -36,6 +42,8 @@ def dictify(entries):
 def entriefy(data):
     """Converts a dictionary into an iterator of entries."""
     convert = lambda tup: Entry(*tup)
+    if is_python3():
+        return map(convert, data.items())
     return imap(convert, data.iteritems())
 
 
@@ -106,8 +114,11 @@ def save(config, data):
     try:
         # write to temp file
         with open(config['tmp_path'], 'w', encoding='utf-8', errors='replace') as f:
-            for path, weight in data.iteritems():
-                f.write((unicode("%s\t%s\n" % (weight, path)).encode('utf-8')))
+            for path, weight in data.items():
+                if is_python3():
+                    f.write(("%s\t%s\n" % (weight, path)))
+                else:
+                    f.write((unicode("%s\t%s\n" % (weight, path)).encode('utf-8')))
 
             f.flush()
             os.fsync(f)

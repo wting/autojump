@@ -13,6 +13,14 @@ import shutil
 import sys
 import unicodedata
 
+if sys.version_info[0] == 3:
+    ifilter = filter
+    imap = map
+    os.getcwdu = os.getcwd
+else:
+    from itertools import ifilter
+    from itertools import imap
+
 
 def create_dir(path):
     """Creates a directory atomically."""
@@ -47,6 +55,8 @@ def encode_local(string, encoding=None):
 def first(xs):
     it = iter(xs)
     try:
+        if is_python3():
+            return it.__next__()
         return it.next()
     except StopIteration:
         return None
@@ -84,6 +94,8 @@ def get_pwd():
 
 
 def has_uppercase(string):
+    if is_python3():
+        return any(ch.isupper() for ch in string)
     return any(unicodedata.category(c) == 'Lu' for c in unicode(string))
 
 
@@ -93,6 +105,10 @@ def in_bash():
 
 def is_python2():
     return sys.version_info[0] == 2
+
+
+def is_python3():
+    return sys.version_info[0] == 3
 
 
 def is_linux():
@@ -129,8 +145,12 @@ def last(xs):
     it = iter(xs)
     tmp = None
     try:
-        while True:
-            tmp = it.next()
+        if is_python3():
+            while True:
+                tmp = it.__next__()
+        else:
+            while True:
+                tmp = it.next()
     except StopIteration:
         return tmp
 
@@ -173,7 +193,7 @@ def print_tab_menu(needle, tab_entries, separator):
 
 def sanitize(directories):
     clean = lambda x: decode(x).rstrip(os.sep)
-    return map(clean, directories)
+    return list(imap(clean, directories))
 
 
 def second(xs):

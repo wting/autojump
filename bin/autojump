@@ -24,9 +24,6 @@ from __future__ import print_function
 from difflib import SequenceMatcher
 from functools import partial
 from itertools import chain
-# FIXME(ting|2013-12-17): fix imports for Python 3 compatibility
-from itertools import ifilter
-from itertools import imap
 from math import sqrt
 from operator import attrgetter
 from operator import itemgetter
@@ -34,6 +31,14 @@ import os
 import platform
 import re
 import sys
+
+if sys.version_info[0] == 3:
+    ifilter = filter
+    imap = map
+    os.getcwdu = os.getcwd
+else:
+    from itertools import ifilter
+    from itertools import imap
 
 from argparse import ArgumentParser
 
@@ -167,13 +172,11 @@ def find_matches(entries, needles):
         # tautology if current working directory no longer exists
         not_cwd = lambda x: True
 
+    # from pprint import pprint as pp; import pdb; pdb.set_trace()
     data = sorted(
             ifilter(not_cwd, entries),
             key=attrgetter('weight'),
             reverse=True)
-
-    if not needles:
-        return first(data).path
 
     ignore_case = detect_smartcase(needles)
 
@@ -184,7 +187,10 @@ def find_matches(entries, needles):
                 match_consecutive(needles, data, ignore_case),
                 match_quicksilver(needles, data, ignore_case),
                 match_fuzzy(needles, data, ignore_case),
-                match_anywhere(needles, data, ignore_case)))
+                match_anywhere(needles, data, ignore_case),
+                # default return value so calling shell functions have an
+                # argument to `cd` to
+                [Entry('.', 0)]))
 
 
 def match_anywhere(needles, haystack, ignore_case=False):
@@ -299,16 +305,17 @@ def purge_missing_paths(entries):
 
 
 def print_stats(data, data_path):
-    for path, weight in sorted(data.iteritems(), key=itemgetter(1)):
+    for path, weight in sorted(data.items(), key=itemgetter(1)):
         print_entry(Entry(path, weight))
 
     print("________________________________________\n")
-    print("%d:\t total weight" % sum(data.itervalues()))
+    print("%d:\t total weight" % sum(data.values()))
     print("%d:\t number of entries" % len(data))
 
     try:
         print("%.2f:\t current directory weight" % data.get(os.getcwdu(), 0))
     except OSError:
+        # current directory no longer exists
         pass
 
     print("\ndata:\t %s" % data_path)
@@ -330,7 +337,7 @@ def main(args):
         save(config, data)
         print_entry(entry)
     elif args.increase:
-        data, entry = add_path(load(config), get_pwd(), args.decrease)
+        data, entry = add_path(load(config), get_pwd(), args.increase)
         save(config, data)
         print_entry(entry)
     elif args.purge:
@@ -368,13 +375,8 @@ def main(args):
             print_tab_menu(needle, tab_entries, TAB_SEPARATOR)
         else:
             # default behavior
-            try:
-                print(encode_local(surround_quotes(
-                        first(find_matches(entries, needles)).path)))
-            except AttributeError:
-                # no results, always return something so the calling shell
-                # function has an argument to `cd` to
-                print(encode_local('.'))
+            print(encode_local(surround_quotes(
+                    first(find_matches(entries, needles)).path)))
 
     return 0
 
