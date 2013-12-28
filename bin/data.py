@@ -72,7 +72,9 @@ def load(config):
                     'r', encoding='utf-8',
                     errors='replace') as f:
                 return dict(
-                        imap(tupleize, ifilter(correct_length, imap(parse, f))))
+                        imap(
+                            tupleize,
+                            ifilter(correct_length, imap(parse, f))))
         except (IOError, EOFError):
             return load_backup(config)
 
@@ -116,12 +118,17 @@ def save(config, data):
     # atomically save by writing to temporary file and moving to destination
     try:
         # write to temp file
-        with open(config['tmp_path'], 'w', encoding='utf-8', errors='replace') as f:
+        with open(
+                config['tmp_path'],
+                'w',
+                encoding='utf-8',
+                errors='replace') as f:
             for path, weight in data.items():
                 if is_python3():
                     f.write(("%s\t%s\n" % (weight, path)))
                 else:
-                    f.write((unicode("%s\t%s\n" % (weight, path)).encode('utf-8')))
+                    f.write(unicode(
+                        "%s\t%s\n" % (weight, path)).encode('utf-8'))
 
             f.flush()
             os.fsync(f)
@@ -131,7 +138,8 @@ def save(config, data):
 
     # create backup file if it doesn't exist or is older than BACKUP_THRESHOLD
     if not os.path.exists(config['backup_path']) or \
-            (time() - os.path.getmtime(config['backup_path']) > BACKUP_THRESHOLD):
+            (time() - os.path.getmtime(config['backup_path'])
+                > BACKUP_THRESHOLD):
         move_file(config['data_path'], config['backup_path'])
 
     # move temp_file -> autojump.txt

@@ -1,7 +1,7 @@
 VERSION = $(shell grep -oE "[0-9]+\.[0-9]+\.[0-9]+" bin/autojump)
 TAGNAME = release-v$(VERSION)
 
-.PHONY: docs install uninstall tar
+.PHONY: docs install uninstall lint tar
 
 install:
 	install.sh
@@ -14,7 +14,7 @@ docs:
 	pandoc -s -w markdown docs/header.md docs/install.md docs/development.md docs/body.md -o README.md
 
 lint:
-	flake8 ./
+	@flake8 ./ --config=setup.cfg
 
 release: docs
 	# Check for tag existence
