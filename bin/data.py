@@ -4,7 +4,6 @@ from __future__ import print_function
 
 from codecs import open
 from collections import namedtuple
-from operator import itemgetter
 import os
 import shutil
 import sys
@@ -68,8 +67,12 @@ def load(config):
         tupleize = lambda x: (x[1], float(x[0]))
 
         try:
-            with open(config['data_path'], 'r', encoding='utf-8', errors='replace') as f:
-                return dict(imap(tupleize, ifilter(correct_length, imap(parse, f))))
+            with open(
+                    config['data_path'],
+                    'r', encoding='utf-8',
+                    errors='replace') as f:
+                return dict(
+                        imap(tupleize, ifilter(correct_length, imap(parse, f))))
         except (IOError, EOFError):
             return load_backup(config)
 

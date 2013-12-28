@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 
-from collections import Iterable
 import errno
 from itertools import islice
 import os
@@ -14,11 +13,9 @@ import sys
 import unicodedata
 
 if sys.version_info[0] == 3:
-    ifilter = filter
     imap = map
     os.getcwdu = os.getcwd
 else:
-    from itertools import ifilter
     from itertools import imap
 
 
@@ -68,7 +65,7 @@ def get_needle(tab_entry, separator):
 
         [needle]__
     """
-    return re.match(r'(.*)'+separator, tab_entry).group(1)
+    return re.match(r'(.*)' + separator, tab_entry).group(1)
 
 
 def get_needle_and_index(tab_entry, separator):
@@ -78,9 +75,9 @@ def get_needle_and_index(tab_entry, separator):
         [needle]__[index]__[possible_match]
     """
     matches = re.search(
-            r'(.*)' + \
-            separator + \
-            r'([0-9]{1})' + \
+            r'(.*)' +
+            separator +
+            r'([0-9]{1})' +
             separator, tab_entry)
     return matches.group(1), int(matches.group(2))
 
@@ -126,15 +123,15 @@ def is_tab_entry(needle, separator):
         [needle]__[index]__[possible_match]
     """
     pattern = re.compile(
-            '.*' + \
-            separator + \
-            '[0-9]{1}' + \
+            '.*' +
+            separator +
+            '[0-9]{1}' +
             separator)
     return re.search(pattern, needle)
 
 
 def is_tab_partial_match(needle, separator):
-    return re.match(r'(.*)'+separator, needle)
+    return re.match(r'(.*)' + separator, needle)
 
 
 def is_windows():
@@ -186,7 +183,7 @@ def print_tab_menu(needle, tab_entries, separator):
             '%s%s%d%s%s' % (
                 needle,
                 separator,
-                i+1,
+                i + 1,
                 separator,
                 entry.path))))
 
