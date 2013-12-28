@@ -48,13 +48,10 @@ from data import save
 from utils import decode
 from utils import encode_local
 from utils import first
-from utils import get_needle
-from utils import get_needle_and_index
+from utils import get_tab_needle_and_path
 from utils import get_pwd
 from utils import has_uppercase
 from utils import is_osx
-from utils import is_tab_entry
-from utils import is_tab_partial_match
 from utils import last
 from utils import print_entry
 from utils import print_tab_menu
@@ -193,6 +190,23 @@ def find_matches(entries, needles):
                 [Entry('.', 0)]))
 
 
+def handle_no_arguments(needle, needles, entries):
+    tab_needle, path = get_tab_needle_and_path(needle, TAB_SEPARATOR)
+
+    if path:
+        # found complete tab completion entry
+        print(encode_local(surround_quotes(path)))
+    elif tab_needle:
+        # found partial tab completion entry
+        print_tab_menu(
+                tab_needle,
+                take(TAB_ENTRIES_COUNT, find_matches(entries, tab_needle)),
+                TAB_SEPARATOR)
+    else:
+        print(encode_local(surround_quotes(
+                first(find_matches(entries, needles)).path)))
+
+
 def match_anywhere(needles, haystack, ignore_case=False):
     """
     Matches needles anywhere in the path as long as they're in the same (but
@@ -323,6 +337,7 @@ def print_stats(data, data_path):
 def main(args):
     config = set_defaults()
 
+    # all arguments are mutually exclusive
     if args.add:
         save(config, first(add_path(load(config), args.add)))
     elif args.complete:
@@ -346,38 +361,15 @@ def main(args):
         print("Purged %d entries." % (len(old_data) - len(new_data)))
     elif args.stat:
         print_stats(load(config), config['data_path'])
+    elif not args.directory:
+        # default return value so calling shell functions have an argument
+        # to `cd` to
+        print(encode_local('.'))
     else:
-        if not args.directory:
-            # default return value so calling shell functions have an
-            # argument to `cd` to
-            print(encode_local('.'))
-            return 0
-
         entries = entriefy(load(config))
         needles = sanitize(args.directory)
         needle = first(needles)
-
-        if is_tab_entry(needle, TAB_SEPARATOR):
-            # the needle is a tab_entry
-            needle, tab_index = get_needle_and_index(needle, TAB_SEPARATOR)
-            tab_entries = take(
-                    TAB_ENTRIES_COUNT,
-                    find_matches(entries, needle))
-
-            get_ith_path = lambda i, iterable: last(take(i, iterable)).path
-            print(encode_local(surround_quotes(
-                    get_ith_path(tab_index, tab_entries))))
-        elif is_tab_partial_match(needle, TAB_SEPARATOR):
-            # the needle is a partial tab_entry
-            needle = get_needle(needle, TAB_SEPARATOR)
-            tab_entries = take(
-                    TAB_ENTRIES_COUNT,
-                    find_matches(entriefy(load(config)), needle))
-            print_tab_menu(needle, tab_entries, TAB_SEPARATOR)
-        else:
-            # default behavior
-            print(encode_local(surround_quotes(
-                    first(find_matches(entries, needles)).path)))
+        handle_no_arguments(needle, needles, entries)
 
     return 0
 

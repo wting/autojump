@@ -59,27 +59,23 @@ def first(xs):
         return None
 
 
-def get_needle(tab_entry, separator):
+def get_tab_needle_and_path(tab_entry, separator):
     """
-    Given a partial tab entry in the following format return the needle:
+    Given a tab entry in the following format return the needle and path:
 
-        [needle]__
-    """
-    return re.match(r'(.*)' + separator, tab_entry).group(1)
-
-
-def get_needle_and_index(tab_entry, separator):
-    """
-    Given a tab entry in the following format return the needle and index:
-
-        [needle]__[index]__[possible_match]
+        [needle]__[index]__[path]
     """
     matches = re.search(
-            r'(.*)' +
+            r'(.*?)' +
             separator +
-            r'([0-9]{1})' +
-            separator, tab_entry)
-    return matches.group(1), int(matches.group(2))
+            r'[0-9]{1}' +
+            separator +
+            r'(.*)',
+            tab_entry)
+
+    if matches:
+        return matches.groups()
+    return None, None
 
 
 def get_pwd():
@@ -114,24 +110,6 @@ def is_linux():
 
 def is_osx():
     return platform.system() == 'Darwin'
-
-
-def is_tab_entry(needle, separator):
-    """
-    Valid tab entry:
-
-        [needle]__[index]__[possible_match]
-    """
-    pattern = re.compile(
-            '.*' +
-            separator +
-            '[0-9]{1}' +
-            separator)
-    return re.search(pattern, needle)
-
-
-def is_tab_partial_match(needle, separator):
-    return re.match(r'(.*)' + separator, needle)
 
 
 def is_windows():
