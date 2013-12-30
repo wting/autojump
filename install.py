@@ -28,6 +28,18 @@ def mkdir(path, dryrun=False):
         os.makedirs(path)
 
 
+def modify_autojump_sh(etc_dir, dryrun=False):
+    """Append custom installation path to autojump.sh"""
+    custom_install = "\
+        \n# check custom install \
+        \nif [ -s %s/autojump.${shell} ]; then \
+            \n\tsource %s/autojump.${shell} \
+        \nfi\n" % (etc_dir, etc_dir)
+
+    with open(os.path.join(etc_dir, 'autojump.sh'), 'a') as f:
+        f.write(custom_install)
+
+
 def parse_arguments():
     default_user_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
     default_user_prefix = ''
@@ -65,17 +77,27 @@ def parse_arguments():
         print("Unsupported shell: %s" % os.getenv('SHELL'), file=sys.stderr)
         sys.exit(1)
 
+    if args.destdir != default_user_destdir \
+            or args.prefix != default_user_prefix \
+            or args.zshshare != default_user_zshshare:
+        args.custom_install = True
+    else:
+        args.custom_install = False
+
     if args.system:
         if os.geteuid() != 0:
             print("Please rerun as root for system-wide installation.",
                   file=sys.stderr)
             sys.exit(1)
-        if args.destdir == default_user_destdir:
-            args.destdir = default_system_destdir
-        if args.prefix == default_user_prefix:
-            args.prefix = default_system_prefix
-        if args.zshshare == default_user_zshshare:
-            args.zshshare = default_system_zshshare
+
+        if args.custom_install:
+            print("Custom paths incompatible with --system option.",
+                  file=sys.stderr)
+            sys.exit(1)
+
+        args.destdir = default_system_destdir
+        args.prefix = default_system_prefix
+        args.zshshare = default_system_zshshare
 
     return args
 
@@ -117,7 +139,8 @@ def main(args):
     cp('./bin/icon.png', icon_dir, args.dryrun)
     cp('./docs/autojump.1', doc_dir, args.dryrun)
 
-    # TODO(ting|2013-12-30): modify autojump.sh for custom installs
+    if args.custom_install:
+        modify_autojump_sh(etc_dir, args.dryrun)
 
     print_post_installation_message(etc_dir)
 
