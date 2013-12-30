@@ -2,7 +2,7 @@
 
 ### REQUIREMENTS
 
-- Python v2.6+
+- Python v2.7+
 - Bash v4.0 for tab completion (or zsh)
 
 If you are unable to update Python to a supported version, older versions of
