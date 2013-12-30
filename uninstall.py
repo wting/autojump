@@ -18,16 +18,16 @@ def parse_arguments():
             help='simulate installation')
     parser.add_argument(
             '-u', '--userdata', action="store_true", default=False,
-            help='`delete user data')
+            help='delete user data')
     parser.add_argument(
             '-d', '--destdir', metavar='DIR',
-            help='set destination to DIR')
+            help='custom destdir')
     parser.add_argument(
             '-p', '--prefix', metavar='DIR', default='',
-            help='set prefix to DIR')
+            help='custom prefix')
     parser.add_argument(
             '-z', '--zshshare', metavar='DIR', default='functions',
-            help='set zsh share destination to DIR')
+            help='custom zshshare')
 
     return parser.parse_args()
 
