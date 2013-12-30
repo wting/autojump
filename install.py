@@ -5,6 +5,7 @@ from __future__ import print_function
 
 from argparse import ArgumentParser
 import os
+import platform
 import shutil
 import sys
 
@@ -103,8 +104,12 @@ def parse_arguments():
 
 
 def print_post_installation_message(etc_dir):
-    rcfile = '~/.%src' % get_shell()
-    aj_shell = '%s/autojump.%s' % (etc_dir, get_shell())
+    aj_shell = '%s/autojump.sh' % etc_dir
+    if platform.system() == 'Darwin' and get_shell == 'bash':
+        rcfile = '~/.profile'
+    else:
+        rcfile = '~/.%src' % get_shell()
+
     print("\nPlease manually add the following line to %s:\n" % rcfile)
     print("\t[[ -s %s ]] && source %s\n" % (aj_shell, aj_shell))
     print("Please restart terminal(s) before running autojump.\n")
