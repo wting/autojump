@@ -1,5 +1,4 @@
-_autojump()
-{
+_autojump() {
         local cur
         cur=${COMP_WORDS[*]:1}
         comps=$(autojump --bash --complete $cur)
@@ -12,8 +11,7 @@ EOF
 }
 complete -F _autojump j
 
-_autojump_files()
-{
+_autojump_files() {
     if [[ ${COMP_WORDS[COMP_CWORD]} == *__* ]]; then
         local cur
         #cur=${COMP_WORDS[*]:1}
@@ -69,7 +67,7 @@ case $PROMPT_COMMAND in
         ;;
 esac
 
-function j {
+j() {
     if [[ ${@} =~ ^-{1,2}.* ]]; then
         autojump ${@}
         return
@@ -86,7 +84,7 @@ function j {
     fi
 }
 
-function jc {
+jc() {
     if [[ ${@} == -* ]]; then
         j ${@}
     else
@@ -94,7 +92,7 @@ function jc {
     fi
 }
 
-function jo {
+jo() {
     if [ -z $(autojump $@) ]; then
         echo "autojump: directory '${@}' not found"
         echo "Try \`autojump --help\` for more information."
@@ -117,7 +115,7 @@ function jo {
     fi
 }
 
-function jco {
+jco() {
     if [[ ${@} == -* ]]; then
         j ${@}
     else

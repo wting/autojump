@@ -20,7 +20,7 @@ command -v brew &>/dev/null \
     && [[ -d "`brew --prefix`/share/zsh/site-functions" ]] \
     && fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
 
-function autojump_chpwd() {
+autojump_chpwd() {
     if [[ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]]; then
         _PWD_ARGS=""
     else
@@ -32,7 +32,7 @@ function autojump_chpwd() {
 typeset -gaU chpwd_functions
 chpwd_functions+=autojump_chpwd
 
-function j {
+j() {
     # Cannot use =~ due to MacPorts zsh v4.2, see issue #125.
     if [[ ${@} == -* ]]; then
         autojump ${@}
@@ -50,7 +50,7 @@ function j {
     fi
 }
 
-function jc {
+jc() {
     if [[ ${@} == -* ]]; then
         j ${@}
     else
@@ -58,7 +58,7 @@ function jc {
     fi
 }
 
-function jo {
+jo() {
     if [[ ${@} == -* ]]; then
         j ${@}
         return
@@ -86,7 +86,7 @@ function jo {
     fi
 }
 
-function jco {
+jco() {
     if [[ ${@} == -* ]]; then
         j ${@}
     else
