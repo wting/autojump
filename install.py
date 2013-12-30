@@ -29,9 +29,12 @@ def mkdir(path, dryrun=False):
 
 
 def parse_arguments():
-    default_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
-    default_prefix = ''
-    default_zshshare = 'functions'
+    default_user_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
+    default_user_prefix = ''
+    default_user_zshshare = 'functions'
+    default_system_destdir = '/'
+    default_system_prefix = '/usr/local'
+    default_system_zshshare = '/usr/share/zsh/site-functions'
 
     parser = ArgumentParser(
             description='Installs autojump globally for root users, otherwise \
@@ -40,13 +43,13 @@ def parse_arguments():
             '-n', '--dryrun', action="store_true", default=False,
             help='simulate installation')
     parser.add_argument(
-            '-d', '--destdir', metavar='DIR', default=default_destdir,
+            '-d', '--destdir', metavar='DIR', default=default_user_destdir,
             help='set destination to DIR')
     parser.add_argument(
-            '-p', '--prefix', metavar='DIR', default=default_prefix,
+            '-p', '--prefix', metavar='DIR', default=default_user_prefix,
             help='set prefix to DIR')
     parser.add_argument(
-            '-z', '--zshshare', metavar='DIR', default=default_zshshare,
+            '-z', '--zshshare', metavar='DIR', default=default_user_zshshare,
             help='set zsh share destination to DIR')
     parser.add_argument(
             '-s', '--system', action="store_true", default=False,
@@ -64,14 +67,15 @@ def parse_arguments():
 
     if args.system:
         if os.geteuid() != 0:
-            print("Please rerun as root for system-wide installation.", file=sys.stderr)
+            print("Please rerun as root for system-wide installation.",
+                  file=sys.stderr)
             sys.exit(1)
-        if args.destdir == default_destdir:
-            args.destdir = '/'
-        if args.prefix == default_prefix:
-            args.prefix = '/usr/local'
-        if args.zshshare == default_zshshare:
-            args.zshshare = '/usr/share/zsh/site-functions'
+        if args.destdir == default_user_destdir:
+            args.destdir = default_system_destdir
+        if args.prefix == default_user_prefix:
+            args.prefix = default_system_prefix
+        if args.zshshare == default_user_zshshare:
+            args.zshshare = default_system_zshshare
 
     return args
 
@@ -103,8 +107,8 @@ def main(args):
     mkdir(zshshare_dir, args.dryrun)
 
     cp('./bin/autojump', bin_dir, args.dryrun)
-    cp('./bin/data.py', bin_dir, args.dryrun)
-    cp('./bin/utils.py', bin_dir, args.dryrun)
+    cp('./bin/autojump_data.py', bin_dir, args.dryrun)
+    cp('./bin/autojump_utils.py', bin_dir, args.dryrun)
     cp('./bin/autojump.sh', etc_dir, args.dryrun)
     cp('./bin/autojump.bash', etc_dir, args.dryrun)
     cp('./bin/autojump.fish', etc_dir, args.dryrun)
