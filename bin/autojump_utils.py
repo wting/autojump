@@ -65,17 +65,22 @@ def get_tab_needle_and_path(tab_entry, separator):
 
         [needle]__[index]__[path]
     """
-    matches = re.search(
-            r'(.*?)' +
-            separator +
-            r'[0-9]{1}' +
-            separator +
-            r'(.*)',
+    match_needle = re.search(r'(.*?)' + separator, tab_entry)
+    match_path = re.search(
+            separator + r'[0-9]{1}' + separator + r'(.*)',
             tab_entry)
 
-    if matches:
-        return matches.groups()
-    return None, None
+    if match_needle:
+        tab_needle = match_needle.group(1)
+    else:
+        tab_needle = None
+
+    if match_path:
+        path = match_path.group(1)
+    else:
+        path = None
+
+    return tab_needle, path
 
 
 def get_pwd():

@@ -182,7 +182,10 @@ def find_matches(entries, needles):
                 [Entry('.', 0)]))
 
 
-def handle_no_arguments(needle, needles, entries):
+def handle_tab_completion(needle, entries):
+    if not needle:
+        sys.exit(0)
+
     tab_needle, path = get_tab_needle_and_path(needle, TAB_SEPARATOR)
 
     if path:
@@ -195,8 +198,11 @@ def handle_no_arguments(needle, needles, entries):
                 take(TAB_ENTRIES_COUNT, find_matches(entries, tab_needle)),
                 TAB_SEPARATOR)
     else:
-        print(encode_local(surround_quotes(
-                first(find_matches(entries, needles)).path)))
+        print_tab_menu(
+                needle,
+                take(TAB_ENTRIES_COUNT, find_matches(entries, needle)),
+                TAB_SEPARATOR)
+
 
 
 def match_anywhere(needles, haystack, ignore_case=False):
@@ -333,11 +339,9 @@ def main(args):
     if args.add:
         save(config, first(add_path(load(config), args.add)))
     elif args.complete:
-        needle = first(sanitize(args.directory))
-        tab_entries = take(
-                TAB_ENTRIES_COUNT,
-                find_matches(entriefy(load(config)), needle))
-        print_tab_menu(needle, tab_entries, TAB_SEPARATOR)
+        handle_tab_completion(
+                needle=first(sanitize(args.directory)),
+                entries=entriefy(load(config)))
     elif args.decrease:
         data, entry = decrease_path(load(config), get_pwd(), args.decrease)
         save(config, data)
@@ -360,8 +364,14 @@ def main(args):
     else:
         entries = entriefy(load(config))
         needles = sanitize(args.directory)
-        needle = first(needles)
-        handle_no_arguments(needle, needles, entries)
+        _, path = get_tab_needle_and_path(first(needles), TAB_SEPARATOR)
+
+        if path:
+            # found complete tab completion entry
+            print(encode_local(surround_quotes(path)))
+        else:
+            print(encode_local(surround_quotes(
+                    first(find_matches(entries, needles))).path))
 
     return 0
 

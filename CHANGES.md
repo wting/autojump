@@ -29,6 +29,8 @@
 - autojump now uses ~/Library/autojump for storing data on OS X instead of
   incorrectly using Linux's $XDG_DATA_HOME. Existing data should automatically
   be migrated to the new location.
+- Past behavior jumped to the highest weight database entry when not passed any
+  arguments. The new behavior is to stay in the current directory.
 
 
 ### Release v21.6.8:
