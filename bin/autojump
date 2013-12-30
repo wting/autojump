@@ -90,9 +90,6 @@ def set_defaults():
 
 
 def parse_arguments():
-    """
-    Evaluate arguments and run appropriate logic, returning an error code.
-    """
     parser = ArgumentParser(
             description='Automatically jump to directory passed as an \
                     argument.',
@@ -127,30 +124,27 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def add_path(data, path, increment=10):
+def add_path(data, path, weight=10):
     """
     Add a new path or increment an existing one.
 
-    os.path.realpath() is not used because users prefer to have short,
-    symlinked paths with duplicate entries in the database than a single
-    canonical path.
+    os.path.realpath() is not used because it's preferable to use symlinks
+    with resulting duplicate entries in the database than a single canonical
+    path.
     """
     path = decode(path).rstrip(os.sep)
     if path == os.path.expanduser('~'):
         return data, Entry(path, 0)
 
-    if path in data:
-        data[path] = sqrt((data[path] ** 2) + (increment ** 2))
-    else:
-        data[path] = increment
+    data[path] = sqrt((data.get(path, 0) ** 2) + (weight ** 2))
 
     return data, Entry(path, data[path])
 
 
-def decrease_path(data, path, increment=15):
-    """Decrease weight of existing path."""
+def decrease_path(data, path, weight=15):
+    """Decrease or zero out a path."""
     path = decode(path).rstrip(os.sep)
-    data[path] = max(0, data[path] - increment)
+    data[path] = max(0, data.get(path, 0) - weight)
     return data, Entry(path, data[path])
 
 
@@ -170,7 +164,6 @@ def find_matches(entries, needles):
         # tautology if current working directory no longer exists
         not_cwd = lambda x: True
 
-    # from pprint import pprint as pp; import pdb; pdb.set_trace()
     data = sorted(
             ifilter(not_cwd, entries),
             key=attrgetter('weight'),
@@ -293,7 +286,7 @@ def match_fuzzy(needles, haystack, ignore_case=False):
             (path="/foo/baz", weight=10),
             (path="/foo/bar", weight=10)]
 
-    This is a weak heuristic and be used as a last resort to find matches.
+    This is a weak heuristic and used as a last resort to find matches.
     """
     end_dir = lambda path: last(os.path.split(path))
     if ignore_case:
