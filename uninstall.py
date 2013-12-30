@@ -10,6 +10,16 @@ import shutil
 import sys
 
 
+def is_empty_dir(path):
+    """
+    Checks if any files are present within a directory and all sub-directories.
+    """
+    for _, _, files in os.walk(path):
+        if files:
+            return False
+    return True
+
+
 def parse_arguments():
     parser = ArgumentParser(
             description='Uninstalls autojump.')
@@ -56,6 +66,9 @@ def remove_custom_installation(args, dryrun=False):
     rm(os.path.join(zshshare_dir, '_j'), dryrun)
     rmdir(icon_dir, dryrun)
     rm(os.path.join(doc_dir, 'autojump.1'), dryrun)
+
+    if is_empty_dir(args.destdir):
+        rmdir(args.destdir, dryrun)
 
 
 def remove_system_installation(dryrun=False):
