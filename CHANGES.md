@@ -1,6 +1,36 @@
 ## Summary of release changes, see commit history for more details:
 ## https://github.com/joelthelion/autojump/commits/master/
 
+### Release v21.8.0:
+
+- Python 2.6 EOL'ed Oct 2013, support dropped. Now requires Python 2.7+.
+- install.sh -> install.py
+    - `--auto` option removed
+    - `--local` option removed, defaults to local user install
+    - `--global` option renamed to `--system`
+    - `--force` option removed
+    - install.py modifies autojump.sh accordingly for custom installations
+    - it is recommended that maintainers use install.py with `--destdir` and
+      `--prefix` accordingly. Two stage installations requires manually updating
+      autojump.sh.
+- uninstall.sh -> uninstall.py
+    - automatically removes user and system installations
+    - now removes custom installations cleanly when passed appropriate
+      `--destdir` and/or `--prefix` options.
+    - new `--userdata` option to remove autojump database
+- all user environmental options removed
+- defaults to smartcasing
+    - If any uppercase characters are detected, then search is case sensitive.
+      Otherwise searches default to case insensitive.
+- defaults to symlinks
+    - symlinks are not resolved to real path and thus results in duplicate
+      database entries but ensuring that short paths will be used
+- fish shell support added
+- autojump now uses ~/Library/autojump for storing data on OS X instead of
+  incorrectly using Linux's $XDG_DATA_HOME. Existing data should automatically
+  be migrated to the new location.
+
+
 ### Release v21.6.8:
 
 - fix --increase and --decrease options
