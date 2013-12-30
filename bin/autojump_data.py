@@ -16,10 +16,10 @@ else:
     from itertools import ifilter
     from itertools import imap
 
-from utils import create_dir
-from utils import is_osx
-from utils import is_python3
-from utils import move_file
+from autojump_utils import create_dir
+from autojump_utils import is_osx
+from autojump_utils import is_python3
+from autojump_utils import move_file
 
 
 BACKUP_THRESHOLD = 24 * 60 * 60

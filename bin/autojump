@@ -39,24 +39,24 @@ else:
     from itertools import ifilter
     from itertools import imap
 
-from data import dictify
-from data import entriefy
-from data import Entry
-from data import load
-from data import save
-from utils import decode
-from utils import encode_local
-from utils import first
-from utils import get_tab_needle_and_path
-from utils import get_pwd
-from utils import has_uppercase
-from utils import is_osx
-from utils import last
-from utils import print_entry
-from utils import print_tab_menu
-from utils import sanitize
-from utils import surround_quotes
-from utils import take
+from autojump_data import dictify
+from autojump_data import entriefy
+from autojump_data import Entry
+from autojump_data import load
+from autojump_data import save
+from autojump_utils import decode
+from autojump_utils import encode_local
+from autojump_utils import first
+from autojump_utils import get_tab_needle_and_path
+from autojump_utils import get_pwd
+from autojump_utils import has_uppercase
+from autojump_utils import is_osx
+from autojump_utils import last
+from autojump_utils import print_entry
+from autojump_utils import print_tab_menu
+from autojump_utils import sanitize
+from autojump_utils import surround_quotes
+from autojump_utils import take
 
 VERSION = '21.8-alpha'
 FUZZY_MATCH_THRESHOLD = 0.6
