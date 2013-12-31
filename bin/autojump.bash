@@ -1,9 +1,15 @@
+# set user installation paths
+if [ -d ~/.autojump/ ]; then
+    export PATH=~/.autojump/bin:"${PATH}"
+fi
+
+
+# enable tab completion
 _autojump() {
         local cur
         cur=${COMP_WORDS[*]:1}
         comps=$(autojump --complete $cur)
-        while read i
-        do
+        while read i; do
             COMPREPLY=("${COMPREPLY[@]}" "${i}")
         done <<EOF
         $comps
@@ -11,13 +17,10 @@ EOF
 }
 complete -F _autojump j
 
-# set paths if necessary for local installations
-if [ -d ~/.autojump/ ]; then
-    export PATH=~/.autojump/bin:"${PATH}"
-fi
 
+# change pwd hook
 autojump_add_to_database() {
-    autojump -a "$(pwd)" &>/dev/null
+    (autojump -a "$(pwd)" &) &>/dev/null
 }
 
 case $PROMPT_COMMAND in
@@ -27,6 +30,7 @@ case $PROMPT_COMMAND in
         PROMPT_COMMAND="${PROMPT_COMMAND:+$(echo "${PROMPT_COMMAND}" | awk '{gsub(/; *$/,"")}1') ; }autojump_add_to_database"
         ;;
 esac
+
 
 # default autojump command
 j() {
@@ -46,6 +50,7 @@ j() {
     fi
 }
 
+
 # jump to child directory (subdirectory of current path)
 jc() {
     if [[ ${@} == -* ]]; then
@@ -54,6 +59,7 @@ jc() {
         j $(pwd) ${@}
     fi
 }
+
 
 # open autojump results in file browser
 jo() {
@@ -84,6 +90,7 @@ jo() {
         false
     fi
 }
+
 
 # open autojump results (child directory) in file browser
 jco() {

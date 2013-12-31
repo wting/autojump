@@ -1,23 +1,23 @@
-complete -x -c j -a '(autojump --bash --complete (commandline -t))'
-
-switch "$XDG_DATA_HOME"
-    case "*$USER*"
-        set -x AUTOJUMP_DATA_DIR "$XDG_DATA_HOME/autojump"
-    case '*'
-        set -x AUTOJUMP_DATA_DIR ~/.local/share/autojump
-end
-
-if not test -d $AUTOJUMP_DATA_DIR
-    mkdir $AUTOJUMP_DATA_DIR
-end
-
-# local installation
+# set user installation path
 if test -d ~/.autojump
     set -x PATH ~/.autojump/bin $PATH
 end
 
 set -x AUTOJUMP_HOME $HOME
 
+
+# enable tab completion
+complete -x -c j -a '(autojump --bash --complete (commandline -t))'
+
+
+# change pwd hook
+function __aj_add --on-variable PWD
+    status --is-command-substitution; and return
+    autojump -a (pwd) &>/dev/null &
+end
+
+
+# misc helper functions
 function __aj_err
     echo $argv 1>&2; false
 end
@@ -27,11 +27,8 @@ function __aj_not_found
     __aj_err "Try `autojump --help` for more information."
 end
 
-function __aj_add --on-variable PWD
-    status --is-command-substitution; and return
-    autojump -a (pwd) >/dev/null ^$AUTOJUMP_DATA_DIR/autojump_errors
-end
 
+# default autojump command
 function j
     switch "$argv"
         case '-*' '--*'
@@ -49,6 +46,8 @@ function j
     end
 end
 
+
+# jump to child directory (subdirectory of current path)
 function jc
     switch "$argv"
         case '-*'
@@ -58,6 +57,8 @@ function jc
     end
 end
 
+
+# open autojump results in file browser
 function jo
     if test -z (autojump $argv)
         __aj_not_found $argv
@@ -76,6 +77,8 @@ function jo
     end
 end
 
+
+# open autojump results (child directory) in file browser
 function jco
     switch "$argv"
         case '-*'

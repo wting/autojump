@@ -1,21 +1,27 @@
-# set paths for user installations
+# set user installation paths
 if [[ -d ${HOME}/.autojump ]]; then
     path=(${HOME}/.autojump/bin ${path})
     fpath=(${HOME}/.autojump/functions/ ${fpath})
 fi
 
-# set fpath if necessary for homebrew installation
+
+# set homebrew installation paths
 command -v brew &>/dev/null \
     && [[ -d "`brew --prefix`/share/zsh/site-functions" ]] \
     && fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
 
-# add change pwd hook
+
+# tab completion handled by _j file
+
+
+# change pwd hook
 autojump_chpwd() {
     (autojump -a "$(pwd)" &) &>/dev/null
 }
 
 typeset -gaU chpwd_functions
 chpwd_functions+=autojump_chpwd
+
 
 # default autojump command
 j() {
@@ -35,6 +41,7 @@ j() {
     fi
 }
 
+
 # jump to child directory (subdirectory of current path)
 jc() {
     if [[ ${@} == -* ]]; then
@@ -43,6 +50,7 @@ jc() {
         j $(pwd) ${@}
     fi
 }
+
 
 # open autojump results in file browser
 jo() {
@@ -73,6 +81,7 @@ jo() {
         false
     fi
 }
+
 
 # open autojump results (child directory) in file browser
 jco() {
