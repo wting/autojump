@@ -55,7 +55,6 @@ from autojump_utils import last
 from autojump_utils import print_entry
 from autojump_utils import print_tab_menu
 from autojump_utils import sanitize
-from autojump_utils import surround_quotes
 from autojump_utils import take
 
 VERSION = '22.0.0-alpha'
@@ -190,7 +189,7 @@ def handle_tab_completion(needle, entries):
 
     if path:
         # found complete tab completion entry
-        print(encode_local(surround_quotes(path)))
+        print(encode_local(path))
     elif tab_needle:
         # found partial tab completion entry
         print_tab_menu(
@@ -368,10 +367,9 @@ def main(args):
 
         if path:
             # found complete tab completion entry
-            print(encode_local(surround_quotes(path)))
+            print(encode_local(path))
         else:
-            print(encode_local(surround_quotes(
-                    first(find_matches(entries, needles))).path))
+            print(encode_local(first(find_matches(entries, needles)).path))
 
     return 0
 

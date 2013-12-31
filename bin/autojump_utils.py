@@ -162,13 +162,13 @@ def print_tab_menu(needle, tab_entries, separator):
     on subsequent calls.
     """
     for i, entry in enumerate(tab_entries):
-        print(encode_local(surround_quotes(
+        print(encode_local(
             '%s%s%d%s%s' % (
                 needle,
                 separator,
                 i + 1,
                 separator,
-                entry.path))))
+                entry.path)))
 
 
 def sanitize(directories):
