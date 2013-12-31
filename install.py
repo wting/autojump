@@ -20,7 +20,7 @@ def cp(src, dest, dryrun=False):
 
 
 def get_shell():
-    return os.path.basename(os.getenv('SHELL'))
+    return os.path.basename(os.getenv('SHELL', ''))
 
 
 def mkdir(path, dryrun=False):

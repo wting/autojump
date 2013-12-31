@@ -39,33 +39,31 @@ j() {
 jc() {
     if [[ ${@} == -* ]]; then
         autojump ${@}
-        return
+    else
+        j $(pwd)/ ${@}
     fi
-
-    j $(pwd)/ ${@}
 }
 
 # open autojump results in file browser
 jo() {
     if [[ ${@} == -* ]]; then
         autojump ${@}
-        return
+    else
+        case ${OSTYPE} in
+            linux-gnu)
+                xdg-open "$(autojump $@)"
+                ;;
+            darwin*)
+                open "$(autojump $@)"
+                ;;
+            cygwin)
+                cygstart "" $(cygpath -w -a $(pwd))
+                ;;
+            *)
+                echo "Unknown operating system." 1>&2
+                ;;
+        esac
     fi
-
-    case ${OSTYPE} in
-        linux-gnu)
-            xdg-open "$(autojump $@)"
-            ;;
-        darwin*)
-            open "$(autojump $@)"
-            ;;
-        cygwin)
-            cygstart "" $(cygpath -w -a $(pwd))
-            ;;
-        *)
-            echo "Unknown operating system." 1>&2
-            ;;
-    esac
 }
 
 # open autojump results (child directory) in file browser

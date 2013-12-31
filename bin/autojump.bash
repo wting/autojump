@@ -1,7 +1,7 @@
 _autojump() {
         local cur
         cur=${COMP_WORDS[*]:1}
-        comps=$(autojump --bash --complete $cur)
+        comps=$(autojump --complete $cur)
         while read i
         do
             COMPREPLY=("${COMPREPLY[@]}" "${i}")
@@ -16,7 +16,7 @@ _autojump_files() {
         local cur
         #cur=${COMP_WORDS[*]:1}
         cur=${COMP_WORDS[COMP_CWORD]}
-        comps=$(autojump --bash --complete $cur)
+        comps=$(autojump --complete $cur)
         while read i
         do
             COMPREPLY=("${COMPREPLY[@]}" "${i}")
@@ -30,33 +30,13 @@ if [[ -n ${AUTOJUMP_AUTOCOMPLETE_CMDS} ]]; then
     complete -o default -o bashdefault -F _autojump_files ${AUTOJUMP_AUTOCOMPLETE_CMDS}
 fi
 
-#determine the data directory according to the XDG Base Directory Specification
-if [[ -n ${XDG_DATA_HOME} ]] && [[ ${XDG_DATA_HOME} =~ ${USER} ]]; then
-    export AUTOJUMP_DATA_DIR="${XDG_DATA_HOME}/autojump"
-else
-    export AUTOJUMP_DATA_DIR=~/.local/share/autojump
-fi
-
-if [ ! -e "${AUTOJUMP_DATA_DIR}" ]; then
-    mkdir -p "${AUTOJUMP_DATA_DIR}"
-fi
-
 # set paths if necessary for local installations
 if [ -d ~/.autojump/ ]; then
     export PATH=~/.autojump/bin:"${PATH}"
 fi
 
-export AUTOJUMP_HOME=${HOME}
-if [ "${AUTOJUMP_KEEP_SYMLINKS}" == "1" ]; then
-    _PWD_ARGS=""
-else
-    _PWD_ARGS="-P"
-fi
-
 autojump_add_to_database() {
-    if [[ "${AUTOJUMP_HOME}" == "${HOME}" ]]; then
-        autojump -a "$(pwd ${_PWD_ARGS})" 1>/dev/null 2>>"${AUTOJUMP_DATA_DIR}/autojump_errors"
-    fi
+    autojump -a "$(pwd)" &>/dev/null
 }
 
 case $PROMPT_COMMAND in
@@ -86,7 +66,7 @@ j() {
 
 jc() {
     if [[ ${@} == -* ]]; then
-        j ${@}
+        autojump ${@}
     else
         j $(pwd)/ ${@}
     fi
@@ -117,7 +97,7 @@ jo() {
 
 jco() {
     if [[ ${@} == -* ]]; then
-        j ${@}
+        autojump ${@}
     else
         jo $(pwd) ${@}
     fi
