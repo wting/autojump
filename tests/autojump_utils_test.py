@@ -12,6 +12,7 @@ from testify import run
 import autojump_utils
 from autojump_utils import decode
 from autojump_utils import first
+from autojump_utils import has_uppercase
 from autojump_utils import in_bash
 from autojump_utils import last
 from autojump_utils import sanitize
@@ -24,6 +25,12 @@ class StringTestCase(TestCase):
     def test_decode(self):
         assert_equal(decode(r'blah'), u'blah')
         assert_equal(decode(r'日本語'), u'日本語')
+
+    def test_has_uppercase(self):
+        assert_true(has_uppercase('Foo'))
+        assert_true(has_uppercase('foO'))
+        assert_false(has_uppercase('foo'))
+        assert_false(has_uppercase(''))
 
     @mock.patch.object(autojump_utils, 'in_bash', return_value=True)
     def test_surround_quotes_in_bash(self, _):
