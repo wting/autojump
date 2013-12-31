@@ -59,28 +59,30 @@ def first(xs):
         return None
 
 
-def get_tab_needle_and_path(tab_entry, separator):
+def get_tab_entry_info(entry, separator):
     """
-    Given a tab entry in the following format return the needle and path:
+    Given a tab entry in the following format return needle, index, and path:
 
         [needle]__[index]__[path]
     """
-    match_needle = re.search(r'(.*?)' + separator, tab_entry)
+    needle, index, path = None, None, None
+
+    match_needle = re.search(r'(.*?)' + separator, entry)
+    match_index = re.search(separator + r'([0-9]{1})', entry)
     match_path = re.search(
             separator + r'[0-9]{1}' + separator + r'(.*)',
-            tab_entry)
+            entry)
 
     if match_needle:
-        tab_needle = match_needle.group(1)
-    else:
-        tab_needle = None
+        needle = match_needle.group(1)
+
+    if match_index:
+        index = int(match_index.group(1))
 
     if match_path:
         path = match_path.group(1)
-    else:
-        path = None
 
-    return tab_needle, path
+    return needle, index, path
 
 
 def get_pwd():

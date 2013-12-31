@@ -47,7 +47,7 @@ from autojump_data import save
 from autojump_utils import decode
 from autojump_utils import encode_local
 from autojump_utils import first
-from autojump_utils import get_tab_needle_and_path
+from autojump_utils import get_tab_entry_info
 from autojump_utils import get_pwd
 from autojump_utils import has_uppercase
 from autojump_utils import is_osx
@@ -185,11 +185,14 @@ def handle_tab_completion(needle, entries):
     if not needle:
         sys.exit(0)
 
-    tab_needle, path = get_tab_needle_and_path(needle, TAB_SEPARATOR)
+    tab_needle, tab_index, tab_path = get_tab_entry_info(needle, TAB_SEPARATOR)
 
-    if path:
-        # found complete tab completion entry
-        print(encode_local(path))
+    if tab_path:
+        print(encode_local(tab_path))
+    elif tab_index:
+        get_ith_path = lambda i, iterable: last(take(i, iterable)).path
+        print(encode_local(
+            get_ith_path(tab_index, find_matches(entries, tab_needle))))
     elif tab_needle:
         # found partial tab completion entry
         print_tab_menu(
@@ -363,11 +366,15 @@ def main(args):
     else:
         entries = entriefy(load(config))
         needles = sanitize(args.directory)
-        _, path = get_tab_needle_and_path(first(needles), TAB_SEPARATOR)
+        tab_needle, tab_index, tab_path = \
+            get_tab_entry_info(first(needles), TAB_SEPARATOR)
 
-        if path:
-            # found complete tab completion entry
-            print(encode_local(path))
+        if tab_path:
+            print(encode_local(tab_path))
+        elif tab_index:
+            get_ith_path = lambda i, iterable: last(take(i, iterable)).path
+            print(encode_local(
+                get_ith_path(tab_index, find_matches(entries, tab_needle))))
         else:
             print(encode_local(first(find_matches(entries, needles)).path))
 
