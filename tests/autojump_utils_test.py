@@ -1,13 +1,18 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
+import os
+
 import mock
 from testify import TestCase
 from testify import assert_equal
+from testify import assert_false
+from testify import assert_true
 from testify import run
 
 import autojump_utils
 from autojump_utils import decode
 from autojump_utils import first
+from autojump_utils import in_bash
 from autojump_utils import last
 from autojump_utils import sanitize
 from autojump_utils import second
@@ -55,7 +60,11 @@ class IterationTestCase(TestCase):
 
 
 class EnvironmentalVariableTestCase(TestCase):
-    pass
+    def test_in_bash(self):
+        os.environ['SHELL'] = '/bin/bash'
+        assert_true(in_bash())
+        os.environ['SHELL'] = '/usr/bin/zsh'
+        assert_false(in_bash())
 
 
 if __name__ == "__main__":
