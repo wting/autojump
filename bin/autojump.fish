@@ -3,17 +3,15 @@ if test -d ~/.autojump
     set -x PATH ~/.autojump/bin $PATH
 end
 
-set -x AUTOJUMP_HOME $HOME
-
 
 # enable tab completion
-complete -x -c j -a '(autojump --bash --complete (commandline -t))'
+complete -x -c j -a '(autojump --complete (commandline -t))'
 
 
 # change pwd hook
 function __aj_add --on-variable PWD
     status --is-command-substitution; and return
-    autojump -a (pwd) &>/dev/null &
+    autojump -a (pwd) >/dev/null &
 end
 
 

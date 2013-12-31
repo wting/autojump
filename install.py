@@ -109,27 +109,31 @@ def parse_arguments():
 
 
 def print_post_installation_message(etc_dir):
-    aj_shell = '%s/autojump.sh' % etc_dir
-    source_msg = "\t[[ -s %s ]] && source %s\n" % (aj_shell, aj_shell)
-
     if get_shell() == 'fish':
-        rcfile = '~/.config/fish/config.fish'
+        aj_shell = '%s/autojump.fish' % etc_dir
         source_msg = "if test -f %s; . %s; end" % (aj_shell, aj_shell)
-    elif platform.system() == 'Darwin' and get_shell() == 'bash':
-        rcfile = '~/.profile'
-    else:
-        rcfile = '~/.%src' % get_shell()
 
-    print("\nPlease manually add the following line to %s:\n" % rcfile)
-    print(source_msg)
-    print("Please restart terminal(s) before running autojump.\n")
+        # TODO(ting|2013-12-31): check config.fish location on OSX
+        rcfile = '~/.config/fish/config.fish'
+    else:
+        aj_shell = '%s/autojump.sh' % etc_dir
+        source_msg = "[[ -s %s ]] && source %s" % (aj_shell, aj_shell)
+
+        if platform.system() == 'Darwin' and get_shell() == 'bash':
+            rcfile = '~/.profile'
+        else:
+            rcfile = '~/.%src' % get_shell()
+
+    print("\nPlease manually add the following line to %s:" % rcfile)
+    print('\n\t' + source_msg)
+    print("\nPlease restart terminal(s) before running autojump.\n")
 
 
 def main(args):
     if args.dryrun:
-        print("Installing autojump to %s (DRYRUN)..." % args.destdir)
+        print("\nInstalling autojump to %s (DRYRUN)..." % args.destdir)
     else:
-        print("Installing autojump to %s ..." % args.destdir)
+        print("\nInstalling autojump to %s ..." % args.destdir)
 
     bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
     etc_dir = os.path.join(args.destdir, 'etc/profile.d')
