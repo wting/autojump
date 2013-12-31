@@ -58,7 +58,7 @@ from autojump_utils import sanitize
 from autojump_utils import surround_quotes
 from autojump_utils import take
 
-VERSION = '21.8-alpha'
+VERSION = '22.0.0-alpha'
 FUZZY_MATCH_THRESHOLD = 0.6
 TAB_ENTRIES_COUNT = 9
 TAB_SEPARATOR = '__'

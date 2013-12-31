@@ -1,7 +1,7 @@
 ## Summary of release changes, see commit history for more details:
 ## https://github.com/joelthelion/autojump/commits/master/
 
-### Release v21.8.0:
+### Release v22.0.0:
 
 - Python 2.6 EOL'ed Oct 2013, support dropped. Now requires Python 2.7+.
 - install.sh -> install.py
