@@ -136,11 +136,11 @@ def save(config, data):
         print("Error saving autojump data (disk full?)" % ex, file=sys.stderr)
         sys.exit(1)
 
+    # move temp_file -> autojump.txt
+    move_file(config['tmp_path'], config['data_path'])
+
     # create backup file if it doesn't exist or is older than BACKUP_THRESHOLD
     if not os.path.exists(config['backup_path']) or \
             (time() - os.path.getmtime(config['backup_path'])
                 > BACKUP_THRESHOLD):
-        move_file(config['data_path'], config['backup_path'])
-
-    # move temp_file -> autojump.txt
-    move_file(config['tmp_path'], config['data_path'])
+        shutil.copy(config['data_path'], config['backup_path'])
