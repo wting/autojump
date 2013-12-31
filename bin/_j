@@ -1,4 +1,4 @@
-#compdef j
+# used for zsh tab completion
 cur=${words[2, -1]}
 
 autojump --complete ${=cur[*]} | while read i; do

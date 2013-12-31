@@ -11,25 +11,6 @@ EOF
 }
 complete -F _autojump j
 
-_autojump_files() {
-    if [[ ${COMP_WORDS[COMP_CWORD]} == *__* ]]; then
-        local cur
-        #cur=${COMP_WORDS[*]:1}
-        cur=${COMP_WORDS[COMP_CWORD]}
-        comps=$(autojump --complete $cur)
-        while read i
-        do
-            COMPREPLY=("${COMPREPLY[@]}" "${i}")
-        done <<EOF
-        $comps
-EOF
-    fi
-}
-
-if [[ -n ${AUTOJUMP_AUTOCOMPLETE_CMDS} ]]; then
-    complete -o default -o bashdefault -F _autojump_files ${AUTOJUMP_AUTOCOMPLETE_CMDS}
-fi
-
 # set paths if necessary for local installations
 if [ -d ~/.autojump/ ]; then
     export PATH=~/.autojump/bin:"${PATH}"
