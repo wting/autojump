@@ -40,7 +40,7 @@ jc() {
     if [[ ${@} == -* ]]; then
         autojump ${@}
     else
-        j $(pwd)/ ${@}
+        j $(pwd) ${@}
     fi
 }
 
@@ -48,21 +48,29 @@ jc() {
 jo() {
     if [[ ${@} == -* ]]; then
         autojump ${@}
-    else
+        return
+    fi
+
+    local new_path="$(autojump ${@})"
+    if [ -d "${new_path}" ]; then
         case ${OSTYPE} in
             linux-gnu)
-                xdg-open "$(autojump $@)"
+                xdg-open "${new_path}"
                 ;;
             darwin*)
-                open "$(autojump $@)"
+                open "${new_path}"
                 ;;
             cygwin)
-                cygstart "" $(cygpath -w -a $(pwd))
+                cygstart "" $(cygpath -w -a ${new_path})
                 ;;
             *)
                 echo "Unknown operating system." 1>&2
                 ;;
         esac
+    else
+        echo "autojump: directory '${@}' not found"
+        echo "Try \`autojump --help\` for more information."
+        false
     fi
 }
 
@@ -70,8 +78,7 @@ jo() {
 jco() {
     if [[ ${@} == -* ]]; then
         autojump ${@}
-        return
+    else
+        jo $(pwd) ${@}
     fi
-
-    jo $(pwd)/ ${@}
 }

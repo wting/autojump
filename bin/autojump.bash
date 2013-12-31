@@ -47,6 +47,7 @@ case $PROMPT_COMMAND in
         ;;
 esac
 
+# default autojump command
 j() {
     if [[ ${@} =~ ^-{1,2}.* ]]; then
         autojump ${@}
@@ -64,37 +65,46 @@ j() {
     fi
 }
 
+# jump to child directory (subdirectory of current path)
 jc() {
     if [[ ${@} == -* ]]; then
         autojump ${@}
     else
-        j $(pwd)/ ${@}
+        j $(pwd) ${@}
     fi
 }
 
+# open autojump results in file browser
 jo() {
-    if [ -z $(autojump $@) ]; then
-        echo "autojump: directory '${@}' not found"
-        echo "Try \`autojump --help\` for more information."
-        false
-    else
+    if [[ ${@} == -* ]]; then
+        autojump ${@}
+        return
+    fi
+
+    new_path="$(autojump ${@})"
+    if [ -d "${new_path}" ]; then
         case ${OSTYPE} in
             linux-gnu)
-                xdg-open "$(autojump $@)"
+                xdg-open "${new_path}"
                 ;;
             darwin*)
-                open "$(autojump $@)"
+                open "${new_path}"
                 ;;
             cygwin)
-                cygstart "" $(cygpath -w -a $(pwd))
+                cygstart "" $(cygpath -w -a ${new_path})
                 ;;
             *)
                 echo "Unknown operating system." 1>&2
                 ;;
         esac
+    else
+        echo "autojump: directory '${@}' not found"
+        echo "Try \`autojump --help\` for more information."
+        false
     fi
 }
 
+# open autojump results (child directory) in file browser
 jco() {
     if [[ ${@} == -* ]]; then
         autojump ${@}
