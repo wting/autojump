@@ -174,7 +174,7 @@ def print_tab_menu(needle, tab_entries, separator):
 
 
 def sanitize(directories):
-    clean = lambda x: decode(x).rstrip(os.sep)
+    clean = lambda x: decode(x) if len(x) == 1 else decode(x).rstrip(os.sep)
     return list(imap(clean, directories))
 
 

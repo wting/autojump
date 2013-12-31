@@ -37,3 +37,6 @@ tar:
 	# Create tagged archive
 	git archive --format=tar --prefix autojump_v$(VERSION)/ $(TAGNAME) | gzip > autojump_v$(VERSION).tar.gz
 	sha1sum autojump_v$(VERSION).tar.gz
+
+test:
+	testify -v tests
