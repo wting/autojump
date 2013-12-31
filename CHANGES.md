@@ -8,7 +8,6 @@
     - `--auto` option removed
     - `--local` option removed, defaults to local user install
     - `--global` option renamed to `--system`
-    - `--force` option removed
     - install.py modifies autojump.sh accordingly for custom installations
     - it is recommended that maintainers use install.py with `--destdir` and
       `--prefix` accordingly. Two stage installations requires manually updating

@@ -56,6 +56,9 @@ def parse_arguments():
             '-n', '--dryrun', action="store_true", default=False,
             help='simulate installation')
     parser.add_argument(
+            '-f', '--force', action="store_true", default=False,
+            help='skip root user, shell type, Python version checks')
+    parser.add_argument(
             '-d', '--destdir', metavar='DIR', default=default_user_destdir,
             help='set destination to DIR')
     parser.add_argument(
@@ -70,13 +73,20 @@ def parse_arguments():
 
     args = parser.parse_args()
 
-    if sys.version_info[0] == 2 and sys.version_info[1] < 7:
-        print("Python v2.7+ or v3.0+ required.", file=sys.stderr)
-        sys.exit(1)
+    if not args.force:
+        if sys.version_info[0] == 2 and sys.version_info[1] < 7:
+            print("Python v2.7+ or v3.0+ required.", file=sys.stderr)
+            sys.exit(1)
 
-    if get_shell() not in SUPPORTED_SHELLS:
-        print("Unsupported shell: %s" % os.getenv('SHELL'), file=sys.stderr)
-        sys.exit(1)
+        if get_shell() not in SUPPORTED_SHELLS:
+            print("Unsupported shell: %s" % os.getenv('SHELL'),
+                  file=sys.stderr)
+            sys.exit(1)
+
+        if args.system and os.geteuid() != 0:
+            print("Please rerun as root for system-wide installation.",
+                  file=sys.stderr)
+            sys.exit(1)
 
     if args.destdir != default_user_destdir \
             or args.prefix != default_user_prefix \
@@ -86,11 +96,6 @@ def parse_arguments():
         args.custom_install = False
 
     if args.system:
-        if os.geteuid() != 0:
-            print("Please rerun as root for system-wide installation.",
-                  file=sys.stderr)
-            sys.exit(1)
-
         if args.custom_install:
             print("Custom paths incompatible with --system option.",
                   file=sys.stderr)
