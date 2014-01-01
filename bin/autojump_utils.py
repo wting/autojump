@@ -90,7 +90,7 @@ def get_pwd():
         return os.getcwdu()
     except OSError:
         print("Current directory no longer exists.", file=sys.stderr)
-        sys.exit(1)
+        raise
 
 
 def has_uppercase(string):
