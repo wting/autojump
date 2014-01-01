@@ -59,22 +59,21 @@ class StringUnitTests(TestCase):
 
 class IterationUnitTests(TestCase):
     def test_first(self):
-        assert_equal(first((0, 1)), 0)
-        assert_equal(first(()), None)
+        assert_equal(first(xrange(5)), 0)
+        assert_equal(first([]), None)
 
     def test_second(self):
-        assert_equal(second((0, 1)), 1)
-        assert_equal(second((0,)), None)
+        assert_equal(second(xrange(5)), 1)
+        assert_equal(second([]), None)
 
     def test_last(self):
-        assert_equal(last((1, 2, 3)), 3)
-        assert_equal(last(()), None)
+        assert_equal(last(xrange(4)), 3)
+        assert_equal(last([]), None)
 
     def test_take(self):
-        xs = [1, 2, 3]
-        assert_equal(list(take(1, xs)), [1])
-        assert_equal(list(take(2, xs)), [1, 2])
-        assert_equal(list(take(4, xs)), [1, 2, 3])
+        assert_equal(list(take(1, xrange(3))), [0])
+        assert_equal(list(take(2, xrange(3))), [0, 1])
+        assert_equal(list(take(4, xrange(3))), [0, 1, 2])
         assert_equal(list(take(10, [])), [])
 
 
