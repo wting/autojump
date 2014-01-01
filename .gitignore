@@ -1,6 +1,6 @@
-tags
-bin/autojump.py
+.coverage
 *.pyc
 *~
 *.tar.gz
 *.patch
+tags

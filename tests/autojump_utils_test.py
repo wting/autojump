@@ -22,6 +22,7 @@ from autojump_utils import create_dir
 from autojump_utils import decode
 from autojump_utils import first
 from autojump_utils import get_pwd
+from autojump_utils import get_tab_entry_info
 from autojump_utils import has_uppercase
 from autojump_utils import in_bash
 from autojump_utils import last
@@ -155,6 +156,19 @@ class FileSystemIntegrationTests(TestCase):
         assert_false(os.path.exists(dst))
         move_file(src, dst)
         assert_true(os.path.exists(dst))
+
+
+def HelperFunctionsUnitTests(TestCase):
+    def test_get_needle(self):
+        assert_equal(('foo', None, None), get_tab_entry_info('foo__', '__'))
+
+    def test_get_index(self):
+        assert_equal(('foo', 2, None), get_tab_entry_info('foo__2', '__'))
+
+    def test_get_path(self):
+        assert_equal(
+                ('foo', 3, '/foo'),
+                get_tab_entry_info('foo__3__/foo', '__'))
 
 
 if __name__ == "__main__":

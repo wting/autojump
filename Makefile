@@ -1,7 +1,7 @@
 VERSION = $(shell grep -oE "[0-9]+\.[0-9]+\.[0-9]+" bin/autojump)
 TAGNAME = release-v$(VERSION)
 
-.PHONY: docs install uninstall lint tar
+.PHONY: docs install uninstall lint tar test
 
 install:
 	install.sh
