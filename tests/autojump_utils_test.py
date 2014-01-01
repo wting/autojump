@@ -1,6 +1,8 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
+from random import randrange
 from shutil import rmtree
+from tempfile import gettempdir
 from tempfile import mkdtemp
 import os
 
@@ -9,17 +11,21 @@ from testify import TestCase
 from testify import assert_equal
 from testify import assert_false
 from testify import assert_true
+from testify import class_setup
+from testify import class_teardown
 from testify import run
 from testify import setup
 from testify import teardown
 
 import autojump_utils
+from autojump_utils import create_dir
 from autojump_utils import decode
 from autojump_utils import first
 from autojump_utils import get_pwd
 from autojump_utils import has_uppercase
 from autojump_utils import in_bash
 from autojump_utils import last
+from autojump_utils import move_file
 from autojump_utils import sanitize
 from autojump_utils import second
 from autojump_utils import surround_quotes
@@ -102,6 +108,54 @@ class EnvironmentalVariableIntegrationTests(TestCase):
             return
 
         assert False, "test_bad_get_pwd() failed."
+
+
+class FileSystemIntegrationTests(TestCase):
+    @class_setup
+    def init(self):
+        self.tmp_dir = os.path.join(gettempdir(), 'autojump')
+        os.makedirs(self.tmp_dir)
+
+    @class_teardown
+    def cleanup(self):
+        try:
+            rmtree(self.tmp_dir)
+        except OSError:
+            pass
+
+    def get_random_path(self):
+        path = gettempdir()
+
+        while os.path.exists(path):
+            random_string = '%30x' % randrange(16 ** 30)
+            path = os.path.join(self.tmp_dir, random_string)
+
+        return path
+
+    def get_random_file(self):
+        path = self.get_random_path()
+        with open(path, 'w+') as f:
+            f.write('filler\n')
+
+        return path
+
+    def test_create_dir(self):
+        path = self.get_random_path()
+        create_dir(path)
+        assert_true(os.path.exists(path))
+
+        # should not raise OSError if directory already exists
+        create_dir(path)
+        assert_true(os.path.exists(path))
+
+    def test_move_file(self):
+        src = self.get_random_file()
+        dst = self.get_random_path()
+        assert_true(os.path.exists(src))
+        assert_false(os.path.exists(dst))
+        move_file(src, dst)
+        assert_true(os.path.exists(dst))
+
 
 if __name__ == "__main__":
     run()
