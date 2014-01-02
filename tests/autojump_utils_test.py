@@ -154,7 +154,7 @@ class FileSystemIntegrationTests(TestCase):
         assert_true(os.path.exists(dst))
 
 
-def HelperFunctionsUnitTests(TestCase):
+class HelperFunctionsUnitTests(TestCase):
     def test_get_needle(self):
         assert_equal(
                 get_tab_entry_info('foo__', '__'),
@@ -167,8 +167,13 @@ def HelperFunctionsUnitTests(TestCase):
 
     def test_get_path(self):
         assert_equal(
-                get_tab_entry_info('foo__3__/foo', '__'),
-                ('foo', 3, '/foo'))
+                get_tab_entry_info('foo__3__/foo/bar', '__'),
+                ('foo', 3, '/foo/bar'))
+
+    def test_get_none(self):
+        assert_equal(
+                get_tab_entry_info('gibberish content', '__'),
+                (None, None, None))
 
 
 if __name__ == "__main__":
