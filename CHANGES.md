@@ -3,7 +3,12 @@
 
 ### Release v22.0.0:
 
+#### Deprecation
+
 - Python 2.6 EOL'ed Oct 2013, support dropped. Now requires Python 2.7+.
+
+#### Backwards Incompatible
+
 - install.sh -> install.py
     - `--auto` option removed
     - `--local` option removed, defaults to local user install
@@ -17,14 +22,20 @@
     - now removes custom installations cleanly when passed appropriate
       `--destdir` and/or `--prefix` options.
     - new `--userdata` option to remove autojump database
-- all user environmental options removed
+- all user environmental options removed:
+    - AUTOJUMP_DATA_DIR
+    - AUTOJUMP_IGNORE_CASE
+    - AUTOJUMP_KEEP_SYMLINKS
+
+#### Features and Bug Fixes
+
+- fish shell support added
 - defaults to smartcasing
     - If any uppercase characters are detected, then search is case sensitive.
       Otherwise searches default to case insensitive.
 - defaults to symlinks
     - symlinks are not resolved to real path and thus results in duplicate
       database entries but ensuring that short paths will be used
-- fish shell support added
 - autojump now uses ~/Library/autojump for storing data on OS X instead of
   incorrectly using Linux's $XDG_DATA_HOME. Existing data should automatically
   be migrated to the new location.
