@@ -10,6 +10,7 @@ import mock
 from testify import TestCase
 from testify import assert_equal
 from testify import assert_false
+from testify import assert_raises
 from testify import assert_true
 from testify import class_setup
 from testify import class_teardown
@@ -102,12 +103,7 @@ class EnvironmentalVariableIntegrationTests(TestCase):
     def test_bad_get_pwd(self):
         os.chdir(self.tmp_dir)
         rmtree(self.tmp_dir)
-        try:
-            get_pwd()
-        except OSError:
-            return
-
-        assert False, "test_bad_get_pwd() failed."
+        assert_raises(OSError, get_pwd)
 
 
 class FileSystemIntegrationTests(TestCase):
@@ -154,20 +150,25 @@ class FileSystemIntegrationTests(TestCase):
         assert_true(os.path.exists(src))
         assert_false(os.path.exists(dst))
         move_file(src, dst)
+        assert_false(os.path.exists(src))
         assert_true(os.path.exists(dst))
 
 
 def HelperFunctionsUnitTests(TestCase):
     def test_get_needle(self):
-        assert_equal(('foo', None, None), get_tab_entry_info('foo__', '__'))
+        assert_equal(
+                get_tab_entry_info('foo__', '__'),
+                ('foo', None, None))
 
     def test_get_index(self):
-        assert_equal(('foo', 2, None), get_tab_entry_info('foo__2', '__'))
+        assert_equal(
+                get_tab_entry_info('foo__2', '__'),
+                ('foo', 2, None))
 
     def test_get_path(self):
         assert_equal(
-                ('foo', 3, '/foo'),
-                get_tab_entry_info('foo__3__/foo', '__'))
+                get_tab_entry_info('foo__3__/foo', '__'),
+                ('foo', 3, '/foo'))
 
 
 if __name__ == "__main__":
