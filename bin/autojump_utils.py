@@ -28,27 +28,9 @@ def create_dir(path):
             raise
 
 
-def decode(string):
-    """Converts byte string to Unicode string."""
-    if is_python2():
-        # Python 2.6 does not support kwargs
-        return string.decode('utf-8', 'replace')
-    return string
-
-
-def encode(string):
-    """Converts Unicode string to byte string."""
-    if is_python2():
-        # Python 2.6 does not support kwargs
-        return string.encode('utf-8', 'replace')
-    return string
-
-
-def encode_local(string, encoding=None):
-    """Converts string into local filesystem encoding."""
-    if is_python2():
-        return decode(string).encode(encoding or sys.getfilesystemencoding())
-    return string
+def encode_local(string):
+    """Converts string into user's preferred encoding."""
+    return string.encode(sys.getfilesystemencoding() or 'utf-8')
 
 
 def first(xs):
@@ -153,7 +135,11 @@ def move_file(src, dst):
 
 
 def print_entry(entry):
-    print(encode_local("%.1f:\t%s" % (entry.weight, entry.path)))
+    print_local("%.1f:\t%s" % (entry.weight, entry.path))
+
+
+def print_local(string):
+    print(encode_local(string))
 
 
 def print_tab_menu(needle, tab_entries, separator):
@@ -166,17 +152,18 @@ def print_tab_menu(needle, tab_entries, separator):
     on subsequent calls.
     """
     for i, entry in enumerate(tab_entries):
-        print(encode_local(
+        print_local(
             '%s%s%d%s%s' % (
                 needle,
                 separator,
                 i + 1,
                 separator,
-                entry.path)))
+                entry.path))
 
 
 def sanitize(directories):
-    clean = lambda x: decode(x) if len(x) == 1 else decode(x).rstrip(os.sep)
+    # edge case to allow '/' as a valid path
+    clean = lambda x: unico(x) if x == os.sep else unico(x).rstrip(os.sep)
     return list(imap(clean, directories))
 
 
@@ -203,3 +190,10 @@ def surround_quotes(string):
 def take(n, iterable):
     """Return first n items of an iterable."""
     return islice(iterable, n)
+
+
+def unico(string):
+    """Converts into Unicode string."""
+    if is_python2() and not isinstance(string, unicode):
+        return unicode(string, encoding='utf-8', errors='replace')
+    return string

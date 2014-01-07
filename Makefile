@@ -39,4 +39,5 @@ tar:
 	sha1sum autojump_v$(VERSION).tar.gz
 
 test:
-	testify -v tests
+	@find . -type f -iname "*.pyc" -delete
+	testify -v tests -x disabled

@@ -5,6 +5,7 @@ from shutil import rmtree
 from tempfile import gettempdir
 from tempfile import mkdtemp
 import os
+import sys
 
 import mock
 from testify import TestCase
@@ -16,11 +17,12 @@ from testify import class_setup
 from testify import class_teardown
 from testify import run
 from testify import setup
+from testify import suite
 from testify import teardown
 
 import autojump_utils
 from autojump_utils import create_dir
-from autojump_utils import decode
+from autojump_utils import encode_local
 from autojump_utils import first
 from autojump_utils import get_pwd
 from autojump_utils import get_tab_entry_info
@@ -32,12 +34,31 @@ from autojump_utils import sanitize
 from autojump_utils import second
 from autojump_utils import surround_quotes
 from autojump_utils import take
+from autojump_utils import unico
 
 
 class StringUnitTests(TestCase):
-    def test_decode(self):
-        assert_equal(decode(r'blah'), u'blah')
-        assert_equal(decode(r'日本語'), u'日本語')
+    @mock.patch.object(sys, 'getfilesystemencoding', return_value='ascii')
+    def test_encode_local_ascii(self, _):
+        assert_equal(encode_local(u'foo'), b'foo')
+
+    @suite('disabled', reason='#246')
+    def test_encode_local_ascii_fails(self):
+        with assert_raises(UnicodeDecodeError):
+            with mock.patch.object(
+                    sys,
+                    'getfilesystemencoding',
+                    return_value='ascii'):
+                encode_local(u'日本語')
+
+    @mock.patch.object(sys, 'getfilesystemencoding', return_value=None)
+    def test_encode_local_empty(self, _):
+        assert_equal(encode_local(b'foo'), u'foo')
+
+    @mock.patch.object(sys, 'getfilesystemencoding', return_value='utf-8')
+    def test_encode_local_unicode(self, _):
+        assert_equal(encode_local(b'foo'), u'foo')
+        assert_equal(encode_local(u'foo'), u'foo')
 
     def test_has_uppercase(self):
         assert_true(has_uppercase('Foo'))
@@ -56,6 +77,11 @@ class StringUnitTests(TestCase):
     def test_sanitize(self):
         assert_equal(sanitize([]), [])
         assert_equal(sanitize([r'/foo/bar/', r'/']), [u'/foo/bar', u'/'])
+
+    def test_unico(self):
+        assert_equal(unico(b'blah'), u'blah')
+        assert_equal(unico(b'日本語'), u'日本語')
+        assert_equal(unico(u'でもおれは中国人だ。'), u'でもおれは中国人だ。')
 
 
 class IterationUnitTests(TestCase):

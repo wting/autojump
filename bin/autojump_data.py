@@ -17,6 +17,7 @@ else:
     from itertools import imap
 
 from autojump_utils import create_dir
+from autojump_utils import unico
 from autojump_utils import is_osx
 from autojump_utils import is_python3
 from autojump_utils import move_file
@@ -124,11 +125,7 @@ def save(config, data):
                 encoding='utf-8',
                 errors='replace') as f:
             for path, weight in data.items():
-                if is_python3():
-                    f.write(("%s\t%s\n" % (weight, path)))
-                else:
-                    f.write(unicode(
-                        "%s\t%s\n" % (weight, path)).encode('utf-8'))
+                f.write(unico("%s\t%s\n" % (weight, path)))
 
             f.flush()
             os.fsync(f)
