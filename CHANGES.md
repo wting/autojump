@@ -3,10 +3,6 @@
 
 ### Release v22.0.0:
 
-#### Deprecation
-
-- Python 2.6 EOL'ed Oct 2013, support dropped. Now requires Python 2.7+.
-
 #### Backwards Incompatible
 
 - install.sh -> install.py

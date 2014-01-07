@@ -31,14 +31,16 @@ def create_dir(path):
 def decode(string):
     """Converts byte string to Unicode string."""
     if is_python2():
-        return string.decode('utf-8', errors='replace')
+        # Python 2.6 does not support kwargs
+        return string.decode('utf-8', 'replace')
     return string
 
 
 def encode(string):
     """Converts Unicode string to byte string."""
     if is_python2():
-        return string.encode('utf-8', errors='replace')
+        # Python 2.6 does not support kwargs
+        return string.encode('utf-8', 'replace')
     return string
 
 
@@ -192,8 +194,9 @@ def surround_quotes(string):
     Bash has problems dealing with certain paths so we're surrounding all
     path outputs with quotes.
     """
-    if in_bash():
-        return '"{}"'.format(string)
+    if in_bash() and string:
+        # Python 2.6 requres field numbers
+        return '"{0}"'.format(string)
     return string
 
 

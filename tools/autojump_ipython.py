@@ -18,7 +18,7 @@ from subprocess import PIPE
 
 from IPython.core.magic import register_line_magic
 
-ip = get_ipython()
+ip = get_ipython()  # noqa
 
 
 @register_line_magic

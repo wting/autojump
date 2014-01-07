@@ -3,12 +3,12 @@
 
 from __future__ import print_function
 
-from argparse import ArgumentParser
 import os
 import platform
 import shutil
 import sys
 
+from autojump_argparse import ArgumentParser
 
 SUPPORTED_SHELLS = ('bash', 'zsh', 'fish')
 
@@ -74,8 +74,8 @@ def parse_arguments():
     args = parser.parse_args()
 
     if not args.force:
-        if sys.version_info[0] == 2 and sys.version_info[1] < 7:
-            print("Python v2.7+ or v3.0+ required.", file=sys.stderr)
+        if sys.version_info[0] == 2 and sys.version_info[1] < 6:
+            print("Python v2.6+ or v3.0+ required.", file=sys.stderr)
             sys.exit(1)
 
         if get_shell() not in SUPPORTED_SHELLS:
@@ -131,9 +131,9 @@ def print_post_installation_message(etc_dir):
 
 def main(args):
     if args.dryrun:
-        print("\nInstalling autojump to %s (DRYRUN)..." % args.destdir)
+        print("Installing autojump to %s (DRYRUN)..." % args.destdir)
     else:
-        print("\nInstalling autojump to %s ..." % args.destdir)
+        print("Installing autojump to %s ..." % args.destdir)
 
     bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
     etc_dir = os.path.join(args.destdir, 'etc/profile.d')
@@ -148,6 +148,7 @@ def main(args):
     mkdir(zshshare_dir, args.dryrun)
 
     cp('./bin/autojump', bin_dir, args.dryrun)
+    cp('./bin/autojump_argparse.py', bin_dir, args.dryrun)
     cp('./bin/autojump_data.py', bin_dir, args.dryrun)
     cp('./bin/autojump_utils.py', bin_dir, args.dryrun)
     cp('./bin/autojump.sh', etc_dir, args.dryrun)

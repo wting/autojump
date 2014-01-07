@@ -3,11 +3,12 @@
 
 from __future__ import print_function
 
-from argparse import ArgumentParser
 import os
 import platform
 import shutil
 import sys
+
+from autojump_argparse import ArgumentParser
 
 
 def is_empty_dir(path):
