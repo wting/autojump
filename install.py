@@ -124,8 +124,10 @@ def print_post_installation_message(etc_dir):
         else:
             rcfile = '~/.%src' % get_shell()
 
-    print("\nPlease manually add the following line to %s:" % rcfile)
+    print("\nPlease manually add the following line(s) to %s:" % rcfile)
     print('\n\t' + source_msg)
+    if get_shell() == 'zsh':
+        print("\n\tautoload -U compinit && compinit -u")
     print("\nPlease restart terminal(s) before running autojump.\n")
 
 
