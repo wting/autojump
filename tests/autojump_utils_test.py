@@ -20,7 +20,7 @@ from testify import teardown
 
 import autojump_utils
 from autojump_utils import create_dir
-from autojump_utils import decode
+from autojump_utils import encode
 from autojump_utils import first
 from autojump_utils import get_pwd
 from autojump_utils import get_tab_entry_info
@@ -35,9 +35,10 @@ from autojump_utils import take
 
 
 class StringUnitTests(TestCase):
-    def test_decode(self):
-        assert_equal(decode(r'blah'), u'blah')
-        assert_equal(decode(r'日本語'), u'日本語')
+    def test_encode(self):
+        assert_equal(encode(b'blah'), u'blah')
+        assert_equal(encode(b'日本語'), u'日本語')
+        assert_equal(encode(u'でもおれは中国人だ。'), u'でもおれは中国人だ。')
 
     def test_has_uppercase(self):
         assert_true(has_uppercase('Foo'))

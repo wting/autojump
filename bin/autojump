@@ -45,8 +45,7 @@ from autojump_data import entriefy
 from autojump_data import Entry
 from autojump_data import load
 from autojump_data import save
-from autojump_utils import decode
-from autojump_utils import encode_local
+from autojump_utils import encode
 from autojump_utils import first
 from autojump_utils import get_tab_entry_info
 from autojump_utils import get_pwd
@@ -131,7 +130,7 @@ def add_path(data, path, weight=10):
     with resulting duplicate entries in the database than a single canonical
     path.
     """
-    path = decode(path).rstrip(os.sep)
+    path = encode(path).rstrip(os.sep)
     if path == os.path.expanduser('~'):
         return data, Entry(path, 0)
 
@@ -142,7 +141,7 @@ def add_path(data, path, weight=10):
 
 def decrease_path(data, path, weight=15):
     """Decrease or zero out a path."""
-    path = decode(path).rstrip(os.sep)
+    path = encode(path).rstrip(os.sep)
     data[path] = max(0, data.get(path, 0) - weight)
     return data, Entry(path, data[path])
 
@@ -189,11 +188,10 @@ def handle_tab_completion(needle, entries):
     tab_needle, tab_index, tab_path = get_tab_entry_info(needle, TAB_SEPARATOR)
 
     if tab_path:
-        print(encode_local(tab_path))
+        print(tab_path)
     elif tab_index:
         get_ith_path = lambda i, iterable: last(take(i, iterable)).path
-        print(encode_local(
-            get_ith_path(tab_index, find_matches(entries, tab_needle))))
+        print(get_ith_path(tab_index, find_matches(entries, tab_needle)))
     elif tab_needle:
         # found partial tab completion entry
         print_tab_menu(
@@ -362,7 +360,7 @@ def main(args):  # noqa
     elif not args.directory:
         # default return value so calling shell functions have an argument
         # to `cd` to
-        print(encode_local('.'))
+        print('.')
     else:
         entries = entriefy(load(config))
         needles = sanitize(args.directory)
@@ -370,13 +368,12 @@ def main(args):  # noqa
             get_tab_entry_info(first(needles), TAB_SEPARATOR)
 
         if tab_path:
-            print(encode_local(tab_path))
+            print(tab_path)
         elif tab_index:
             get_ith_path = lambda i, iterable: last(take(i, iterable)).path
-            print(encode_local(
-                get_ith_path(tab_index, find_matches(entries, tab_needle))))
+            print(get_ith_path(tab_index, find_matches(entries, tab_needle)))
         else:
-            print(encode_local(first(find_matches(entries, needles)).path))
+            print(first(find_matches(entries, needles)).path)
 
     return 0
 
