@@ -1,98 +1,50 @@
-.TH autojump 1 "10 April 2012" "release\-v20"
+.TH autojump 1 "10 April 2012" "release-v22"
 .SS NAME
 .PP
-autojump \- a faster way to navigate your filesystem
-.SS SYNOPSIS
+autojump - a faster way to navigate your filesystem
+.SS DESCRIPTION
 .PP
-Jump to a previously visited directory that contains \[aq]foo\[aq]:
+autojump is a faster way to navigate your filesystem.
+It works by maintaining a database of the directories you use the most
+from the command line.
+.PP
+\f[I]Directories must be visited first before they can be jumped to.\f[]
+.SS USAGE
+.PP
+\f[C]j\f[] is a convenience wrapper function around \f[C]autojump\f[].
+Any option that can be used with \f[C]autojump\f[] can be used with
+\f[C]j\f[] and vice versa.
+.IP \[bu] 2
+Jump To A Directory That Contains \f[C]foo\f[]:
+.RS 2
 .IP
 .nf
 \f[C]
 j\ foo
 \f[]
 .fi
+.RE
+.IP \[bu] 2
+Jump To A Child Directory
+.RS 2
 .PP
-Jump to a previously visited subdirectory of the current directory:
+Sometimes it\[aq]s convenient to jump to a child directory
+(sub-directory of current directory) rather than typing out the full
+name.
 .IP
 .nf
 \f[C]
 jc\ bar
 \f[]
 .fi
-.PP
-Show database entries and their respective key weights:
-.IP
-.nf
-\f[C]
-j\ \-\-stat
-\f[]
-.fi
-.SS DESCRIPTION
-.PP
-autojump is a faster way to navigate your filesystem.
-It works by maintaining a database of the directories you use the most
-from the command line.
-Directories must be visited first before they can be jumped to.
-.SS OPTIONS
-.PP
-Options must be passed to \[aq]autojump\[aq] and not the \[aq]j\[aq]
-wrapper function.
-.IP
-.nf
-\f[C]
-\-i,\ \-\-increase\ \ \ \ \ \ manually\ increase\ current\ directory\ weight
-
-\-d,\ \-\-decrease\ \ \ \ \ \ manually\ decrease\ current\ directory\ weight
-
-\-\-purge\ \ \ \ \ \ \ \ \ \ \ \ \ deletes\ database\ entries\ that\ no\ longer\ exist\ on\ system
-
-\-s,\ \-\-stat\ \ \ \ \ \ \ \ \ \ show\ general\ stats\ and\ top\ 100\ database\ entries
-
-\-\-version\ \ \ \ \ \ \ \ \ \ \ show\ version\ information\ and\ exit
-\f[]
-.fi
-.SS ADVANCED USAGE
-.IP \[bu] 2
-Using Multiple Arguments
-.RS 2
-.PP
-Let\[aq]s assume the following database:
-.IP
-.nf
-\f[C]
-30\ \ \ /home/user/mail/inbox
-10\ \ \ /home/user/work/inbox
-\f[]
-.fi
-.PP
-\f[C]j\ in\f[] would jump into /home/user/mail/inbox as the higher
-weighted entry.
-However you can pass multiple arguments to autojump to prefer a
-different entry.
-In the above example, \f[C]j\ w\ in\f[] would then jump you into
-/home/user/work/inbox.
 .RE
 .IP \[bu] 2
-Jump To A Child Directory.
-.RS 2
-.PP
-Sometimes it\[aq]s convenient to jump to a child directory
-(sub\-directory of current directory) rather than typing out the full
-name.
-.IP
-.nf
-\f[C]
-jc\ images
-\f[]
-.fi
-.RE
-.IP \[bu] 2
-Open File Manager To Directories (instead of jumping)
+Open File Manager To Directories (instead of jumping):
 .RS 2
 .PP
 Instead of jumping to a directory, you can open a file explorer window
-(Mac Finder, Windows Explorer, GNOME Nautilus, etc) to the directory
-instead.
+(Mac Finder, Windows Explorer, GNOME Nautilus, etc.)
+ to the directory instead.
 .IP
 .nf
 \f[C]
@@ -108,132 +60,71 @@ jco\ images
 \f[]
 .fi
 .RE
-.SS ADDITIONAL CONFIGURATION
 .IP \[bu] 2
-Enable ZSH Tab Completion
+Using Multiple Arguments:
 .RS 2
 .PP
-ZSH tab completion requires the \f[C]compinit\f[] module to be loaded.
-Please add the following line to your ~/.zshrc \f[I]after\f[] loading
-autojump:
+Let\[aq]s assume the following database:
 .IP
 .nf
 \f[C]
-autoload\ \-U\ compinit\ &&\ compinit
+30\ \ \ /home/user/mail/inbox
+10\ \ \ /home/user/work/inbox
 \f[]
 .fi
 .PP
-For security compinit checks completion system if files will be owned by
-root or the current user.
-This check can be ignored by using the \-u flag:
-.IP
-.nf
-\f[C]
-autoload\ \-U\ compinit\ &&\ compinit\ \-u
-\f[]
-.fi
-.PP
-Tab completion requires two tabs before autojump will display the
-completion menu.
-However if \f[C]setopt\ nolistambiguous\f[] is enabled, then only one
-tab is required.
+\f[C]j\ in\f[] would jump into /home/user/mail/inbox as the higher
+weighted entry.
+However you can pass multiple arguments to autojump to prefer a
+different entry.
+In the above example, \f[C]j\ w\ in\f[] would then change directory to
+/home/user/work/inbox.
 .RE
-.IP \[bu] 2
-Always Ignore Case
-.RS 2
 .PP
-Default behavior is to prioritize exact matches over all else.
-For example, \f[C]j\ foo\f[] will prefer /foobar over /FooBar even if
-the latter has a higher weight.
-To change this behavior and ignore case, add the following environmental
-variable in your ~/.bashrc:
+For more options refer to help:
 .IP
 .nf
 \f[C]
-export\ AUTOJUMP_IGNORE_CASE=1
+autojump\ --help
 \f[]
 .fi
-.RE
-.IP \[bu] 2
-Prefer Symbolic Links
-.RS 2
-.PP
-Default behavior is to evaluate symbolic links into full paths as to
-reduce duplicate entries in the database.
-However, some users prefer a shorter working directory path in their
-shell prompt.
-To switch behavior to prefer symbolic links, add the following
-environmental variable in your ~/.bashrc:
-.IP
-.nf
-\f[C]
-export\ AUTOJUMP_KEEP_SYMLINKS=1
-\f[]
-.fi
-.RE
-.IP \[bu] 2
-Autocomplete Additional Commands (Bash only)
-.RS 2
-.PP
-Autojump can be used to autocomplete other commands (e.g.
-cp or vim).
-To use this feature, add the following environmental variable in your
-~/.bashrc:
-.IP
-.nf
-\f[C]
-export\ AUTOJUMP_AUTOCOMPLETE_CMDS=\[aq]cp\ vim\[aq]
-\f[]
-.fi
-.PP
-Changes require reloading autojump to take into effect.
-.RE
 .SS KNOWN ISSUES
 .IP \[bu] 2
-For bash users, autojump keeps track of directories as a pre\-command
-hook by modifying $PROMPT_COMMAND.
-If you overwrite $PROMPT_COMMAND in ~/.bashrc you can cause problems.
-Don\[aq]t do this:
+autojump does not support directories that begin with \f[C]-\f[].
+.IP \[bu] 2
+For bash users, autojump keeps track of directories by modifying
+\f[C]$PROMPT_COMMAND\f[].
+Do not overwrite \f[C]$PROMPT_COMMAND\f[]:
 .RS 2
 .IP
 .nf
 \f[C]
-export\ PROMPT_COMMAND="history\ \-a"
+export\ PROMPT_COMMAND="history\ -a"
 \f[]
 .fi
 .PP
-Do this:
+Instead append to the end of the existing $PROMPT_COMMAND:
 .IP
 .nf
 \f[C]
-export\ PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND\ ;}\ history\ \-a"
+export\ PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND\ ;}\ history\ -a"
 \f[]
 .fi
 .RE
-.IP \[bu] 2
-The jump function \f[C]j\f[] does not support directories that begin
-with \f[C]\-\f[].
-If you want to jump a directory called \f[C]\-\-music\f[], try using
-\f[C]j\ music\f[] instead of \f[C]j\ \ \ \-\-music\f[].
-.SS FILES
-.PP
-If installed locally, autojump is self\-contained in
-\f[I]~/.autojump/\f[].
-.PP
-The database is stored in \f[I]$XDG_DATA_HOME/autojump/autojump.txt\f[].
 .SS REPORTING BUGS
 .PP
-For any usage related issues or feature requests please visit:
-.PP
-\f[I]https://github.com/joelthelion/autojump/issues\f[]
-.SS THANKS
-.PP
-Special thanks goes out to: Pierre Gueth, Simon Marache\-Francisco,
-Daniel Jackoway, and many others.
+For any questions or issues please visit:
+.IP
+.nf
+\f[C]
+https://github.com/joelthelion/autojump/issues
+\f[]
+.fi
 .SS AUTHORS
 .PP
 autojump was originally written by Joël Schaerer, and currently
 maintained by William Ting.
+More contributors can be found in \f[C]AUTHORS\f[].
 .SS COPYRIGHT
 .PP
 Copyright © 2012 Free Software Foundation, Inc.
