@@ -1,6 +1,16 @@
 # set user installation paths
-if [ -d ~/.autojump/ ]; then
+if [[ -d ~/.autojump/ ]]; then
     export PATH=~/.autojump/bin:"${PATH}"
+fi
+
+
+# set error file location
+if [[ "$(uname)" == "Darwin" ]]; then
+    export AUTOJUMP_ERROR_PATH=~/Library/autojump/errors.log
+elif [[ -n "${XDG_DATA_HOME}" ]]; then
+    export AUTOJUMP_ERROR_PATH="${XDG_DATA_HOME}/autojump/errors.log"
+else
+    export AUTOJUMP_ERROR_PATH=~/.local/share/autojump/errors.log
 fi
 
 
@@ -20,7 +30,7 @@ complete -F _autojump j
 
 # change pwd hook
 autojump_add_to_database() {
-    (autojump -a "$(pwd)" &) &>/dev/null
+    (autojump --add "$(pwd)" >/dev/null 2>${AUTOJUMP_ERROR_PATH} &) &>/dev/null
 }
 
 case $PROMPT_COMMAND in
@@ -40,7 +50,7 @@ j() {
     fi
 
     new_path="$(autojump ${@})"
-    if [ -d "${new_path}" ]; then
+    if [[ -d "${new_path}" ]]; then
         echo -e "\\033[31m${new_path}\\033[0m"
         cd "${new_path}"
     else
@@ -69,7 +79,7 @@ jo() {
     fi
 
     new_path="$(autojump ${@})"
-    if [ -d "${new_path}" ]; then
+    if [[ -d "${new_path}" ]]; then
         case ${OSTYPE} in
             linux-gnu)
                 xdg-open "${new_path}"
