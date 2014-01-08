@@ -1,14 +1,14 @@
 # set user installation paths
-if [[ -d ${HOME}/.autojump ]]; then
-    path=(${HOME}/.autojump/bin ${path})
-    fpath=(${HOME}/.autojump/functions/ ${fpath})
+if [[ -d ~/.autojump ]]; then
+    path=(~/.autojump/bin ${path})
+    fpath=(~/.autojump/functions/ ${fpath})
 fi
 
 
 # set homebrew installation paths
-command -v brew &>/dev/null \
-    && [[ -d "`brew --prefix`/share/zsh/site-functions" ]] \
-    && fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
+if command -v brew && [[ -d "$(brew --prefix)/share/zsh/site-functions" ]]; then
+    fpath=("$(brew --prefix)/share/zsh/site-functions" ${fpath})
+fi
 
 
 # set error file location
@@ -38,7 +38,7 @@ j() {
     fi
 
     local new_path="$(autojump ${@})"
-    if [ -d "${new_path}" ]; then
+    if [[ -d "${new_path}" ]]; then
         echo -e "\\033[31m${new_path}\\033[0m"
         cd "${new_path}"
     else
@@ -67,7 +67,7 @@ jo() {
     fi
 
     local new_path="$(autojump ${@})"
-    if [ -d "${new_path}" ]; then
+    if [[ -d "${new_path}" ]]; then
         case ${OSTYPE} in
             linux-gnu)
                 xdg-open "${new_path}"

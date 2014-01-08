@@ -1,6 +1,6 @@
 # source autojump on BASH or ZSH depending on the shell
 
-shell=`echo ${SHELL} | awk -F/ '{ print $NF }'`
+shell=$(echo ${SHELL} | awk -F/ '{ print $NF }')
 
 # prevent circular loop for sh shells
 if [ "${shell}" = "sh" ]; then

@@ -1,5 +1,5 @@
 # set user installation paths
-if [ -d ~/.autojump/ ]; then
+if [[ -d ~/.autojump/ ]]; then
     export PATH=~/.autojump/bin:"${PATH}"
 fi
 
@@ -50,7 +50,7 @@ j() {
     fi
 
     new_path="$(autojump ${@})"
-    if [ -d "${new_path}" ]; then
+    if [[ -d "${new_path}" ]]; then
         echo -e "\\033[31m${new_path}\\033[0m"
         cd "${new_path}"
     else
@@ -79,7 +79,7 @@ jo() {
     fi
 
     new_path="$(autojump ${@})"
-    if [ -d "${new_path}" ]; then
+    if [[ -d "${new_path}" ]]; then
         case ${OSTYPE} in
             linux-gnu)
                 xdg-open "${new_path}"
