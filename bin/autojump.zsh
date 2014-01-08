@@ -11,12 +11,19 @@ command -v brew &>/dev/null \
     && fpath=(`brew --prefix`/share/zsh/site-functions ${fpath})
 
 
-# tab completion handled by _j file
+# set error file location
+if [[ "$(uname)" == "Darwin" ]]; then
+    export AUTOJUMP_ERROR_PATH=~/Library/autojump/errors.log
+elif [[ -n "${XDG_DATA_HOME}" ]]; then
+    export AUTOJUMP_ERROR_PATH="${XDG_DATA_HOME}/autojump/errors.log"
+else
+    export AUTOJUMP_ERROR_PATH=~/.local/share/autojump/errors.log
+fi
 
 
 # change pwd hook
 autojump_chpwd() {
-    (autojump -a "$(pwd)" &) &>/dev/null
+    autojump --add "$(pwd)" >/dev/null 2>${AUTOJUMP_ERROR_PATH} &!
 }
 
 typeset -gaU chpwd_functions
