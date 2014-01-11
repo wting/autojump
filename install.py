@@ -8,6 +8,7 @@ import platform
 import shutil
 import sys
 
+sys.path.append('bin')
 from autojump_argparse import ArgumentParser
 
 SUPPORTED_SHELLS = ('bash', 'zsh', 'fish')

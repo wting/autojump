@@ -20,6 +20,10 @@ from testify import setup
 from testify import suite
 from testify import teardown
 
+if sys.version_info[0] == 3:
+    os.getcwdu = os.getcwd
+sys.path.append(os.path.join(os.getcwd(), 'bin'))
+
 import autojump_utils
 from autojump_utils import create_dir
 from autojump_utils import encode_local
