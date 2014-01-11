@@ -20,8 +20,8 @@ else
     export AUTOJUMP_ERROR_PATH=~/.local/share/autojump/errors.log
 fi
 
-if [[ ! -d "$(dirname ${AUTOJUMP_ERROR_PATH})" ]]; then
-    mkdir -p "$(dirname ${AUTOJUMP_ERROR_PATH})"
+if [[ ! -d ${AUTOJUMP_ERROR_PATH:h} ]]; then
+    mkdir -p ${AUTOJUMP_ERROR_PATH:h}
 fi
 
 
