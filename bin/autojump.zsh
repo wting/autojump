@@ -20,10 +20,18 @@ else
     export AUTOJUMP_ERROR_PATH=~/.local/share/autojump/errors.log
 fi
 
+if [[ ! -d "$(dirname ${AUTOJUMP_ERROR_PATH})" ]]; then
+    mkdir -p "$(dirname ${AUTOJUMP_ERROR_PATH})"
+fi
+
 
 # change pwd hook
 autojump_chpwd() {
-    autojump --add "$(pwd)" >/dev/null 2>${AUTOJUMP_ERROR_PATH} &!
+    if [[ -f "${AUTOJUMP_ERROR_PATH}" ]]; then
+        autojump --add "$(pwd)" >/dev/null 2>${AUTOJUMP_ERROR_PATH} &!
+    else
+        autojump --add "$(pwd)" >/dev/null &!
+    fi
 }
 
 typeset -gaU chpwd_functions

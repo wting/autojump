@@ -13,6 +13,10 @@ else
     export AUTOJUMP_ERROR_PATH=~/.local/share/autojump/errors.log
 fi
 
+if [[ ! -d "$(dirname ${AUTOJUMP_ERROR_PATH})" ]]; then
+    mkdir -p "$(dirname ${AUTOJUMP_ERROR_PATH})"
+fi
+
 
 # enable tab completion
 _autojump() {
@@ -30,7 +34,11 @@ complete -F _autojump j
 
 # change pwd hook
 autojump_add_to_database() {
-    (autojump --add "$(pwd)" >/dev/null 2>${AUTOJUMP_ERROR_PATH} &) &>/dev/null
+    if [[ -f "${AUTOJUMP_ERROR_PATH}" ]]; then
+        (autojump --add "$(pwd)" >/dev/null 2>${AUTOJUMP_ERROR_PATH} &) &>/dev/null
+    else
+        (autojump --add "$(pwd)" >/dev/null &) &>/dev/null
+    fi
 }
 
 case $PROMPT_COMMAND in
