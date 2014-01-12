@@ -78,16 +78,21 @@ def parse_arguments():
         if sys.version_info[0] == 2 and sys.version_info[1] < 6:
             print("Python v2.6+ or v3.0+ required.", file=sys.stderr)
             sys.exit(1)
+        if platform.system() != 'Windows':
+            if get_shell() not in SUPPORTED_SHELLS:
+                print("Unsupported shell: %s" % os.getenv('SHELL'),
+                      file=sys.stderr)
+                sys.exit(1)
 
-        if get_shell() not in SUPPORTED_SHELLS:
-            print("Unsupported shell: %s" % os.getenv('SHELL'),
-                  file=sys.stderr)
-            sys.exit(1)
-
-        if args.system and os.geteuid() != 0:
-            print("Please rerun as root for system-wide installation.",
-                  file=sys.stderr)
-            sys.exit(1)
+            if args.system and os.geteuid() != 0:
+                print("Please rerun as root for system-wide installation.",
+                      file=sys.stderr)
+                sys.exit(1)
+        else:
+            if args.system:
+                print("System-wide installation is not supported on Windows.",
+                      file=sys.stderr)
+                sys.exit(1)
 
     if args.destdir != default_user_destdir \
             or args.prefix != default_user_prefix \
@@ -109,26 +114,29 @@ def parse_arguments():
     return args
 
 
-def print_post_installation_message(etc_dir):
-    if get_shell() == 'fish':
-        aj_shell = '%s/autojump.fish' % etc_dir
-        source_msg = "if test -f %s; . %s; end" % (aj_shell, aj_shell)
+def print_post_installation_message(etc_dir, bin_dir):
+    if platform.system() != 'Windows':
+        if get_shell() == 'fish':
+            aj_shell = '%s/autojump.fish' % etc_dir
+            source_msg = "if test -f %s; . %s; end" % (aj_shell, aj_shell)
 
-        # TODO(ting|2013-12-31): check config.fish location on OSX
-        rcfile = '~/.config/fish/config.fish'
-    else:
-        aj_shell = '%s/autojump.sh' % etc_dir
-        source_msg = "[[ -s %s ]] && source %s" % (aj_shell, aj_shell)
-
-        if platform.system() == 'Darwin' and get_shell() == 'bash':
-            rcfile = '~/.profile'
+            # TODO(ting|2013-12-31): check config.fish location on OSX
+            rcfile = '~/.config/fish/config.fish'
         else:
-            rcfile = '~/.%src' % get_shell()
+            aj_shell = '%s/autojump.sh' % etc_dir
+            source_msg = "[[ -s %s ]] && source %s" % (aj_shell, aj_shell)
 
-    print("\nPlease manually add the following line(s) to %s:" % rcfile)
-    print('\n\t' + source_msg)
-    if get_shell() == 'zsh':
-        print("\n\tautoload -U compinit && compinit -u")
+            if platform.system() == 'Darwin' and get_shell() == 'bash':
+                rcfile = '~/.profile'
+            else:
+                rcfile = '~/.%src' % get_shell()
+
+        print("\nPlease manually add the following line(s) to %s:" % rcfile)
+        print('\n\t' + source_msg)
+        if get_shell() == 'zsh':
+            print("\n\tautoload -U compinit && compinit -u")
+    else: 
+        print("\nPlease manually add %s to your user path" % bin_dir)
     print("\nPlease restart terminal(s) before running autojump.\n")
 
 
@@ -139,10 +147,11 @@ def main(args):
         print("Installing autojump to %s ..." % args.destdir)
 
     bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
-    etc_dir = os.path.join(args.destdir, 'etc/profile.d')
-    doc_dir = os.path.join(args.destdir, args.prefix, 'share/man/man1')
-    icon_dir = os.path.join(args.destdir, args.prefix, 'share/autojump')
+    etc_dir = os.path.join(args.destdir, 'etc', 'profile.d')
+    doc_dir = os.path.join(args.destdir, args.prefix, 'share', 'man', 'man1')
+    icon_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
     zshshare_dir = os.path.join(args.destdir, args.zshshare)
+    clink_dir = os.path.join(os.getenv("LOCALAPPDATA"),'clink')
 
     mkdir(bin_dir, args.dryrun)
     mkdir(etc_dir, args.dryrun)
@@ -154,18 +163,27 @@ def main(args):
     cp('./bin/autojump_argparse.py', bin_dir, args.dryrun)
     cp('./bin/autojump_data.py', bin_dir, args.dryrun)
     cp('./bin/autojump_utils.py', bin_dir, args.dryrun)
-    cp('./bin/autojump.sh', etc_dir, args.dryrun)
-    cp('./bin/autojump.bash', etc_dir, args.dryrun)
-    cp('./bin/autojump.fish', etc_dir, args.dryrun)
-    cp('./bin/autojump.zsh', etc_dir, args.dryrun)
-    cp('./bin/_j', zshshare_dir, args.dryrun)
+    if platform.system() != 'Windows':
+        cp('./bin/autojump.sh', etc_dir, args.dryrun)
+        cp('./bin/autojump.bash', etc_dir, args.dryrun)
+        cp('./bin/autojump.fish', etc_dir, args.dryrun)
+        cp('./bin/autojump.zsh', etc_dir, args.dryrun)
+        cp('./bin/_j', zshshare_dir, args.dryrun)
+
+        if args.custom_install:
+            modify_autojump_sh(etc_dir, args.dryrun)
+    else:
+        cp('./bin/autojump.lua', clink_dir, args.dryrun)
+        cp('./bin/autojump.bat', bin_dir, args.dryrun)
+        cp('./bin/j.bat', bin_dir, args.dryrun)
+        cp('./bin/jc.bat', bin_dir, args.dryrun)
+        cp('./bin/jo.bat', bin_dir, args.dryrun)
+        cp('./bin/jco.bat', bin_dir, args.dryrun)
     cp('./bin/icon.png', icon_dir, args.dryrun)
     cp('./docs/autojump.1', doc_dir, args.dryrun)
 
-    if args.custom_install:
-        modify_autojump_sh(etc_dir, args.dryrun)
 
-    print_post_installation_message(etc_dir)
+    print_post_installation_message(etc_dir, bin_dir)
 
 if __name__ == "__main__":
     sys.exit(main(parse_arguments()))

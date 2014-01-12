@@ -8,6 +8,7 @@ import platform
 import shutil
 import sys
 
+sys.path.append('bin')
 from autojump_argparse import ArgumentParser
 
 
@@ -111,6 +112,10 @@ def remove_user_data(dryrun=False):
                         os.path.expanduser('~'),
                         'Library',
                         'autojump')
+    elif platform.system() == 'Windows':
+         data_home = os.path.join(
+                        os.getenv('APPDATA'),
+                        'autojump')
     else:
         data_home = os.getenv(
                 'XDG_DATA_HOME',
@@ -127,9 +132,13 @@ def remove_user_data(dryrun=False):
 
 def remove_user_installation(dryrun=False):
     default_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
+    clink_dir = os.path.join(os.getenv("LOCALAPPDATA"),'clink')
     if os.path.exists(default_destdir):
         print("\nFound user installation...")
         rmdir(default_destdir, dryrun)
+    if platform.system() == 'Windows':
+        if os.path.exists(clink_dir):
+            rm(os.path.join(clink_dir,'autojump.lua'), dryrun)
 
 
 def rm(path, dryrun):
