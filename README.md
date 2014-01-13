@@ -64,7 +64,7 @@ INSTALLATION
 ### REQUIREMENTS
 
 -   Python v2.6+
--   Bash v4.0+, zsh, or fish
+-   Bash v4.0+, zsh, fish or clink (Windows)
 
 ### AUTOMATIC
 
@@ -105,6 +105,12 @@ Run the installation script and follow on screen instructions.
 
     cd autojump
     ./install.py or ./uinstall.py
+
+## Windows
+
+Windows support is enabled by [clink](https://code.google.com/p/clink/) which should be installed prior to installing autojump.
+
+Completion support on windows has not yet been added.
 
 KNOWN ISSUES
 ------------
