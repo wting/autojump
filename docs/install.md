@@ -3,7 +3,7 @@
 ### REQUIREMENTS
 
 - Python v2.6+
-- Bash v4.0+, zsh, or fish
+- Bash v4.0+, zsh, fish, or clink (Windows)
 
 ### AUTOMATIC
 
@@ -32,6 +32,11 @@ Homebrew is the recommended installation method for Mac OS X:
 MacPorts also available:
 
     port install autojump
+
+## Windows
+
+Windows support is enabled by [clink](https://code.google.com/p/clink/) which
+should be installed prior to installing autojump.
 
 ### MANUAL
 
