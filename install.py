@@ -42,13 +42,27 @@ def modify_autojump_sh(etc_dir, dryrun=False):
         f.write(custom_install)
 
 
+def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
+    """Prepend custom AUTOJUMP_BIN_DIR definition to autojump.lua"""
+    custom_install = "local AUTOJUMP_BIN_DIR = \"%s\"\n" % bin_dir.replace("\\", "\\\\")
+    clink_file = os.path.join(clink_dir, 'autojump.lua')
+    with open(clink_file, 'r') as f:
+        original = f.read()
+    with open(clink_file, 'w') as f:
+        f.write(custom_install + original)
+
+
 def parse_arguments():
-    default_user_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
+    if platform.system() == 'Windows':
+        default_user_destdir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'autojump')
+    else:
+        default_user_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
     default_user_prefix = ''
     default_user_zshshare = 'functions'
     default_system_destdir = '/'
     default_system_prefix = '/usr/local'
     default_system_zshshare = '/usr/share/zsh/site-functions'
+    default_clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
 
     parser = ArgumentParser(
             description='Installs autojump globally for root users, otherwise \
@@ -69,6 +83,9 @@ def parse_arguments():
             '-z', '--zshshare', metavar='DIR', default=default_user_zshshare,
             help='set zsh share destination to DIR')
     parser.add_argument(
+            '-c', '--clinkdir', metavar='DIR', default=default_clink_dir,
+            help='set clink directory location to DIR (Windows only)')
+    parser.add_argument(
             '-s', '--system', action="store_true", default=False,
             help='install system wide for all users')
 
@@ -78,14 +95,18 @@ def parse_arguments():
         if sys.version_info[0] == 2 and sys.version_info[1] < 6:
             print("Python v2.6+ or v3.0+ required.", file=sys.stderr)
             sys.exit(1)
+        if args.system:
+            if platform.system() == 'Windows':
+                print("System-wide installation is not supported on Windows.",
+                      file=sys.stderr)
+                sys.exit(1)
+            elif os.geteuid() != 0:
+                print("Please rerun as root for system-wide installation.",
+                      file=sys.stderr)
+                sys.exit(1)
 
-        if get_shell() not in SUPPORTED_SHELLS:
+        if platform.system() != 'Windows' and get_shell() not in SUPPORTED_SHELLS:
             print("Unsupported shell: %s" % os.getenv('SHELL'),
-                  file=sys.stderr)
-            sys.exit(1)
-
-        if args.system and os.geteuid() != 0:
-            print("Please rerun as root for system-wide installation.",
                   file=sys.stderr)
             sys.exit(1)
 
@@ -109,26 +130,29 @@ def parse_arguments():
     return args
 
 
-def print_post_installation_message(etc_dir):
-    if get_shell() == 'fish':
-        aj_shell = '%s/autojump.fish' % etc_dir
-        source_msg = "if test -f %s; . %s; end" % (aj_shell, aj_shell)
-
-        # TODO(ting|2013-12-31): check config.fish location on OSX
-        rcfile = '~/.config/fish/config.fish'
+def print_post_installation_message(etc_dir, bin_dir):
+    if platform.system() == 'Windows':
+        print("\nPlease manually add %s to your user path" % bin_dir)
     else:
-        aj_shell = '%s/autojump.sh' % etc_dir
-        source_msg = "[[ -s %s ]] && source %s" % (aj_shell, aj_shell)
+        if get_shell() == 'fish':
+            aj_shell = '%s/autojump.fish' % etc_dir
+            source_msg = "if test -f %s; . %s; end" % (aj_shell, aj_shell)
 
-        if platform.system() == 'Darwin' and get_shell() == 'bash':
-            rcfile = '~/.profile'
+            # TODO(ting|2013-12-31): check config.fish location on OSX
+            rcfile = '~/.config/fish/config.fish'
         else:
-            rcfile = '~/.%src' % get_shell()
+            aj_shell = '%s/autojump.sh' % etc_dir
+            source_msg = "[[ -s %s ]] && source %s" % (aj_shell, aj_shell)
 
-    print("\nPlease manually add the following line(s) to %s:" % rcfile)
-    print('\n\t' + source_msg)
-    if get_shell() == 'zsh':
-        print("\n\tautoload -U compinit && compinit -u")
+            if platform.system() == 'Darwin' and get_shell() == 'bash':
+                rcfile = '~/.profile'
+            else:
+                rcfile = '~/.%src' % get_shell()
+
+        print("\nPlease manually add the following line(s) to %s:" % rcfile)
+        print('\n\t' + source_msg)
+        if get_shell() == 'zsh':
+            print("\n\tautoload -U compinit && compinit -u")
     print("\nPlease restart terminal(s) before running autojump.\n")
 
 
@@ -139,33 +163,46 @@ def main(args):
         print("Installing autojump to %s ..." % args.destdir)
 
     bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
-    etc_dir = os.path.join(args.destdir, 'etc/profile.d')
-    doc_dir = os.path.join(args.destdir, args.prefix, 'share/man/man1')
-    icon_dir = os.path.join(args.destdir, args.prefix, 'share/autojump')
+    etc_dir = os.path.join(args.destdir, 'etc', 'profile.d')
+    doc_dir = os.path.join(args.destdir, args.prefix, 'share', 'man', 'man1')
+    icon_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
     zshshare_dir = os.path.join(args.destdir, args.zshshare)
 
     mkdir(bin_dir, args.dryrun)
-    mkdir(etc_dir, args.dryrun)
     mkdir(doc_dir, args.dryrun)
     mkdir(icon_dir, args.dryrun)
-    mkdir(zshshare_dir, args.dryrun)
 
     cp('./bin/autojump', bin_dir, args.dryrun)
     cp('./bin/autojump_argparse.py', bin_dir, args.dryrun)
     cp('./bin/autojump_data.py', bin_dir, args.dryrun)
     cp('./bin/autojump_utils.py', bin_dir, args.dryrun)
-    cp('./bin/autojump.sh', etc_dir, args.dryrun)
-    cp('./bin/autojump.bash', etc_dir, args.dryrun)
-    cp('./bin/autojump.fish', etc_dir, args.dryrun)
-    cp('./bin/autojump.zsh', etc_dir, args.dryrun)
-    cp('./bin/_j', zshshare_dir, args.dryrun)
     cp('./bin/icon.png', icon_dir, args.dryrun)
     cp('./docs/autojump.1', doc_dir, args.dryrun)
 
-    if args.custom_install:
-        modify_autojump_sh(etc_dir, args.dryrun)
+    if platform.system() == 'Windows':
+        cp('./bin/autojump.lua', args.clinkdir, args.dryrun)
+        cp('./bin/autojump.bat', bin_dir, args.dryrun)
+        cp('./bin/j.bat', bin_dir, args.dryrun)
+        cp('./bin/jc.bat', bin_dir, args.dryrun)
+        cp('./bin/jo.bat', bin_dir, args.dryrun)
+        cp('./bin/jco.bat', bin_dir, args.dryrun)
 
-    print_post_installation_message(etc_dir)
+        if args.custom_install:
+            modify_autojump_lua(args.clinkdir, bin_dir, args.dryrun)
+    else:
+        mkdir(etc_dir, args.dryrun)
+        mkdir(zshshare_dir, args.dryrun)
+
+        cp('./bin/autojump.sh', etc_dir, args.dryrun)
+        cp('./bin/autojump.bash', etc_dir, args.dryrun)
+        cp('./bin/autojump.fish', etc_dir, args.dryrun)
+        cp('./bin/autojump.zsh', etc_dir, args.dryrun)
+        cp('./bin/_j', zshshare_dir, args.dryrun)
+
+        if args.custom_install:
+            modify_autojump_sh(etc_dir, args.dryrun)
+
+    print_post_installation_message(etc_dir, bin_dir)
 
 if __name__ == "__main__":
     sys.exit(main(parse_arguments()))

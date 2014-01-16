@@ -50,6 +50,7 @@ from autojump_utils import get_tab_entry_info
 from autojump_utils import get_pwd
 from autojump_utils import has_uppercase
 from autojump_utils import is_osx
+from autojump_utils import is_windows
 from autojump_utils import last
 from autojump_utils import print_entry
 from autojump_utils import print_local
@@ -71,6 +72,10 @@ def set_defaults():
         data_home = os.path.join(
                         os.path.expanduser('~'),
                         'Library',
+                        'autojump')
+    elif is_windows():
+        data_home = os.path.join(
+                        os.getenv('APPDATA'),
                         'autojump')
     else:
         data_home = os.getenv(
@@ -258,13 +263,13 @@ def match_consecutive(needles, haystack, ignore_case=False):
             (path="/moo/foo/baz", weight=10),
             (path="/foo/baz", weight=10)]
     """
-    regex_no_sep = '[^' + os.sep + ']*'
-    regex_one_sep = regex_no_sep + os.sep + regex_no_sep
+    sep = os.sep.replace('\\','\\\\')
+    regex_no_sep = '[^' + sep + ']*'
+    regex_one_sep = regex_no_sep + sep + regex_no_sep
     regex_no_sep_end = regex_no_sep + '$'
     # can't use compiled regex because of flags
     regex_needle = regex_one_sep.join(needles) + regex_no_sep_end
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
-
     found = lambda entry: re.search(
             regex_needle,
             entry.path,
@@ -336,7 +341,6 @@ def print_stats(data, data_path):
 
 def main(args):  # noqa
     config = set_defaults()
-
     # all arguments are mutually exclusive
     if args.add:
         save(config, first(add_path(load(config), args.add)))
