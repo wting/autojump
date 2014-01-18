@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 from __future__ import print_function
 
 import os
@@ -44,7 +43,9 @@ def modify_autojump_sh(etc_dir, dryrun=False):
 
 def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
     """Prepend custom AUTOJUMP_BIN_DIR definition to autojump.lua"""
-    custom_install = "local AUTOJUMP_BIN_DIR = \"%s\"\n" % bin_dir.replace("\\", "\\\\")
+    custom_install = "local AUTOJUMP_BIN_DIR = \"%s\"\n" % bin_dir.replace(
+            "\\",
+            "\\\\")
     clink_file = os.path.join(clink_dir, 'autojump.lua')
     with open(clink_file, 'r') as f:
         original = f.read()
@@ -52,11 +53,15 @@ def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
         f.write(custom_install + original)
 
 
-def parse_arguments():
+def parse_arguments():  # noqa
     if platform.system() == 'Windows':
-        default_user_destdir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'autojump')
+        default_user_destdir = os.path.join(
+                os.getenv('LOCALAPPDATA', ''),
+                'autojump')
     else:
-        default_user_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
+        default_user_destdir = os.path.join(
+                os.path.expanduser("~"),
+                '.autojump')
     default_user_prefix = ''
     default_user_zshshare = 'functions'
     default_system_destdir = '/'
@@ -105,7 +110,8 @@ def parse_arguments():
                       file=sys.stderr)
                 sys.exit(1)
 
-        if platform.system() != 'Windows' and get_shell() not in SUPPORTED_SHELLS:
+        if platform.system() != 'Windows' \
+                and get_shell() not in SUPPORTED_SHELLS:
             print("Unsupported shell: %s" % os.getenv('SHELL'),
                   file=sys.stderr)
             sys.exit(1)
@@ -202,7 +208,9 @@ def main(args):
         if args.custom_install:
             modify_autojump_sh(etc_dir, args.dryrun)
 
+
     print_post_installation_message(etc_dir, bin_dir)
+
 
 if __name__ == "__main__":
     sys.exit(main(parse_arguments()))

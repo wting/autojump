@@ -146,10 +146,12 @@ def remove_user_data(dryrun=False):
 
 def remove_user_installation(dryrun=False):
     if platform.system() == 'Windows':
-        default_destdir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'autojump')
+        default_destdir = os.path.join(os.getenv('LOCALAPPDATA', ''),
+                'autojump')
         clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
     else:
         default_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
+
     if os.path.exists(default_destdir):
         print("\nFound user installation...")
         rmdir(default_destdir, dryrun)

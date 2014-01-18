@@ -263,10 +263,14 @@ def match_consecutive(needles, haystack, ignore_case=False):
             (path="/moo/foo/baz", weight=10),
             (path="/foo/baz", weight=10)]
     """
-    sep = os.sep.replace('\\','\\\\')
+    if is_windows():
+        # The normal \\ separator needs to be escaped again for use in regex.
+        sep = '\\\\'
+    else:
+        sep = os.sep
     regex_no_sep = '[^' + sep + ']*'
-    regex_one_sep = regex_no_sep + sep + regex_no_sep
     regex_no_sep_end = regex_no_sep + '$'
+    regex_one_sep = regex_no_sep + sep + regex_no_sep
     # can't use compiled regex because of flags
     regex_needle = regex_one_sep.join(needles) + regex_no_sep_end
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
