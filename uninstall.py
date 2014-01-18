@@ -23,6 +23,8 @@ def is_empty_dir(path):
 
 
 def parse_arguments():
+    default_clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
+
     parser = ArgumentParser(
             description='Uninstalls autojump.')
     parser.add_argument(
@@ -40,6 +42,8 @@ def parse_arguments():
     parser.add_argument(
             '-z', '--zshshare', metavar='DIR', default='functions',
             help='custom zshshare')
+    parser.add_argument(
+            '-c', '--clinkdir', metavar='DIR', default=default_clink_dir)
 
     return parser.parse_args()
 
@@ -61,11 +65,21 @@ def remove_custom_installation(args, dryrun=False):
     rm(os.path.join(bin_dir, 'autojump'), dryrun)
     rm(os.path.join(bin_dir, 'autojump_data.py'), dryrun)
     rm(os.path.join(bin_dir, 'autojump_utils.py'), dryrun)
-    rm(os.path.join(etc_dir, 'autojump.sh'), dryrun)
-    rm(os.path.join(etc_dir, 'autojump.bash'), dryrun)
-    rm(os.path.join(etc_dir, 'autojump.fish'), dryrun)
-    rm(os.path.join(etc_dir, 'autojump.zsh'), dryrun)
-    rm(os.path.join(zshshare_dir, '_j'), dryrun)
+    rm(os.path.join(bin_dir, 'autojump_argparse.py'), dryrun)
+    if platform.system() == 'Windows':
+        if os.path.exists(args.clinkdir):
+            rm(os.path.join(args.clinkdir, 'autojump.lua'), dryrun)
+        rm(os.path.join(bin_dir, 'autojump.bat'), dryrun)
+        rm(os.path.join(bin_dir, 'j.bat'), dryrun)
+        rm(os.path.join(bin_dir, 'jc.bat'), dryrun)
+        rm(os.path.join(bin_dir, 'jco.bat'), dryrun)
+        rm(os.path.join(bin_dir, 'jo.bat'), dryrun)
+    else:
+        rm(os.path.join(etc_dir, 'autojump.sh'), dryrun)
+        rm(os.path.join(etc_dir, 'autojump.bash'), dryrun)
+        rm(os.path.join(etc_dir, 'autojump.fish'), dryrun)
+        rm(os.path.join(etc_dir, 'autojump.zsh'), dryrun)
+        rm(os.path.join(zshshare_dir, '_j'), dryrun)
     rmdir(icon_dir, dryrun)
     rm(os.path.join(doc_dir, 'autojump.1'), dryrun)
 
@@ -113,7 +127,7 @@ def remove_user_data(dryrun=False):
                         'Library',
                         'autojump')
     elif platform.system() == 'Windows':
-         data_home = os.path.join(
+        data_home = os.path.join(
                         os.getenv('APPDATA'),
                         'autojump')
     else:
@@ -131,14 +145,16 @@ def remove_user_data(dryrun=False):
 
 
 def remove_user_installation(dryrun=False):
-    default_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
-    clink_dir = os.path.join(os.getenv("LOCALAPPDATA"),'clink')
+    if platform.system() == 'Windows':
+        default_destdir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'autojump')
+        clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
+    else:
+        default_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
     if os.path.exists(default_destdir):
         print("\nFound user installation...")
         rmdir(default_destdir, dryrun)
-    if platform.system() == 'Windows':
-        if os.path.exists(clink_dir):
-            rm(os.path.join(clink_dir,'autojump.lua'), dryrun)
+        if platform.system() == 'Windows' and os.path.exists(clink_dir):
+            rm(os.path.join(clink_dir, 'autojump.lua'), dryrun)
 
 
 def rm(path, dryrun):

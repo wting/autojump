@@ -1,8 +1,7 @@
-local HOME = clink.get_env("USERPROFILE") .."\\"
-local AUTOJUMP_BIN = HOME .. ".autojump\\bin\\autojump"
+local AUTOJUMP_BIN = (AUTOJUMP_BIN_DIR or clink.get_env("LOCALAPPDATA") .. "\\autojump\\bin") .. "\\autojump"
 
 function autojump_add_to_database() 
-  os.execute("python " .. AUTOJUMP_BIN .. " --add " .. clink.get_cwd())
+  os.execute("python " .. AUTOJUMP_BIN .. " --add " .. clink.get_cwd() .. " 2> " .. clink.get_env("TEMP") .. "\\autojump_error.txt")
 end
 
 clink.prompt.register_filter(autojump_add_to_database, 99)

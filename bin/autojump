@@ -75,7 +75,7 @@ def set_defaults():
                         'autojump')
     elif is_windows():
         data_home = os.path.join(
-                        os.getenv('LOCALAPPDATA'),
+                        os.getenv('APPDATA'),
                         'autojump')
     else:
         data_home = os.getenv(
@@ -263,7 +263,7 @@ def match_consecutive(needles, haystack, ignore_case=False):
             (path="/moo/foo/baz", weight=10),
             (path="/foo/baz", weight=10)]
     """
-    sep = os.sep.encode('string-escape')
+    sep = os.sep.replace('\\','\\\\')
     regex_no_sep = '[^' + sep + ']*'
     regex_one_sep = regex_no_sep + sep + regex_no_sep
     regex_no_sep_end = regex_no_sep + '$'
