@@ -163,10 +163,11 @@ def detect_smartcase(needles):
 def find_matches(entries, needles):
     """Return an iterator to matching entries."""
     try:
+        os.getcwdu()
         not_cwd = lambda entry: entry.path != os.getcwdu()
     except OSError:
         # tautology if current working directory no longer exists
-        not_cwd = lambda x: True
+        not_cwd = lambda _: True
 
     data = sorted(
             ifilter(not_cwd, entries),
