@@ -160,32 +160,40 @@ def detect_smartcase(needles):
     return not any(imap(has_uppercase, needles))
 
 
-def find_matches(entries, needles):
+def find_matches(entries, needles, check_entries=True):
     """Return an iterator to matching entries."""
+    ignore_case = detect_smartcase(needles)
+
     try:
-        os.getcwdu()
-        not_cwd = lambda entry: entry.path != os.getcwdu()
+        pwd = os.getcwdu()
     except OSError:
-        # tautology if current working directory no longer exists
-        not_cwd = lambda _: True
+        pwd = None
+
+    # using closure and comparing vs string to prevent constantly hitting hdd
+    def not_cwd(entry):
+        return entry.path != pwd
+
+    if check_entries:
+        exists = lambda entry: os.path.exists(entry.path)
+    else:
+        exists = lambda _: True
 
     data = sorted(
-            ifilter(not_cwd, entries),
+            entries,
             key=attrgetter('weight'),
             reverse=True)
 
-    ignore_case = detect_smartcase(needles)
-
-    exists = lambda entry: os.path.exists(entry.path)
     return ifilter(
-            exists,
-            chain(
-                match_consecutive(needles, data, ignore_case),
-                match_fuzzy(needles, data, ignore_case),
-                match_anywhere(needles, data, ignore_case),
-                # default return value so calling shell functions have an
-                # argument to `cd` to
-                [Entry('.', 0)]))
+            not_cwd,
+            ifilter(
+                exists,
+                chain(
+                    match_consecutive(needles, data, ignore_case),
+                    match_fuzzy(needles, data, ignore_case),
+                    match_anywhere(needles, data, ignore_case),
+                    # default return value so calling shell functions have an
+                    # argument to `cd` to
+                    [Entry('.', 0)])))
 
 
 def handle_tab_completion(needle, entries):
@@ -198,17 +206,25 @@ def handle_tab_completion(needle, entries):
         print_local(tab_path)
     elif tab_index:
         get_ith_path = lambda i, iterable: last(take(i, iterable)).path
-        print_local(get_ith_path(tab_index, find_matches(entries, tab_needle)))
+        print_local(get_ith_path(
+            tab_index,
+            find_matches(entries, tab_needle, check_entries=False)))
     elif tab_needle:
         # found partial tab completion entry
         print_tab_menu(
                 tab_needle,
-                take(TAB_ENTRIES_COUNT, find_matches(entries, tab_needle)),
+                take(TAB_ENTRIES_COUNT, find_matches(
+                    entries,
+                    tab_needle,
+                    check_entries=False)),
                 TAB_SEPARATOR)
     else:
         print_tab_menu(
                 needle,
-                take(TAB_ENTRIES_COUNT, find_matches(entries, needle)),
+                take(TAB_ENTRIES_COUNT, find_matches(
+                    entries,
+                    needle,
+                    check_entries=False)),
                 TAB_SEPARATOR)
 
 
