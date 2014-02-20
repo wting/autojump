@@ -209,14 +209,14 @@ def handle_tab_completion(needle, entries):
         get_ith_path = lambda i, iterable: last(take(i, iterable)).path
         print_local(get_ith_path(
             tab_index,
-            find_matches(entries, tab_needle, check_entries=False)))
+            find_matches(entries, [tab_needle], check_entries=False)))
     elif tab_needle:
         # found partial tab completion entry
         print_tab_menu(
                 tab_needle,
                 take(TAB_ENTRIES_COUNT, find_matches(
                     entries,
-                    tab_needle,
+                    [tab_needle],
                     check_entries=False)),
                 TAB_SEPARATOR)
     else:
@@ -224,7 +224,7 @@ def handle_tab_completion(needle, entries):
                 needle,
                 take(TAB_ENTRIES_COUNT, find_matches(
                     entries,
-                    needle,
+                    [needle],
                     check_entries=False)),
                 TAB_SEPARATOR)
 
