@@ -162,6 +162,7 @@ def detect_smartcase(needles):
 
 def find_matches(entries, needles, check_entries=True):
     """Return an iterator to matching entries."""
+    assert isinstance(needles, list), "Needles must be a list."
     ignore_case = detect_smartcase(needles)
 
     try:
