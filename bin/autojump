@@ -162,6 +162,7 @@ def detect_smartcase(needles):
 
 def find_matches(entries, needles, check_entries=True):
     """Return an iterator to matching entries."""
+    # TODO(ting|2014-02-18): replace assertion with test
     assert isinstance(needles, list), "Needles must be a list."
     ignore_case = detect_smartcase(needles)
 
@@ -185,16 +186,14 @@ def find_matches(entries, needles, check_entries=True):
             reverse=True)
 
     return ifilter(
-            not_cwd,
-            ifilter(
-                exists,
-                chain(
-                    match_consecutive(needles, data, ignore_case),
-                    match_fuzzy(needles, data, ignore_case),
-                    match_anywhere(needles, data, ignore_case),
-                    # default return value so calling shell functions have an
-                    # argument to `cd` to
-                    [Entry('.', 0)])))
+            lambda entry: not_cwd(entry) and exists(entry),
+            chain(
+                match_consecutive(needles, data, ignore_case),
+                match_fuzzy(needles, data, ignore_case),
+                match_anywhere(needles, data, ignore_case),
+                # default return value so calling shell functions have an
+                # argument to `cd` to
+                [Entry('.', 0)]))
 
 
 def handle_tab_completion(needle, entries):
