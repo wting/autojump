@@ -171,14 +171,14 @@ def find_matches(entries, needles, check_entries=True):
     except OSError:
         pwd = None
 
-    # using closure and comparing vs string to prevent constantly hitting hdd
-    def not_cwd(entry):
-        return entry.path != pwd
+    # using closure to prevent constantly hitting hdd
+    def is_cwd(entry):
+        return entry.path == pwd
 
     if check_entries:
-        exists = lambda entry: os.path.exists(entry.path)
+        path_exists = lambda entry: os.path.exists(entry.path)
     else:
-        exists = lambda _: True
+        path_exists = lambda _: True
 
     data = sorted(
             entries,
@@ -186,7 +186,7 @@ def find_matches(entries, needles, check_entries=True):
             reverse=True)
 
     return ifilter(
-            lambda entry: not_cwd(entry) and exists(entry),
+            lambda entry: not is_cwd(entry) and path_exists(entry),
             chain(
                 match_consecutive(needles, data, ignore_case),
                 match_fuzzy(needles, data, ignore_case),
