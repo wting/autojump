@@ -98,8 +98,8 @@ def migrate_osx_xdg_data(config):
 
     xdg_data_home = os.path.join(os.path.expanduser('~'), '.local', 'share')
     xdg_aj_home = os.path.join(xdg_data_home, 'autojump')
-    data_path = os.path.join(xdg_aj_home, 'autojump.txt'),
-    backup_path = os.path.join(xdg_aj_home, 'autojump.txt.bak'),
+    data_path = os.path.join(xdg_aj_home, 'autojump.txt')
+    backup_path = os.path.join(xdg_aj_home, 'autojump.txt.bak')
 
     if os.path.exists(data_path):
         move_file(data_path, config['data_path'])
