@@ -143,8 +143,6 @@ def print_post_installation_message(etc_dir, bin_dir):
         if get_shell() == 'fish':
             aj_shell = '%s/autojump.fish' % etc_dir
             source_msg = "if test -f %s; . %s; end" % (aj_shell, aj_shell)
-
-            # TODO(ting|2013-12-31): check config.fish location on OSX
             rcfile = '~/.config/fish/config.fish'
         else:
             aj_shell = '%s/autojump.sh' % etc_dir
