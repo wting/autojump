@@ -88,7 +88,6 @@ def set_defaults():
 
     config['data_path'] = os.path.join(data_home, 'autojump.txt')
     config['backup_path'] = os.path.join(data_home, 'autojump.txt.bak')
-    config['tmp_path'] = os.path.join(data_home, 'data.tmp')
 
     return config
 

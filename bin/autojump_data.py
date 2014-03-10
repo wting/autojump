@@ -7,6 +7,7 @@ from collections import namedtuple
 import os
 import shutil
 import sys
+from tempfile import NamedTemporaryFile
 from time import time
 
 if sys.version_info[0] == 3:
@@ -119,11 +120,9 @@ def save(config, data):
     # atomically save by writing to temporary file and moving to destination
     try:
         # write to temp file
-        with open(
-                config['tmp_path'],
-                'w',
-                encoding='utf-8',
-                errors='replace') as f:
+        temp = NamedTemporaryFile(delete=False)
+
+        with open(temp.name, 'w', encoding='utf-8', errors='replace') as f:
             for path, weight in data.items():
                 f.write(unico("%s\t%s\n" % (weight, path)))
 
@@ -134,10 +133,9 @@ def save(config, data):
         sys.exit(1)
 
     # move temp_file -> autojump.txt
-    move_file(config['tmp_path'], config['data_path'])
+    move_file(temp.name, config['data_path'])
 
     # create backup file if it doesn't exist or is older than BACKUP_THRESHOLD
     if not os.path.exists(config['backup_path']) or \
-            (time() - os.path.getmtime(config['backup_path'])
-                > BACKUP_THRESHOLD):
+            (time() - os.path.getmtime(config['backup_path']) > BACKUP_THRESHOLD): #noqa
         shutil.copy(config['data_path'], config['backup_path'])
