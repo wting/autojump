@@ -359,6 +359,7 @@ def print_stats(data, data_path):
 
 def main(args):  # noqa
     config = set_defaults()
+
     # all arguments are mutually exclusive
     if args.add:
         save(config, first(add_path(load(config), args.add)))
@@ -404,7 +405,7 @@ def main(args):  # noqa
                     first(
                         chain(
                             find_matches(entries, needles),
-                            # always return an argument to calling shell functions
+                            # always return n argument to calling shell functions
                             [Entry('.', 0)])).path)
 
     return 0

@@ -58,28 +58,28 @@ def load(config):
     if is_osx() and os.path.exists(xdg_aj_home):
         migrate_osx_xdg_data(config)
 
-    if os.path.exists(config['data_path']):
-        # example: u'10.0\t/home/user\n' -> ['10.0', u'/home/user']
-        parse = lambda line: line.strip().split('\t')
+    if not os.path.exists(config['data_path']):
+        return {}
 
-        correct_length = lambda x: len(x) == 2
+    # example: u'10.0\t/home/user\n' -> ['10.0', u'/home/user']
+    parse = lambda line: line.strip().split('\t')
 
-        # example: ['10.0', u'/home/user'] -> (u'/home/user', 10.0)
-        tupleize = lambda x: (x[1], float(x[0]))
+    correct_length = lambda x: len(x) == 2
 
-        try:
-            with open(
-                    config['data_path'],
-                    'r', encoding='utf-8',
-                    errors='replace') as f:
-                return dict(
-                        imap(
-                            tupleize,
-                            ifilter(correct_length, imap(parse, f))))
-        except (IOError, EOFError):
-            return load_backup(config)
+    # example: ['10.0', u'/home/user'] -> (u'/home/user', 10.0)
+    tupleize = lambda x: (x[1], float(x[0]))
 
-    return {}
+    try:
+        with open(
+                config['data_path'],
+                'r', encoding='utf-8',
+                errors='replace') as f:
+            return dict(
+                    imap(
+                        tupleize,
+                        ifilter(correct_length, imap(parse, f))))
+    except (IOError, EOFError):
+        return load_backup(config)
 
 
 def load_backup(config):
