@@ -29,8 +29,32 @@ _autojump() {
         $comps
 EOF
 }
-complete -F _autojump j
+complete -F _autojump j jo
 
+_complete_autojump_c() {
+  local current_word
+  SAVE_IFS=$IFS
+  IFS=$'\n'
+  COMPREPLY=()
+  current_word="${COMP_WORDS[COMP_CWORD]}"
+  # tabbing on empty "prefix", e.g. jc <tab>
+  if [ -z "$current_word" ]; then
+    autocomplete_pattern="$PWD"
+  # tabbing when last item is a number jc /some/path.*first.*second__2<tab> #FIXME?
+  elif [[ "$current_word" =~ ^[0-9]+$ ]]; then
+    autocomplete_pattern="${PWD}__$current_word"
+  # tabbing when last item contains .*, e.g. jc /some/path.*first.*second<tab>
+  elif [[ "$current_word" =~ .*\.\*.* ]]; then
+    autocomplete_pattern="$current_word"
+  # tabbing when there are tokens, e.g. jc first second<tab>
+  else
+    autocomplete_pattern="${PWD}.*${current_word}"
+  fi
+  comps=$(autojump --complete "$autocomplete_pattern")
+  COMPREPLY=($(compgen -W "$comps" --))
+  IFS=$SAVE_IFS
+}
+complete -F _complete_autojump_c jc jco
 
 # change pwd hook
 autojump_add_to_database() {
