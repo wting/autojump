@@ -190,10 +190,7 @@ def find_matches(entries, needles, check_entries=True):
             chain(
                 match_consecutive(needles, data, ignore_case),
                 match_fuzzy(needles, data, ignore_case),
-                match_anywhere(needles, data, ignore_case),
-                # default return value so calling shell functions have an
-                # argument to `cd` to
-                [Entry('.', 0)]))
+                match_anywhere(needles, data, ignore_case)))
 
 
 def handle_tab_completion(needle, entries):
@@ -399,9 +396,16 @@ def main(args):  # noqa
         elif tab_index:
             get_ith_path = lambda i, iterable: last(take(i, iterable)).path
             print_local(
-                    get_ith_path(tab_index, find_matches(entries, tab_needle)))
+                    get_ith_path(
+                        tab_index,
+                        find_matches(entries, tab_needle)))
         else:
-            print_local(first(find_matches(entries, needles)).path)
+            print_local(
+                    first(
+                        chain(
+                            find_matches(entries, needles),
+                            # always return an argument to calling shell functions
+                            [Entry('.', 0)])).path)
 
     return 0
 
