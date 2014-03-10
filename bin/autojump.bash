@@ -40,10 +40,10 @@ _complete_autojump_c() {
   # tabbing on empty "prefix", e.g. jc <tab>
   if [ -z "$current_word" ]; then
     autocomplete_pattern="$PWD"
-  # tabbing when last item is a number jc /some/path.*first.*second__2<tab> #FIXME?
+  # tabbing when last item is a number, e.g. jc /some/path.*first.*second__2<tab>
   elif [[ "$current_word" =~ ^[0-9]+$ ]]; then
     autocomplete_pattern="${PWD}__$current_word"
-  # tabbing when last item contains .*, e.g. jc /some/path.*first.*second<tab>
+  # tabbing when last item contains .*, e.g. jc /some/path.*another<tab>
   elif [[ "$current_word" =~ .*\.\*.* ]]; then
     autocomplete_pattern="$current_word"
   # tabbing when there are tokens, e.g. jc first second<tab>
@@ -93,14 +93,7 @@ j() {
 }
 
 
-# jump to child directory (subdirectory of current path)
-jc() {
-    if [[ ${@} == -* ]]; then
-        autojump ${@}
-    else
-        j $(pwd) ${@}
-    fi
-}
+alias jc=j
 
 
 # open autojump results in file browser
@@ -134,11 +127,4 @@ jo() {
 }
 
 
-# open autojump results (child directory) in file browser
-jco() {
-    if [[ ${@} == -* ]]; then
-        autojump ${@}
-    else
-        jo $(pwd) ${@}
-    fi
-}
+alias jco=jo
