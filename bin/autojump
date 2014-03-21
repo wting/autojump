@@ -382,8 +382,7 @@ def main(args):  # noqa
     elif args.stat:
         print_stats(load(config), config['data_path'])
     elif not args.directory:
-        # default return value so calling shell functions have an argument
-        # to `cd` to
+        # always return a path to calling shell functions
         print_local('.')
     else:
         entries = entriefy(load(config))
@@ -404,8 +403,8 @@ def main(args):  # noqa
                     first(
                         chain(
                             find_matches(entries, needles),
-                            # always return n argument to calling shell functions
-                            [Entry('.', 0)])).path)
+                            # always return a path to calling shell functions
+                            ['.'])))
 
     return 0
 
