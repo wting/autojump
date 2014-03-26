@@ -399,12 +399,10 @@ def main(args):  # noqa
                         tab_index,
                         find_matches(entries, tab_needle)))
         else:
-            print_local(
-                    first(
-                        chain(
-                            find_matches(entries, needles),
-                            # always return a path to calling shell functions
-                            ['.'])))
+            print_local(first(chain(
+                    imap(attrgetter('path'), find_matches(entries, needles)),
+                    # always return a path to calling shell functions
+                    ['.'])))
 
     return 0
 
