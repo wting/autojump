@@ -402,7 +402,7 @@ def main(args):  # noqa
             TAB_SEPARATOR_LENGTH = len(TAB_SEPARATOR)
             clean_needles = [ (needle[:-TAB_SEPARATOR_LENGTH] if needle.endswith(TAB_SEPARATOR) else needle) for needle in needles ]
             print_local(first(chain(
-               imap(attrgetter('path'), find_matches(entries, clean_needles )),
+                    imap(attrgetter('path'), find_matches(entries, clean_needles)),
                     # always return a path to calling shell functions
                     ['.'])))
 
