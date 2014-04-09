@@ -397,7 +397,7 @@ def main(args):  # noqa
             print_local(
                     get_ith_path(
                         tab_index,
-                        find_matches(entries, tab_needle)))
+                        find_matches(entries, [tab_needle])))
         else:
             print_local(first(chain(
                     imap(attrgetter('path'), find_matches(entries, needles)),
