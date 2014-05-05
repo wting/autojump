@@ -9,4 +9,4 @@ if (`alias cwdcmd` !~ *autojump*) then
 endif
 
 #default autojump command
-alias j 'cd `autojump \!:1`'
+alias j 'cd `autojump -- \!:1`'
