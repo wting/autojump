@@ -1,7 +1,9 @@
 # set user installation paths
-if [[ -d ~/.autojump ]]; then
+if [[ -d ~/.autojump/bin ]]; then
     path=(~/.autojump/bin ${path})
-    fpath=(~/.autojump/functions/ ${fpath})
+fi
+if [[ -d ~/.autojump/functions ]]; then
+    fpath=(~/.autojump/functions ${fpath})
 fi
 
 
