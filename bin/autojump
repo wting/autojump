@@ -172,7 +172,7 @@ def find_matches(entries, needles, check_entries=True):
 
     # using closure to prevent constantly hitting hdd
     def is_cwd(entry):
-        return entry.path == pwd
+        return os.path.realpath(entry.path) == pwd
 
     if check_entries:
         path_exists = lambda entry: os.path.exists(entry.path)
