@@ -390,6 +390,11 @@ def main(args):  # noqa
         tab_needle, tab_index, tab_path = \
             get_tab_entry_info(first(needles), TAB_SEPARATOR)
 
+        # Handle `j foo__`, assuming first index.
+        if not tab_path and not tab_index \
+                and tab_needle and needles[0] == tab_needle + TAB_SEPARATOR:
+            tab_index = 1
+
         if tab_path:
             print_local(tab_path)
         elif tab_index:
