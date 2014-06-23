@@ -4,10 +4,10 @@ TAGNAME = release-v$(VERSION)
 .PHONY: docs install uninstall lint tar test
 
 install:
-	install.py
+	./install.py
 
 uninstall:
-	uninstall.py
+	./uninstall.py
 
 docs:
 	pandoc -s -w man docs/manpage_header.md docs/header.md docs/body.md -o docs/autojump.1
