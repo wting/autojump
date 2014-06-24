@@ -22,7 +22,7 @@ can be used with `autojump` can be used with `j` and vice versa.
 
         j foo
 
--   Jump To A Child Directory
+-   Jump To A Child Directory:
 
     Sometimes it's convenient to jump to a child directory
     (sub-directory of current directory) rather than typing out the full
@@ -38,7 +38,7 @@ can be used with `autojump` can be used with `j` and vice versa.
 
         jo music
 
-    Opening a file manager to a child directory is also supported.
+-   Opening a file manager to a child directory is also supported:
 
         jco images
 
@@ -54,7 +54,7 @@ can be used with `autojump` can be used with `j` and vice versa.
     a different entry. In the above example, `j w in` would then change
     directory to /home/user/work/inbox.
 
-For more options refer to help:
+For more options refer to the help:
 
     autojump --help
 
@@ -98,7 +98,7 @@ MacPorts also available:
 Windows
 -------
 
-Windows support is enabled by [clink](https://code.google.com/p/clink/)
+Windows support is enabled by [clink](https://code.google.com/p/clink/),
 which should be installed prior to installing autojump.
 
 ### MANUAL
@@ -107,10 +107,10 @@ Grab a copy of autojump:
 
     git clone git://github.com/joelthelion/autojump.git
 
-Run the installation script and follow on screen instructions.
+Run the installation script and follow the on screen instructions.
 
     cd autojump
-    ./install.py or ./uinstall.py
+    ./install.py or ./uninstall.py
 
 KNOWN ISSUES
 ------------
