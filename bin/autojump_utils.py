@@ -30,6 +30,8 @@ def create_dir(path):
 
 def encode_local(string):
     """Converts string into user's preferred encoding."""
+    if is_python3():
+        return string
     return string.encode(sys.getfilesystemencoding() or 'utf-8')
 
 
