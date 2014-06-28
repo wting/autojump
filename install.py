@@ -206,7 +206,6 @@ def main(args):
         if args.custom_install:
             modify_autojump_sh(etc_dir, args.dryrun)
 
-
     print_post_installation_message(etc_dir, bin_dir)
 
 
