@@ -40,4 +40,4 @@ tar:
 
 test:
 	@find . -type f -iname "*.pyc" -delete
-	testify -v tests -x disabled
+	py.test -rsxX -q
