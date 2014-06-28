@@ -1,3 +1,4 @@
-flake8>=2.0.0
+flake8
 mock
 pytest
+tox
