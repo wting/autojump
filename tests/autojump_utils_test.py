@@ -29,7 +29,7 @@ if is_python3():
 
 def u(string):
     """
-    This is a unicode() wrapper since u'string' fails in Python3.
+    This is a unicode() wrapper since u'string' is a Python3 compiler error.
     """
     if is_python3():
         return string
@@ -37,28 +37,29 @@ def u(string):
 
 
 # strings
+@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
 @mock.patch.object(sys, 'getfilesystemencoding', return_value='ascii')
 def test_encode_local_ascii(_):
     assert encode_local(u('foo')) == b'foo'
 
 
-@pytest.mark.xfail(reason='issue #246')
-def test_encode_local_ascii_fails():
+@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
+@pytest.mark.xfail(reason="disabled due to pytest bug: https://bitbucket.org/hpk42/pytest/issue/534/pytest-fails-to-catch-unicodedecodeerrors")  # noqa
+@mock.patch.object(sys, 'getfilesystemencoding', return_value='ascii')
+def test_encode_local_ascii_fails(_):
     with pytest.raises(UnicodeDecodeError):
-        with mock.patch.object(
-                sys,
-                'getfilesystemencoding',
-                return_value='ascii'):
-            encode_local(u('日本語'))
+        encode_local(u('日本語'))
 
 
+@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
 @mock.patch.object(sys, 'getfilesystemencoding', return_value=None)
 def test_encode_local_empty(_):
     assert encode_local(b'foo') == u('foo')
 
 
+@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
 @mock.patch.object(sys, 'getfilesystemencoding', return_value='utf-8')
-def test_encode_local_u(_):
+def test_encode_local_unicode(_):
     assert encode_local(b'foo') == u('foo')
     assert encode_local(u('foo')) == u('foo')
 
@@ -85,6 +86,7 @@ def test_sanitize():
     assert sanitize([r'/foo/bar/', r'/']) == [u('/foo/bar'), u('/')]
 
 
+@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
 def test_unico():
     assert unico(str('blah')) == u('blah')
     assert unico(str('日本語')) == u('日本語')
