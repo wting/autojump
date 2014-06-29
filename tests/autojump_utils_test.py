@@ -6,7 +6,6 @@ import sys
 import mock
 import pytest
 
-# Python 3 compatibility
 if sys.version_info[0] == 3:
     os.getcwdu = os.getcwd
 sys.path.append(os.path.join(os.getcwd(), 'bin'))

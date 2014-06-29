@@ -10,7 +10,7 @@ import sys
 sys.path.append('bin')
 from autojump_argparse import ArgumentParser
 
-SUPPORTED_SHELLS = ('bash', 'zsh', 'fish')
+SUPPORTED_SHELLS = ('bash', 'zsh', 'fish', 'tcsh')
 
 
 def cp(src, dest, dryrun=False):
@@ -157,6 +157,7 @@ def print_post_installation_message(etc_dir, bin_dir):
         print('\n\t' + source_msg)
         if get_shell() == 'zsh':
             print("\n\tautoload -U compinit && compinit -u")
+
     print("\nPlease restart terminal(s) before running autojump.\n")
 
 

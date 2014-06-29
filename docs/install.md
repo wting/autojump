@@ -3,7 +3,12 @@
 ### REQUIREMENTS
 
 - Python v2.6+
-- Bash v4.0+, zsh, fish, or clink (Windows)
+- Supported shells:
+    - bash v4.0+
+    - zsh
+    - fish
+    - tcsh (experimental)
+    - clink (Windows, experimental)
 
 ### AUTOMATIC
 
