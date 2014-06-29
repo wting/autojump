@@ -47,4 +47,4 @@ Grab a copy of autojump:
 Run the installation script and follow on screen instructions.
 
     cd autojump
-    ./install.py or ./uinstall.py
+    ./install.py or ./uninstall.py
