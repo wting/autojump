@@ -3,4 +3,5 @@
 *~
 *.tar.gz
 *.patch
+.tox
 tags

@@ -137,5 +137,5 @@ def save(config, data):
 
     # create backup file if it doesn't exist or is older than BACKUP_THRESHOLD
     if not os.path.exists(config['backup_path']) or \
-            (time() - os.path.getmtime(config['backup_path']) > BACKUP_THRESHOLD): #noqa
+            (time() - os.path.getmtime(config['backup_path']) > BACKUP_THRESHOLD):  # noqa
         shutil.copy(config['data_path'], config['backup_path'])

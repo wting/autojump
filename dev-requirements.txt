@@ -1,2 +1,4 @@
-flake8>=2.0.0
-testify
+flake8
+mock
+pytest
+tox

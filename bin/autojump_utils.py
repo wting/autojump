@@ -30,6 +30,8 @@ def create_dir(path):
 
 def encode_local(string):
     """Converts string into user's preferred encoding."""
+    if is_python3():
+        return string
     return string.encode(sys.getfilesystemencoding() or 'utf-8')
 
 
@@ -170,8 +172,12 @@ def sanitize(directories):
 def second(xs):
     it = iter(xs)
     try:
-        it.next()
-        return it.next()
+        if is_python2():
+            it.next()
+            return it.next()
+        elif is_python3():
+            next(it)
+            return next(it)
     except StopIteration:
         return None
 

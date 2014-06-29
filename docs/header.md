@@ -21,7 +21,7 @@ be used with `autojump` can be used with `j` and vice versa.
 
         j foo
 
-- Jump To A Child Directory
+- Jump To A Child Directory:
 
     Sometimes it's convenient to jump to a child directory (sub-directory of
     current directory) rather than typing out the full name.
@@ -35,7 +35,7 @@ be used with `autojump` can be used with `j` and vice versa.
 
         jo music
 
-    Opening a file manager to a child directory is also supported.
+    Opening a file manager to a child directory is also supported:
 
         jco images
 
