@@ -6,16 +6,14 @@ import sys
 import mock
 import pytest
 
-if sys.version_info[0] == 3:
-    os.getcwdu = os.getcwd
 sys.path.append(os.path.join(os.getcwd(), 'bin'))
-
 import autojump_utils
 from autojump_utils import encode_local
 from autojump_utils import first
 from autojump_utils import get_tab_entry_info
 from autojump_utils import has_uppercase
 from autojump_utils import in_bash
+from autojump_utils import is_python3
 from autojump_utils import last
 from autojump_utils import sanitize
 from autojump_utils import second
@@ -24,10 +22,23 @@ from autojump_utils import take
 from autojump_utils import unico
 
 
+if is_python3():
+    os.getcwdu = os.getcwd
+
+
+def u(string):
+    """
+    This is a unicode() wrapper since u'string' fails in Python3.
+    """
+    if is_python3():
+        return string
+    return unicode(string, encoding='utf-8', errors='strict')
+
+
 # strings
 @mock.patch.object(sys, 'getfilesystemencoding', return_value='ascii')
 def test_encode_local_ascii(_):
-    assert encode_local(u'foo') == b'foo'
+    assert encode_local(u('foo')) == b'foo'
 
 
 @pytest.mark.xfail(reason='issue #246')
@@ -37,18 +48,18 @@ def test_encode_local_ascii_fails():
                 sys,
                 'getfilesystemencoding',
                 return_value='ascii'):
-            encode_local(u'日本語')
+            encode_local(u('日本語'))
 
 
 @mock.patch.object(sys, 'getfilesystemencoding', return_value=None)
 def test_encode_local_empty(_):
-    assert encode_local(b'foo') == u'foo'
+    assert encode_local(b'foo') == u('foo')
 
 
 @mock.patch.object(sys, 'getfilesystemencoding', return_value='utf-8')
-def test_encode_local_unicode(_):
-    assert encode_local(b'foo') == u'foo'
-    assert encode_local(u'foo') == u'foo'
+def test_encode_local_u(_):
+    assert encode_local(b'foo') == u('foo')
+    assert encode_local(u('foo')) == u('foo')
 
 
 def test_has_uppercase():
@@ -70,13 +81,13 @@ def test_dont_surround_quotes_not_in_bash(_):
 
 def test_sanitize():
     assert sanitize([]) == []
-    assert sanitize([r'/foo/bar/', r'/']) == [u'/foo/bar', u'/']
+    assert sanitize([r'/foo/bar/', r'/']) == [u('/foo/bar'), u('/')]
 
 
 def test_unico():
-    assert unico(b'blah') == u'blah'
-    assert unico(b'日本語') == u'日本語'
-    assert unico(u'でもおれは中国人だ。') == u'でもおれは中国人だ。'
+    assert unico(str('blah')) == u('blah')
+    assert unico(str('日本語')) == u('日本語')
+    assert unico(u('でもおれは中国人だ。')) == u('でもおれは中国人だ。')
 
 
 # iteration
