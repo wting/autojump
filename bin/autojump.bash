@@ -45,7 +45,7 @@ case $PROMPT_COMMAND in
     *autojump*)
         ;;
     *)
-        PROMPT_COMMAND="${PROMPT_COMMAND:+$(echo "${PROMPT_COMMAND}" | awk '{gsub(/; *$/,"")}1') ; }autojump_add_to_database"
+        PROMPT_COMMAND="${PROMPT_COMMAND:+$(echo "${PROMPT_COMMAND}" | awk '{gsub(/; *$/,"")}1') ; }[[ $OLDPWD == $PPWD ]] && autojump_add_to_database && PPWD=$PWD"
         ;;
 esac
 
