@@ -138,7 +138,7 @@ def test_get_index():
 
 def test_get_path():
     assert get_tab_entry_info('foo__3__/foo/bar', '__') \
-            == ('foo', 3, '/foo/bar')
+        == ('foo', 3, '/foo/bar')
 
 
 def test_get_none():

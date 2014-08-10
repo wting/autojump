@@ -56,8 +56,8 @@ def get_tab_entry_info(entry, separator):
     match_needle = re.search(r'(.*?)' + separator, entry)
     match_index = re.search(separator + r'([0-9]{1})', entry)
     match_path = re.search(
-            separator + r'[0-9]{1}' + separator + r'(.*)',
-            entry)
+        separator + r'[0-9]{1}' + separator + r'(.*)',
+        entry)
 
     if match_needle:
         needle = match_needle.group(1)

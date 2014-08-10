@@ -51,10 +51,10 @@ def entriefy(data):
 def load(config):
     """Returns a dictonary (key=path, value=weight) loaded from data file."""
     xdg_aj_home = os.path.join(
-            os.path.expanduser('~'),
-            '.local',
-            'share',
-            'autojump')
+        os.path.expanduser('~'),
+        '.local',
+        'share',
+        'autojump')
 
     if is_osx() and os.path.exists(xdg_aj_home):
         migrate_osx_xdg_data(config)
@@ -76,9 +76,9 @@ def load(config):
                 'r', encoding='utf-8',
                 errors='replace') as f:
             return dict(
-                    imap(
-                        tupleize,
-                        ifilter(correct_length, imap(parse, f))))
+                imap(
+                    tupleize,
+                    ifilter(correct_length, imap(parse, f))))
     except (IOError, EOFError):
         return load_backup(config)
 

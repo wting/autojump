@@ -70,21 +70,21 @@ def set_defaults():
 
     if is_osx():
         data_home = os.path.join(
-                        os.path.expanduser('~'),
-                        'Library',
-                        'autojump')
+            os.path.expanduser('~'),
+            'Library',
+            'autojump')
     elif is_windows():
         data_home = os.path.join(
-                        os.getenv('APPDATA'),
-                        'autojump')
+            os.getenv('APPDATA'),
+            'autojump')
     else:
         data_home = os.getenv(
-                'XDG_DATA_HOME',
-                os.path.join(
-                        os.path.expanduser('~'),
-                        '.local',
-                        'share',
-                        'autojump'))
+            'XDG_DATA_HOME',
+            os.path.join(
+                os.path.expanduser('~'),
+                '.local',
+                'share',
+                'autojump'))
 
     config['data_path'] = os.path.join(data_home, 'autojump.txt')
     config['backup_path'] = os.path.join(data_home, 'autojump.txt.bak')
@@ -94,35 +94,35 @@ def set_defaults():
 
 def parse_arguments():
     parser = ArgumentParser(
-            description='Automatically jump to directory passed as an \
+        description='Automatically jump to directory passed as an \
                     argument.',
-            epilog="Please see autojump(1) man pages for full documentation.")
+        epilog="Please see autojump(1) man pages for full documentation.")
     parser.add_argument(
-            'directory', metavar='DIRECTORY', nargs='*', default='',
-            help='directory to jump to')
+        'directory', metavar='DIRECTORY', nargs='*', default='',
+        help='directory to jump to')
     parser.add_argument(
-            '-a', '--add', metavar='DIRECTORY',
-            help='add path')
+        '-a', '--add', metavar='DIRECTORY',
+        help='add path')
     parser.add_argument(
-            '-i', '--increase', metavar='WEIGHT', nargs='?', type=int,
-            const=10, default=False,
-            help='increase current directory weight')
+        '-i', '--increase', metavar='WEIGHT', nargs='?', type=int,
+        const=10, default=False,
+        help='increase current directory weight')
     parser.add_argument(
-            '-d', '--decrease', metavar='WEIGHT', nargs='?', type=int,
-            const=15, default=False,
-            help='decrease current directory weight')
+        '-d', '--decrease', metavar='WEIGHT', nargs='?', type=int,
+        const=15, default=False,
+        help='decrease current directory weight')
     parser.add_argument(
-            '--complete', action="store_true", default=False,
-            help='used for tab completion')
+        '--complete', action="store_true", default=False,
+        help='used for tab completion')
     parser.add_argument(
-            '--purge', action="store_true", default=False,
-            help='remove non-existent paths from database')
+        '--purge', action="store_true", default=False,
+        help='remove non-existent paths from database')
     parser.add_argument(
-            '-s', '--stat', action="store_true", default=False,
-            help='show database entries and their key weights')
+        '-s', '--stat', action="store_true", default=False,
+        help='show database entries and their key weights')
     parser.add_argument(
-            '-v', '--version', action="version", version="%(prog)s v" +
-            VERSION, help='show version information')
+        '-v', '--version', action="version", version="%(prog)s v" +
+        VERSION, help='show version information')
 
     return parser.parse_args()
 
@@ -180,16 +180,16 @@ def find_matches(entries, needles, check_entries=True):
         path_exists = lambda _: True
 
     data = sorted(
-            entries,
-            key=attrgetter('weight'),
-            reverse=True)
+        entries,
+        key=attrgetter('weight'),
+        reverse=True)
 
     return ifilter(
-            lambda entry: not is_cwd(entry) and path_exists(entry),
-            chain(
-                match_consecutive(needles, data, ignore_case),
-                match_fuzzy(needles, data, ignore_case),
-                match_anywhere(needles, data, ignore_case)))
+        lambda entry: not is_cwd(entry) and path_exists(entry),
+        chain(
+            match_consecutive(needles, data, ignore_case),
+            match_fuzzy(needles, data, ignore_case),
+            match_anywhere(needles, data, ignore_case)))
 
 
 def handle_tab_completion(needle, entries):
@@ -205,20 +205,20 @@ def handle_tab_completion(needle, entries):
     elif tab_needle:
         # found partial tab completion entry
         print_tab_menu(
-                tab_needle,
-                take(TAB_ENTRIES_COUNT, find_matches(
-                    entries,
-                    [tab_needle],
-                    check_entries=False)),
-                TAB_SEPARATOR)
+            tab_needle,
+            take(TAB_ENTRIES_COUNT, find_matches(
+                entries,
+                [tab_needle],
+                check_entries=False)),
+            TAB_SEPARATOR)
     else:
         print_tab_menu(
-                needle,
-                take(TAB_ENTRIES_COUNT, find_matches(
-                    entries,
-                    [needle],
-                    check_entries=False)),
-                TAB_SEPARATOR)
+            needle,
+            take(TAB_ENTRIES_COUNT, find_matches(
+                entries,
+                [needle],
+                check_entries=False)),
+            TAB_SEPARATOR)
 
 
 def match_anywhere(needles, haystack, ignore_case=False):
@@ -241,9 +241,9 @@ def match_anywhere(needles, haystack, ignore_case=False):
     regex_needle = '.*' + '.*'.join(needles).replace('\\', '\\\\') + '.*'
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda haystack: re.search(
-            regex_needle,
-            haystack.path,
-            flags=regex_flags)
+        regex_needle,
+        haystack.path,
+        flags=regex_flags)
     return ifilter(found, haystack)
 
 
@@ -285,9 +285,9 @@ def match_consecutive(needles, haystack, ignore_case=False):
     regex_needle = regex_one_sep.join(needles).replace('\\', '\\\\') + regex_no_sep_end  # noqa
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda entry: re.search(
-            regex_needle,
-            entry.path,
-            flags=regex_flags)
+        regex_needle,
+        entry.path,
+        flags=regex_flags)
     return ifilter(found, haystack)
 
 
@@ -317,13 +317,13 @@ def match_fuzzy(needles, haystack, ignore_case=False):
     if ignore_case:
         needle = last(needles).lower()
         match_percent = lambda entry: SequenceMatcher(
-                a=needle,
-                b=end_dir(entry.path.lower())).ratio()
+            a=needle,
+            b=end_dir(entry.path.lower())).ratio()
     else:
         needle = last(needles)
         match_percent = lambda entry: SequenceMatcher(
-                a=needle,
-                b=end_dir(entry.path)).ratio()
+            a=needle,
+            b=end_dir(entry.path)).ratio()
     meets_threshold = lambda entry: match_percent(entry) >= \
         FUZZY_MATCH_THRESHOLD
     return ifilter(meets_threshold, haystack)
@@ -345,7 +345,7 @@ def print_stats(data, data_path):
 
     try:
         print_local(
-                "%.2f:\t current directory weight" % data.get(os.getcwdu(), 0))
+            "%.2f:\t current directory weight" % data.get(os.getcwdu(), 0))
     except OSError:
         # current directory no longer exists
         pass
@@ -361,8 +361,8 @@ def main(args):  # noqa
         save(config, first(add_path(load(config), args.add)))
     elif args.complete:
         handle_tab_completion(
-                needle=first(chain(sanitize(args.directory), [''])),
-                entries=entriefy(load(config)))
+            needle=first(chain(sanitize(args.directory), [''])),
+            entries=entriefy(load(config)))
     elif args.decrease:
         data, entry = decrease_path(load(config), get_pwd(), args.decrease)
         save(config, data)
@@ -382,9 +382,9 @@ def main(args):  # noqa
         # Return best match.
         entries = entriefy(load(config))
         print_local(first(chain(
-                imap(attrgetter('path'), find_matches(entries, [''])),
-                # always return a path to calling shell functions
-                ['.'])))
+            imap(attrgetter('path'), find_matches(entries, [''])),
+            # always return a path to calling shell functions
+            ['.'])))
     else:
         entries = entriefy(load(config))
         needles = sanitize(args.directory)
@@ -401,14 +401,14 @@ def main(args):  # noqa
         elif tab_index:
             get_ith_path = lambda i, iterable: last(take(i, iterable)).path
             print_local(
-                    get_ith_path(
-                        tab_index,
-                        find_matches(entries, [tab_needle])))
+                get_ith_path(
+                    tab_index,
+                    find_matches(entries, [tab_needle])))
         else:
             print_local(first(chain(
-                    imap(attrgetter('path'), find_matches(entries, needles)),
-                    # always return a path to calling shell functions
-                    ['.'])))
+                imap(attrgetter('path'), find_matches(entries, needles)),
+                # always return a path to calling shell functions
+                ['.'])))
 
     return 0
 
