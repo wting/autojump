@@ -121,6 +121,8 @@ def save(config, data):
     try:
         # write to temp file
         temp = NamedTemporaryFile(delete=False)
+        # prevent Windows errors by closing the file before opening it.
+        temp.close()
 
         with open(temp.name, 'w', encoding='utf-8', errors='replace') as f:
             for path, weight in data.items():
