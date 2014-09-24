@@ -42,7 +42,7 @@ chpwd_functions+=autojump_chpwd
 
 # default autojump command
 j() {
-    if [[ ${@} == -* ]]; then
+    if [[ ${@} == -* && ! (${#} -eq 2 && ${1} == '--') ]]; then
         autojump ${@}
         return
     fi
