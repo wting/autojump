@@ -44,8 +44,8 @@ def modify_autojump_sh(etc_dir, dryrun=False):
 def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
     """Prepend custom AUTOJUMP_BIN_DIR definition to autojump.lua"""
     custom_install = "local AUTOJUMP_BIN_DIR = \"%s\"\n" % bin_dir.replace(
-            "\\",
-            "\\\\")
+        "\\",
+        "\\\\")
     clink_file = os.path.join(clink_dir, 'autojump.lua')
     with open(clink_file, 'r') as f:
         original = f.read()
@@ -56,12 +56,12 @@ def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
 def parse_arguments():  # noqa
     if platform.system() == 'Windows':
         default_user_destdir = os.path.join(
-                os.getenv('LOCALAPPDATA', ''),
-                'autojump')
+            os.getenv('LOCALAPPDATA', ''),
+            'autojump')
     else:
         default_user_destdir = os.path.join(
-                os.path.expanduser("~"),
-                '.autojump')
+            os.path.expanduser("~"),
+            '.autojump')
     default_user_prefix = ''
     default_user_zshshare = 'functions'
     default_system_destdir = '/'
@@ -70,29 +70,29 @@ def parse_arguments():  # noqa
     default_clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
 
     parser = ArgumentParser(
-            description='Installs autojump globally for root users, otherwise \
-                    installs in current user\'s home directory.')
+        description='Installs autojump globally for root users, otherwise \
+            installs in current user\'s home directory.')
     parser.add_argument(
-            '-n', '--dryrun', action="store_true", default=False,
-            help='simulate installation')
+        '-n', '--dryrun', action="store_true", default=False,
+        help='simulate installation')
     parser.add_argument(
-            '-f', '--force', action="store_true", default=False,
-            help='skip root user, shell type, Python version checks')
+        '-f', '--force', action="store_true", default=False,
+        help='skip root user, shell type, Python version checks')
     parser.add_argument(
-            '-d', '--destdir', metavar='DIR', default=default_user_destdir,
-            help='set destination to DIR')
+        '-d', '--destdir', metavar='DIR', default=default_user_destdir,
+        help='set destination to DIR')
     parser.add_argument(
-            '-p', '--prefix', metavar='DIR', default=default_user_prefix,
-            help='set prefix to DIR')
+        '-p', '--prefix', metavar='DIR', default=default_user_prefix,
+        help='set prefix to DIR')
     parser.add_argument(
-            '-z', '--zshshare', metavar='DIR', default=default_user_zshshare,
-            help='set zsh share destination to DIR')
+        '-z', '--zshshare', metavar='DIR', default=default_user_zshshare,
+        help='set zsh share destination to DIR')
     parser.add_argument(
-            '-c', '--clinkdir', metavar='DIR', default=default_clink_dir,
-            help='set clink directory location to DIR (Windows only)')
+        '-c', '--clinkdir', metavar='DIR', default=default_clink_dir,
+        help='set clink directory location to DIR (Windows only)')
     parser.add_argument(
-            '-s', '--system', action="store_true", default=False,
-            help='install system wide for all users')
+        '-s', '--system', action="store_true", default=False,
+        help='install system wide for all users')
 
     args = parser.parse_args()
 

@@ -94,8 +94,7 @@ def set_defaults():
 
 def parse_arguments():
     parser = ArgumentParser(
-        description='Automatically jump to directory passed as an \
-                    argument.',
+        description='Automatically jump to directory passed as an argument.',
         epilog="Please see autojump(1) man pages for full documentation.")
     parser.add_argument(
         'directory', metavar='DIRECTORY', nargs='*', default='',
