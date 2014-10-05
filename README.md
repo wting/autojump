@@ -69,7 +69,7 @@ INSTALLATION
     -   zsh
     -   fish
     -   tcsh (experimental)
-    -   clink on Windows (experimental)
+    -   clink (Windows, experimental)
 
 ### AUTOMATIC
 
