@@ -136,12 +136,12 @@ def parse_arguments():  # noqa
     return args
 
 
-def print_post_installation_message(etc_dir, bin_dir):
+def print_post_installation_message(etc_dir, share_dir, bin_dir):
     if platform.system() == 'Windows':
         print("\nPlease manually add %s to your user path" % bin_dir)
     else:
         if get_shell() == 'fish':
-            aj_shell = '%s/autojump.fish' % etc_dir
+            aj_shell = '%s/autojump.fish' % share_dir
             source_msg = "if test -f %s; . %s; end" % (aj_shell, aj_shell)
             rcfile = '~/.config/fish/config.fish'
         else:
@@ -170,18 +170,19 @@ def main(args):
     bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
     etc_dir = os.path.join(args.destdir, 'etc', 'profile.d')
     doc_dir = os.path.join(args.destdir, args.prefix, 'share', 'man', 'man1')
-    icon_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
+    share_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
     zshshare_dir = os.path.join(args.destdir, args.zshshare)
 
     mkdir(bin_dir, args.dryrun)
     mkdir(doc_dir, args.dryrun)
-    mkdir(icon_dir, args.dryrun)
+    mkdir(etc_dir, args.dryrun)
+    mkdir(share_dir, args.dryrun)
 
     cp('./bin/autojump', bin_dir, args.dryrun)
     cp('./bin/autojump_argparse.py', bin_dir, args.dryrun)
     cp('./bin/autojump_data.py', bin_dir, args.dryrun)
     cp('./bin/autojump_utils.py', bin_dir, args.dryrun)
-    cp('./bin/icon.png', icon_dir, args.dryrun)
+    cp('./bin/icon.png', share_dir, args.dryrun)
     cp('./docs/autojump.1', doc_dir, args.dryrun)
 
     if platform.system() == 'Windows':
@@ -196,18 +197,19 @@ def main(args):
             modify_autojump_lua(args.clinkdir, bin_dir, args.dryrun)
     else:
         mkdir(etc_dir, args.dryrun)
+        mkdir(share_dir, args.dryrun)
         mkdir(zshshare_dir, args.dryrun)
 
         cp('./bin/autojump.sh', etc_dir, args.dryrun)
-        cp('./bin/autojump.bash', etc_dir, args.dryrun)
-        cp('./bin/autojump.fish', etc_dir, args.dryrun)
-        cp('./bin/autojump.zsh', etc_dir, args.dryrun)
+        cp('./bin/autojump.bash', share_dir, args.dryrun)
+        cp('./bin/autojump.fish', share_dir, args.dryrun)
+        cp('./bin/autojump.zsh', share_dir, args.dryrun)
         cp('./bin/_j', zshshare_dir, args.dryrun)
 
         if args.custom_install:
             modify_autojump_sh(etc_dir, args.dryrun)
 
-    print_post_installation_message(etc_dir, bin_dir)
+    print_post_installation_message(etc_dir, share_dir, bin_dir)
 
 
 if __name__ == "__main__":

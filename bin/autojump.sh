@@ -17,11 +17,11 @@ if [ "${shell}" = "sh" ]; then
 	return 0
 
 # check local install
-elif [ -s ~/.autojump/etc/profile.d/autojump.${shell} ]; then
-	source ~/.autojump/etc/profile.d/autojump.${shell}
+elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
+	source ~/.autojump/share/autojump/autojump.${shell}
 
 # check global install
-elif [ -s /etc/profile.d/autojump.${shell} ]; then
-	source /etc/profile.d/autojump.${shell}
+elif [ -s /usr/local/share/autojump/autojump.${shell} ]; then
+	source /usr/local/share/autojump/autojump.${shell}
 
 fi

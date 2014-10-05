@@ -53,12 +53,12 @@ def remove_custom_installation(args, dryrun=False):
         return
 
     bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
-    etc_dir = os.path.join(args.destdir, 'etc/profile.d')
-    doc_dir = os.path.join(args.destdir, args.prefix, 'share/man/man1')
-    icon_dir = os.path.join(args.destdir, args.prefix, 'share/autojump')
+    doc_dir = os.path.join(args.destdir, args.prefix, 'share', 'man', 'man1')
+    etc_dir = os.path.join(args.destdir, 'etc', 'profile.d')
+    share_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
     zshshare_dir = os.path.join(args.destdir, args.zshshare)
 
-    if not os.path.exists(icon_dir):
+    if not os.path.exists(share_dir):
         return
 
     print("\nFound custom installation...")
@@ -76,12 +76,12 @@ def remove_custom_installation(args, dryrun=False):
         rm(os.path.join(bin_dir, 'jo.bat'), dryrun)
     else:
         rm(os.path.join(etc_dir, 'autojump.sh'), dryrun)
-        rm(os.path.join(etc_dir, 'autojump.bash'), dryrun)
-        rm(os.path.join(etc_dir, 'autojump.fish'), dryrun)
-        rm(os.path.join(etc_dir, 'autojump.tcsh'), dryrun)
-        rm(os.path.join(etc_dir, 'autojump.zsh'), dryrun)
+        rm(os.path.join(share_dir, 'autojump.bash'), dryrun)
+        rm(os.path.join(share_dir, 'autojump.fish'), dryrun)
+        rm(os.path.join(share_dir, 'autojump.tcsh'), dryrun)
+        rm(os.path.join(share_dir, 'autojump.zsh'), dryrun)
         rm(os.path.join(zshshare_dir, '_j'), dryrun)
-    rmdir(icon_dir, dryrun)
+    rmdir(share_dir, dryrun)
     rm(os.path.join(doc_dir, 'autojump.1'), dryrun)
 
     if is_empty_dir(args.destdir):
@@ -94,12 +94,12 @@ def remove_system_installation(dryrun=False):
     default_zshshare = '/usr/share/zsh/site-functions'
 
     bin_dir = os.path.join(default_destdir, default_prefix, 'bin')
-    etc_dir = os.path.join(default_destdir, 'etc/profile.d')
-    doc_dir = os.path.join(default_destdir, default_prefix, 'share/man/man1')
-    icon_dir = os.path.join(default_destdir, default_prefix, 'share/autojump')
+    doc_dir = os.path.join(default_destdir, default_prefix, 'share', 'man', 'man1')
+    etc_dir = os.path.join(default_destdir, 'etc', 'profile.d')
+    share_dir = os.path.join(default_destdir, default_prefix, 'share', 'autojump')
     zshshare_dir = os.path.join(default_destdir, default_zshshare)
 
-    if not os.path.exists(icon_dir):
+    if not os.path.exists(share_dir):
         return
 
     print("\nFound system installation...")
@@ -113,12 +113,12 @@ def remove_system_installation(dryrun=False):
     rm(os.path.join(bin_dir, 'autojump_data.py'), dryrun)
     rm(os.path.join(bin_dir, 'autojump_utils.py'), dryrun)
     rm(os.path.join(etc_dir, 'autojump.sh'), dryrun)
-    rm(os.path.join(etc_dir, 'autojump.bash'), dryrun)
-    rm(os.path.join(etc_dir, 'autojump.fish'), dryrun)
-    rm(os.path.join(etc_dir, 'autojump.tcsh'), dryrun)
-    rm(os.path.join(etc_dir, 'autojump.zsh'), dryrun)
+    rm(os.path.join(share_dir, 'autojump.bash'), dryrun)
+    rm(os.path.join(share_dir, 'autojump.fish'), dryrun)
+    rm(os.path.join(share_dir, 'autojump.tcsh'), dryrun)
+    rm(os.path.join(share_dir, 'autojump.zsh'), dryrun)
     rm(os.path.join(zshshare_dir, '_j'), dryrun)
-    rmdir(icon_dir, dryrun)
+    rmdir(share_dir, dryrun)
     rm(os.path.join(doc_dir, 'autojump.1'), dryrun)
 
 
