@@ -30,7 +30,7 @@ fi
 # change pwd hook
 autojump_chpwd() {
     if [[ -f "${AUTOJUMP_ERROR_PATH}" ]]; then
-        autojump --add "$(pwd)" >/dev/null 2>${AUTOJUMP_ERROR_PATH} &!
+        autojump --add "$(pwd)" >/dev/null 2>>${AUTOJUMP_ERROR_PATH} &!
     else
         autojump --add "$(pwd)" >/dev/null &!
     fi

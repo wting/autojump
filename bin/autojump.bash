@@ -35,7 +35,7 @@ complete -F _autojump j
 # change pwd hook
 autojump_add_to_database() {
     if [[ -f "${AUTOJUMP_ERROR_PATH}" ]]; then
-        (autojump --add "$(pwd)" >/dev/null 2>${AUTOJUMP_ERROR_PATH} &) &>/dev/null
+        (autojump --add "$(pwd)" >/dev/null 2>>${AUTOJUMP_ERROR_PATH} &) &>/dev/null
     else
         (autojump --add "$(pwd)" >/dev/null &) &>/dev/null
     fi
