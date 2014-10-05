@@ -46,9 +46,10 @@ from autojump_data import Entry
 from autojump_data import load
 from autojump_data import save
 from autojump_utils import first
-from autojump_utils import get_tab_entry_info
 from autojump_utils import get_pwd
+from autojump_utils import get_tab_entry_info
 from autojump_utils import has_uppercase
+from autojump_utils import is_autojump_sourced
 from autojump_utils import is_osx
 from autojump_utils import is_windows
 from autojump_utils import last
@@ -59,7 +60,7 @@ from autojump_utils import sanitize
 from autojump_utils import take
 from autojump_utils import unico
 
-VERSION = '22.1.0-beta'
+VERSION = '22.1.1-beta'
 FUZZY_MATCH_THRESHOLD = 0.6
 TAB_ENTRIES_COUNT = 9
 TAB_SEPARATOR = '__'
@@ -350,6 +351,12 @@ def print_stats(data, data_path):
 
 
 def main(args):  # noqa
+    if not is_autojump_sourced() and not is_windows():
+        print("Please source the correct autojump file in your shell's")
+        print("startup file. For more information, please reinstall autojump")
+        print("and read the post installation instructions.")
+        return 1
+
     config = set_defaults()
 
     # all arguments are mutually exclusive

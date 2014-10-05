@@ -136,7 +136,7 @@ def parse_arguments():  # noqa
     return args
 
 
-def print_post_installation_message(etc_dir, share_dir, bin_dir):
+def show_post_installation_message(etc_dir, share_dir, bin_dir):
     if platform.system() == 'Windows':
         print("\nPlease manually add %s to your user path" % bin_dir)
     else:
@@ -209,7 +209,7 @@ def main(args):
         if args.custom_install:
             modify_autojump_sh(etc_dir, args.dryrun)
 
-    print_post_installation_message(etc_dir, share_dir, bin_dir)
+    show_post_installation_message(etc_dir, share_dir, bin_dir)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+export AUTOJUMP_SOURCED=1
+
 # set user installation paths
 if [[ -d ~/.autojump/bin ]]; then
     path=(~/.autojump/bin ${path})
@@ -48,12 +50,13 @@ j() {
     fi
 
     setopt localoptions noautonamedirs
-    local new_path="$(autojump ${@})"
-    if [[ -d "${new_path}" ]]; then
-        echo -e "\\033[31m${new_path}\\033[0m"
-        cd "${new_path}"
+    local output="$(autojump ${@})"
+    if [[ -d "${output}" ]]; then
+        echo -e "\\033[31m${output}\\033[0m"
+        cd "${output}"
     else
         echo "autojump: directory '${@}' not found"
+        echo "\n${output}\n"
         echo "Try \`autojump --help\` for more information."
         false
     fi
@@ -78,17 +81,17 @@ jo() {
     fi
 
     setopt localoptions noautonamedirs
-    local new_path="$(autojump ${@})"
-    if [[ -d "${new_path}" ]]; then
+    local output="$(autojump ${@})"
+    if [[ -d "${output}" ]]; then
         case ${OSTYPE} in
             linux-gnu)
-                xdg-open "${new_path}"
+                xdg-open "${output}"
                 ;;
             darwin*)
-                open "${new_path}"
+                open "${output}"
                 ;;
             cygwin)
-                cygstart "" $(cygpath -w -a ${new_path})
+                cygstart "" $(cygpath -w -a ${output})
                 ;;
             *)
                 echo "Unknown operating system." 1>&2
@@ -96,6 +99,7 @@ jo() {
         esac
     else
         echo "autojump: directory '${@}' not found"
+        echo "\n${output}\n"
         echo "Try \`autojump --help\` for more information."
         false
     fi
