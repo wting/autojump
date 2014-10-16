@@ -1,5 +1,6 @@
 .coverage
 *.pyc
+__pycache__
 *~
 *.tar.gz
 *.patch
