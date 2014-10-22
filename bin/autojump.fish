@@ -1,3 +1,5 @@
+set -x AUTOJUMP_SOURCED 1
+
 # set user installation path
 if test -d ~/.autojump
     set -x PATH ~/.autojump/bin $PATH
@@ -31,26 +33,22 @@ function __aj_err
     echo $argv 1>&2; false
 end
 
-function __aj_not_found
-    __aj_err "autojump: directory '"$argv"' not found"
-    __aj_err "Try `autojump --help` for more information."
-end
-
-
 # default autojump command
 function j
     switch "$argv"
         case '-*' '--*'
             autojump $argv
         case '*'
-            set -l new_path (autojump $argv)
-            if test -d "$new_path"
+            set -l output (autojump $argv)
+            if test -d "$output"
                 set_color red
-                echo $new_path
+                echo $output
                 set_color normal
-                cd $new_path
+                cd $output
             else
-                __aj_not_found $argv
+                __aj_err "autojump: directory '"$argv"' not found"
+                __aj_err "\n$output\n"
+                __aj_err "Try `autojump --help` for more information."
             end
     end
 end
@@ -69,8 +67,11 @@ end
 
 # open autojump results in file browser
 function jo
-    if test -z (autojump $argv)
-        __aj_not_found $argv
+    set -l output (autojump $argv)
+    if test -d "$output"
+        __aj_err "autojump: directory '"$argv"' not found"
+        __aj_err "\n$output\n"
+        __aj_err "Try `autojump --help` for more information."
     else
         switch (sh -c 'echo ${OSTYPE}')
             case linux-gnu

@@ -89,6 +89,10 @@ def in_bash():
     return 'bash' in os.getenv('SHELL')
 
 
+def is_autojump_sourced():
+    return '1' == os.getenv('AUTOJUMP_SOURCED')
+
+
 def is_python2():
     return sys.version_info[0] == 2
 
