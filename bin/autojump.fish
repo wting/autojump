@@ -74,14 +74,14 @@ function jo
         __aj_err "Try `autojump --help` for more information."
     else
         switch (sh -c 'echo ${OSTYPE}')
-            case linux-gnu
+            case 'linux*'
                 xdg-open (autojump $argv)
             case 'darwin*'
                 open (autojump $argv)
             case cygwin
                 cygstart "" (cygpath -w -a (pwd))
             case '*'
-                __aj_error "Unknown operating system."
+                __aj_error "Unknown operating system: '"$OSTYPE"'"
         end
         echo end
     end

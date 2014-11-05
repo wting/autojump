@@ -85,7 +85,7 @@ jo() {
     local output="$(autojump ${@})"
     if [[ -d "${output}" ]]; then
         case ${OSTYPE} in
-            linux-gnu)
+            linux*)
                 xdg-open "${output}"
                 ;;
             darwin*)
@@ -95,7 +95,7 @@ jo() {
                 cygstart "" $(cygpath -w -a ${output})
                 ;;
             *)
-                echo "Unknown operating system." 1>&2
+                echo "Unknown operating system: ${OSTYPE}" 1>&2
                 ;;
         esac
     else
