@@ -9,8 +9,7 @@ import sys
 
 sys.path.append('bin')
 from autojump_argparse import ArgumentParser
-from os.path import join
-from string import Template
+from os.path import join, normpath
 
 SUPPORTED_SHELLS = ('bash', 'zsh', 'fish', 'tcsh')
 
@@ -31,16 +30,31 @@ def mkdir(path, dryrun=False):
         os.makedirs(path)
 
 
-def modify_autojump_sh(etc_dir, share_dir, dryrun=False):
+def modify_autojump_sh(destdir, etc_dir, share_dir, dryrun=False, custom=False):
     """Append custom installation path to autojump.sh"""
-
     autojumpsh = join(etc_dir, 'autojump.sh')
-    with open(autojumpsh, 'r') as f:
-        content = f.read()
-    tmpl = Template(content)
-    new_content = tmpl.safe_substitute(etc_dir=etc_dir, share_dir=share_dir)
-    with open(autojumpsh, 'w') as f:
-        f.write(new_content)
+
+    # Strip `destdir` from {etc,share}_dir, but make sure they're still absolute
+    destdir_length = len(destdir)
+    etc_dir = normpath("/" + etc_dir[destdir_length:])
+    share_dir = normpath("/" + share_dir[destdir_length:])
+
+    custom_install = "\
+        \n# check custom install \
+        \nif [ -s %s/autojump.${shell} ]; then \
+        \n\tsource %s/autojump.${shell} \
+        \nfi\n" % (etc_dir, etc_dir)
+
+    custom_share = "\
+        \n# check global install \
+        \nelif [ -s %s/autojump.${shell} ]; then \
+        \n\tsource %s/autojump.${shell} \
+        \nfi\n" % (share_dir, share_dir)
+
+    with open(autojumpsh, 'a') as f:
+        f.write(custom_share)
+        if custom:
+            f.write(custom_install)
 
 
 def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
@@ -208,8 +222,8 @@ def main(args):
         cp('./bin/autojump.zsh', share_dir, args.dryrun)
         cp('./bin/_j', zshshare_dir, args.dryrun)
 
-        if args.custom_install:
-            modify_autojump_sh(etc_dir, share_dir, args.dryrun)
+        modify_autojump_sh(args.destdir, etc_dir, share_dir, args.dryrun,
+                           args.custom_install)
 
     show_post_installation_message(etc_dir, share_dir, bin_dir)
 
