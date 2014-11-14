@@ -21,7 +21,10 @@ elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
 	source ~/.autojump/share/autojump/autojump.${shell}
 
 # check global install
-elif [ -s /usr/local/share/autojump/autojump.${shell} ]; then
-	source /usr/local/share/autojump/autojump.${shell}
+elif [ -s ${share_dir}/autojump.${shell} ]; then
+	source ${share_dir}/autojump.${shell}
 
+# check custom install
+elif [ -s ${etc_dir}/autojump.${shell} ]; then
+	source ${etc_dir}/autojump.${shell}
 fi
