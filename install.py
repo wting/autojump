@@ -9,6 +9,7 @@ import sys
 
 sys.path.append('bin')
 from autojump_argparse import ArgumentParser
+from os.path import join
 from string import Template
 
 SUPPORTED_SHELLS = ('bash', 'zsh', 'fish', 'tcsh')
@@ -33,7 +34,7 @@ def mkdir(path, dryrun=False):
 def modify_autojump_sh(etc_dir, share_dir, dryrun=False):
     """Append custom installation path to autojump.sh"""
 
-    autojumpsh = os.path.join(etc_dir, 'autojump.sh')
+    autojumpsh = join(etc_dir, 'autojump.sh')
     with open(autojumpsh, 'r') as f:
         content = f.read()
     tmpl = Template(content)
@@ -47,7 +48,7 @@ def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
     custom_install = "local AUTOJUMP_BIN_DIR = \"%s\"\n" % bin_dir.replace(
         "\\",
         "\\\\")
-    clink_file = os.path.join(clink_dir, 'autojump.lua')
+    clink_file = join(clink_dir, 'autojump.lua')
     with open(clink_file, 'r') as f:
         original = f.read()
     with open(clink_file, 'w') as f:
@@ -56,11 +57,11 @@ def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
 
 def parse_arguments():  # noqa
     if platform.system() == 'Windows':
-        default_user_destdir = os.path.join(
+        default_user_destdir = join(
             os.getenv('LOCALAPPDATA', ''),
             'autojump')
     else:
-        default_user_destdir = os.path.join(
+        default_user_destdir = join(
             os.path.expanduser("~"),
             '.autojump')
     default_user_prefix = ''
@@ -68,7 +69,7 @@ def parse_arguments():  # noqa
     default_system_destdir = '/'
     default_system_prefix = '/usr/local'
     default_system_zshshare = '/usr/share/zsh/site-functions'
-    default_clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
+    default_clink_dir = join(os.getenv('LOCALAPPDATA', ''), 'clink')
 
     parser = ArgumentParser(
         description='Installs autojump globally for root users, otherwise \
@@ -168,11 +169,11 @@ def main(args):
     else:
         print("Installing autojump to %s ..." % args.destdir)
 
-    bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
-    etc_dir = os.path.join(args.destdir, 'etc', 'profile.d')
-    doc_dir = os.path.join(args.destdir, args.prefix, 'share', 'man', 'man1')
-    share_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
-    zshshare_dir = os.path.join(args.destdir, args.zshshare)
+    bin_dir = join(args.destdir, args.prefix, 'bin')
+    etc_dir = join(args.destdir, 'etc', 'profile.d')
+    doc_dir = join(args.destdir, args.prefix, 'share', 'man', 'man1')
+    share_dir = join(args.destdir, args.prefix, 'share', 'autojump')
+    zshshare_dir = join(args.destdir, args.zshshare)
 
     mkdir(bin_dir, args.dryrun)
     mkdir(doc_dir, args.dryrun)
