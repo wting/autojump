@@ -11,7 +11,7 @@ complete -x -c j -a '(autojump --complete (commandline -t))'
 
 
 # set error file location
-if (uname) == "Darwin"
+if test (uname) = "Darwin"
     set -x AUTOJUMP_ERROR_PATH ~/Library/autojump/errors.log
 else if test -d $XDG_DATA_HOME
     set -x AUTOJUMP_ERROR_PATH $XDG_DATA_HOME/autojump/errors.log
