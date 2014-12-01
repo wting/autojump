@@ -19,15 +19,15 @@ else
     set -x AUTOJUMP_ERROR_PATH ~/.local/share/autojump/errors.log
 end
 
-if test ! -d "(dirname $AUTOJUMP_ERROR_PATH)"
-    mkdir -p "(dirname $AUTOJUMP_ERROR_PATH)"
+if test ! -d (dirname "$AUTOJUMP_ERROR_PATH")
+    mkdir -p (dirname "$AUTOJUMP_ERROR_PATH")
 end
 
 # change pwd hook
 function __aj_add --on-variable PWD
     status --is-command-substitution; and return
     if test -f "$AUTOJUMP_ERROR_PATH"
-        autojump --add (pwd) >/dev/null 2>>$AUTOJUMP_ERROR_PATH &
+        autojump --add (pwd) >/dev/null 2>>"$AUTOJUMP_ERROR_PATH" &
     else
         autojump --add (pwd) >/dev/null &
     end
