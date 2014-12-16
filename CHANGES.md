@@ -1,7 +1,7 @@
 ## Summary of release changes, see commit history for more details:
 ## https://github.com/joelthelion/autojump/commits/master/
 
-### Release v22.0.0:
+### Release v22.2.2:
 
 #### Backwards Incompatible
 
@@ -22,6 +22,7 @@
     - AUTOJUMP_DATA_DIR
     - AUTOJUMP_IGNORE_CASE
     - AUTOJUMP_KEEP_SYMLINKS
+- misc bug fixes
 
 #### Features and Bug Fixes
 
