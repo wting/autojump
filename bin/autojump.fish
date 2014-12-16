@@ -19,6 +19,10 @@ else
     set -x AUTOJUMP_ERROR_PATH ~/.local/share/autojump/errors.log
 end
 
+if test ! -d (dirname $AUTOJUMP_ERROR_PATH)
+    mkdir -p (dirname $AUTOJUMP_ERROR_PATH)
+end
+
 
 # change pwd hook
 function __aj_add --on-variable PWD
