@@ -9,6 +9,7 @@ import sys
 
 sys.path.append('bin')
 from autojump_argparse import ArgumentParser
+from os.path import join, normpath
 
 SUPPORTED_SHELLS = ('bash', 'zsh', 'fish', 'tcsh')
 
@@ -29,16 +30,31 @@ def mkdir(path, dryrun=False):
         os.makedirs(path)
 
 
-def modify_autojump_sh(etc_dir, dryrun=False):
+def modify_autojump_sh(destdir, etc_dir, share_dir, dryrun=False, custom=False):
     """Append custom installation path to autojump.sh"""
+    autojumpsh = join(etc_dir, 'autojump.sh')
+
+    # Strip `destdir` from {etc,share}_dir, but make sure they're still absolute
+    destdir_length = len(destdir)
+    etc_dir = normpath("/" + etc_dir[destdir_length:])
+    share_dir = normpath("/" + share_dir[destdir_length:])
+
     custom_install = "\
         \n# check custom install \
         \nif [ -s %s/autojump.${shell} ]; then \
-            \n\tsource %s/autojump.${shell} \
+        \n\tsource %s/autojump.${shell} \
         \nfi\n" % (etc_dir, etc_dir)
 
-    with open(os.path.join(etc_dir, 'autojump.sh'), 'a') as f:
-        f.write(custom_install)
+    custom_share = "\
+        \n# check global install \
+        \nelif [ -s %s/autojump.${shell} ]; then \
+        \n\tsource %s/autojump.${shell} \
+        \nfi\n" % (share_dir, share_dir)
+
+    with open(autojumpsh, 'a') as f:
+        f.write(custom_share)
+        if custom:
+            f.write(custom_install)
 
 
 def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
@@ -46,7 +62,7 @@ def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
     custom_install = "local AUTOJUMP_BIN_DIR = \"%s\"\n" % bin_dir.replace(
         "\\",
         "\\\\")
-    clink_file = os.path.join(clink_dir, 'autojump.lua')
+    clink_file = join(clink_dir, 'autojump.lua')
     with open(clink_file, 'r') as f:
         original = f.read()
     with open(clink_file, 'w') as f:
@@ -55,11 +71,11 @@ def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
 
 def parse_arguments():  # noqa
     if platform.system() == 'Windows':
-        default_user_destdir = os.path.join(
+        default_user_destdir = join(
             os.getenv('LOCALAPPDATA', ''),
             'autojump')
     else:
-        default_user_destdir = os.path.join(
+        default_user_destdir = join(
             os.path.expanduser("~"),
             '.autojump')
     default_user_prefix = ''
@@ -67,7 +83,7 @@ def parse_arguments():  # noqa
     default_system_destdir = '/'
     default_system_prefix = '/usr/local'
     default_system_zshshare = '/usr/share/zsh/site-functions'
-    default_clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
+    default_clink_dir = join(os.getenv('LOCALAPPDATA', ''), 'clink')
 
     parser = ArgumentParser(
         description='Installs autojump globally for root users, otherwise \
@@ -167,11 +183,11 @@ def main(args):
     else:
         print("Installing autojump to %s ..." % args.destdir)
 
-    bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
-    etc_dir = os.path.join(args.destdir, 'etc', 'profile.d')
-    doc_dir = os.path.join(args.destdir, args.prefix, 'share', 'man', 'man1')
-    share_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
-    zshshare_dir = os.path.join(args.destdir, args.zshshare)
+    bin_dir = join(args.destdir, args.prefix, 'bin')
+    etc_dir = join(args.destdir, 'etc', 'profile.d')
+    doc_dir = join(args.destdir, args.prefix, 'share', 'man', 'man1')
+    share_dir = join(args.destdir, args.prefix, 'share', 'autojump')
+    zshshare_dir = join(args.destdir, args.zshshare)
 
     mkdir(bin_dir, args.dryrun)
     mkdir(doc_dir, args.dryrun)
@@ -206,8 +222,8 @@ def main(args):
         cp('./bin/autojump.zsh', share_dir, args.dryrun)
         cp('./bin/_j', zshshare_dir, args.dryrun)
 
-        if args.custom_install:
-            modify_autojump_sh(etc_dir, args.dryrun)
+        modify_autojump_sh(args.destdir, etc_dir, share_dir, args.dryrun,
+                           args.custom_install)
 
     show_post_installation_message(etc_dir, share_dir, bin_dir)
 
