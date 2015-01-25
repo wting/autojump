@@ -29,13 +29,13 @@ def mkdir(path, dryrun=False):
         os.makedirs(path)
 
 
-def modify_autojump_sh(etc_dir, dryrun=False):
+def modify_autojump_sh(etc_dir, share_dir, dryrun=False):
     """Append custom installation path to autojump.sh"""
     custom_install = "\
         \n# check custom install \
         \nif [ -s %s/autojump.${shell} ]; then \
-            \n\tsource %s/autojump.${shell} \
-        \nfi\n" % (etc_dir, etc_dir)
+        \n    source %s/autojump.${shell} \
+        \nfi\n" % (share_dir, share_dir)
 
     with open(os.path.join(etc_dir, 'autojump.sh'), 'a') as f:
         f.write(custom_install)
@@ -207,7 +207,7 @@ def main(args):
         cp('./bin/_j', zshshare_dir, args.dryrun)
 
         if args.custom_install:
-            modify_autojump_sh(etc_dir, args.dryrun)
+            modify_autojump_sh(etc_dir, share_dir, args.dryrun)
 
     show_post_installation_message(etc_dir, share_dir, bin_dir)
 
