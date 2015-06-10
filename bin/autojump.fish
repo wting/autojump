@@ -5,6 +5,11 @@ if test -d ~/.autojump
     set -x PATH ~/.autojump/bin $PATH
 end
 
+# Set ostype, if not set
+if not set -q OSTYPE
+    set -gx OSTYPE (bash -c 'echo ${OSTYPE}')
+end
+
 
 # enable tab completion
 complete -x -c j -a '(autojump --complete (commandline -t))'
@@ -34,7 +39,7 @@ end
 # misc helper functions
 function __aj_err
     # TODO(ting|#247): set error file location
-    echo $argv 1>&2; false
+    echo -e $argv 1>&2; false
 end
 
 # default autojump command
@@ -44,15 +49,20 @@ function j
             autojump $argv
         case '*'
             set -l output (autojump $argv)
-            if test -d "$output"
-                set_color red
-                echo $output
-                set_color normal
-                cd $output
+            # Check for . and attempt a regular cd
+            if [ $output = "." ] 
+                cd $argv
             else
-                __aj_err "autojump: directory '"$argv"' not found"
-                __aj_err "\n$output\n"
-                __aj_err "Try `autojump --help` for more information."
+                if test -d "$output"
+                    set_color red
+                    echo $output
+                    set_color normal
+                    cd $output
+                else
+                    __aj_err "autojump: directory '"$argv"' not found"
+                    __aj_err "\n$output\n"
+                    __aj_err "Try `autojump --help` for more information."
+                end
             end
     end
 end
@@ -73,11 +83,7 @@ end
 function jo
     set -l output (autojump $argv)
     if test -d "$output"
-        __aj_err "autojump: directory '"$argv"' not found"
-        __aj_err "\n$output\n"
-        __aj_err "Try `autojump --help` for more information."
-    else
-        switch (sh -c 'echo ${OSTYPE}')
+        switch $OSTYPE
             case 'linux*'
                 xdg-open (autojump $argv)
             case 'darwin*'
@@ -85,9 +91,12 @@ function jo
             case cygwin
                 cygstart "" (cygpath -w -a (pwd))
             case '*'
-                __aj_error "Unknown operating system: '"$OSTYPE"'"
+                __aj_error "Unknown operating system: \"$OSTYPE\""
         end
-        echo end
+    else
+        __aj_err "autojump: directory '"$argv"' not found"
+        __aj_err "\n$output\n"
+        __aj_err "Try `autojump --help` for more information."
     end
 end
 
