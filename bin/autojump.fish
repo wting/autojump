@@ -91,7 +91,7 @@ function jo
             case cygwin
                 cygstart "" (cygpath -w -a (pwd))
             case '*'
-                __aj_error "Unknown operating system: \"$OSTYPE\""
+                __aj_err "Unknown operating system: \"$OSTYPE\""
         end
     else
         __aj_err "autojump: directory '"$argv"' not found"
