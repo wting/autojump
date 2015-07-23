@@ -121,6 +121,10 @@ def parse_arguments():
         help='used for tab completion',
     )
     parser.add_argument(
+        '--child', action="store_true", default=False,
+        help='only match subdirectories of the current working directory'
+    )
+    parser.add_argument(
         '--purge', action='store_true', default=False,
         help='remove non-existent paths from database',
     )
@@ -312,6 +316,13 @@ def main(args):  # noqa
         needles = sanitize(args.directory)
         tab_needle, tab_index, tab_path = \
             get_tab_entry_info(first(needles), TAB_SEPARATOR)
+
+        if args.child:
+            pwd = get_pwd()
+            entries = ifilter(
+                lambda entry: entry.path.find(pwd) == 0,
+                entries
+            )
 
         # Handle `j foo__`, assuming first index.
         if not tab_path and not tab_index \
