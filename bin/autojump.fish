@@ -1,8 +1,14 @@
 set -x AUTOJUMP_SOURCED 1
 
-# set user installation path
-if test -d ~/.autojump
-    set -x PATH ~/.autojump/bin $PATH
+# Set user installation path
+begin
+    set --local AUTOJUMP_BIN_PATH ~/.autojump/bin
+    if test -d $AUTOJUMP_BIN_PATH
+        # Add to PATH only if autojump not sourced yet
+        if not contains $AUTOJUMP_BIN_PATH $PATH
+            set -x PATH $AUTOJUMP_BIN_PATH $PATH
+        end
+    end
 end
 
 # Set ostype, if not set
