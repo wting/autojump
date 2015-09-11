@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 
 echo %*|>nul findstr /rx \-.*
 if ERRORLEVEL 1 (
-  for /f %%i in ('python %~dp0\autojump %*') do set new_path=%%i
+  for /f %%i in ('python "%~dp0\autojump" %*') do set new_path=%%i
   if exist !new_path!\nul (
     start !new_path!
   ) else (
