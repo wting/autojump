@@ -1,2 +1,2 @@
 @echo off
-python %~dp0\autojump %*
+python "%~dp0\autojump" %*

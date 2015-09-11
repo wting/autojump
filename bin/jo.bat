@@ -11,5 +11,5 @@ if ERRORLEVEL 1 (
     echo try `autojump --help` for more information
   )
 ) else (
-  python %~dp0\autojump %* 
+  python "%~dp0\autojump" %*
 )
