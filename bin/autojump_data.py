@@ -7,7 +7,7 @@ from collections import namedtuple
 import os
 import shutil
 import sys
-from tempfile import NamedTemporaryFile
+import fcntl
 from time import time
 
 if sys.version_info[0] == 3:
@@ -75,10 +75,13 @@ def load(config):
                 config['data_path'],
                 'r', encoding='utf-8',
                 errors='replace') as f:
-            return dict(
+            fcntl.flock(f.fileno(), fcntl.LOCK_SH)
+            d = dict(
                 imap(
                     tupleize,
                     ifilter(correct_length, imap(parse, f))))
+            fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+            return d
     except (IOError, EOFError):
         return load_backup(config)
 
@@ -117,24 +120,11 @@ def save(config, data):
     """Save data and create backup, creating a new data file if necessary."""
     create_dir(os.path.dirname(config['data_path']))
 
-    # atomically save by writing to temporary file and moving to destination
-    try:
-        temp = NamedTemporaryFile(delete=False)
-        # Windows cannot reuse the same open file name
-        temp.close()
-
-        with open(temp.name, 'w', encoding='utf-8', errors='replace') as f:
-            for path, weight in data.items():
-                f.write(unico("%s\t%s\n" % (weight, path)))
-
-            f.flush()
-            os.fsync(f)
-    except IOError as ex:
-        print("Error saving autojump data (disk full?)" % ex, file=sys.stderr)
-        sys.exit(1)
-
-    # move temp_file -> autojump.txt
-    move_file(temp.name, config['data_path'])
+    with open(config['data_path'], 'w', encoding='utf-8') as f:
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+        for path, weight in data.items():
+            f.write(unico("%s\t%s\n" % (weight, path)))
+        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
     # create backup file if it doesn't exist or is older than BACKUP_THRESHOLD
     if not os.path.exists(config['backup_path']) or \
