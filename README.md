@@ -104,7 +104,7 @@ MacPorts also available:
 Windows
 -------
 
-Windows support is enabled by [clink](https://code.google.com/p/clink/)
+Windows support is enabled by [clink](https://github.com/mridgers/clink)
 which should be installed prior to installing autojump.
 
 ### MANUAL
