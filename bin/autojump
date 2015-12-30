@@ -102,7 +102,7 @@ def parse_arguments():
         help='directory to jump to')
     parser.add_argument(
         '-a', '--add', metavar='DIRECTORY', nargs='+',
-        help='add path')
+        help='add paths')
     parser.add_argument(
         '-i', '--increase', metavar='WEIGHT', nargs='?', type=int,
         const=10, default=False,
