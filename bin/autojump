@@ -139,6 +139,9 @@ def add_path(data, path, weight=10):
     if path == os.path.expanduser('~'):
         return data, Entry(path, 0)
 
+    if not os.path.isdir(path):
+        return data, Entry(path, 0)
+
     data[path] = sqrt((data.get(path, 0) ** 2) + (weight ** 2))
 
     return data, Entry(path, data[path])
