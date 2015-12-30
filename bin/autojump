@@ -364,7 +364,6 @@ def main(args):  # noqa
 
     # all arguments are mutually exclusive
     if args.add:
-        print(type(args.add))
         for arg in args.add:
             save(config, first(add_path(load(config), arg)))
     elif args.complete:
