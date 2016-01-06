@@ -181,7 +181,7 @@ def find_matches(entries, needles, check_entries=True):
 
     data = sorted(
         entries,
-        key=attrgetter('weight'),
+        key=attrgetter('weight', 'path'),
         reverse=True)
 
     return ifilter(
