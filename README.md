@@ -137,7 +137,7 @@ REPORTING BUGS
 
 For any questions or issues please visit:
 
-    https://github.com/joelthelion/autojump/issues
+    https://github.com/wting/autojump/issues
 
 AUTHORS
 -------
