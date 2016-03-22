@@ -93,6 +93,9 @@ def parse_arguments():  # noqa
     parser.add_argument(
         '-s', '--system', action="store_true", default=False,
         help='install system wide for all users')
+    parser.add_argument(
+        '--distribution', action="store_true", default=False,
+        help='enable installation to a distribution')
 
     args = parser.parse_args()
 
@@ -168,8 +171,10 @@ def main(args):
         print("Installing autojump to %s ..." % args.destdir)
 
     bin_dir = os.path.join(args.destdir, args.prefix, 'bin')
+    root_etc_dir = os.path.join('/', 'etc', 'profile.d')
     etc_dir = os.path.join(args.destdir, 'etc', 'profile.d')
     doc_dir = os.path.join(args.destdir, args.prefix, 'share', 'man', 'man1')
+    root_share_dir = os.path.join('/', args.prefix, 'share', 'autojump')
     share_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
     zshshare_dir = os.path.join(args.destdir, args.zshshare)
 
@@ -207,9 +212,15 @@ def main(args):
         cp('./bin/_j', zshshare_dir, args.dryrun)
 
         if args.custom_install:
-            modify_autojump_sh(etc_dir, share_dir, args.dryrun)
+            if args.distribution:
+                modify_autojump_sh(etc_dir, root_share_dir, args.dryrun)
+            else:
+                modify_autojump_sh(etc_dir, share_dir, args.dryrun)
 
-    show_post_installation_message(etc_dir, share_dir, bin_dir)
+    if args.distribution:
+        show_post_installation_message(root_etc_dir, root_share_dir, bin_dir)
+    else:
+        show_post_installation_message(etc_dir, share_dir, bin_dir)
 
 
 if __name__ == "__main__":
