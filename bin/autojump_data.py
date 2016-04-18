@@ -34,18 +34,23 @@ def dictify(entries):
         key = path
         value = weight
     """
-    result = {}
-    for entry in entries:
-        result[entry.path] = entry.weight
-    return result
+    return dict((e.path, e.weight) for e in entries)
 
 
 def entriefy(data):
     """Converts a dictionary into an iterator of entries."""
-    convert = lambda tup: Entry(*tup)
-    if is_python3():
-        return map(convert, data.items())
-    return imap(convert, data.iteritems())
+    iteritems = data.items if is_python3() else data.iteritems
+    return (Entry(k, v) for k, v in iteritems())
+
+
+def parse_data(data):
+    # example: u'10.0\t/home/user\n' -> ['10.0', u'/home/user']
+    parsed = (l.strip().split('\t') for l in data)
+    valid = (x for x in parsed if len(x) == 2)
+    return dict(
+        (path, float(weight))
+        for weight, path in valid
+    )
 
 
 def load(config):
@@ -62,23 +67,12 @@ def load(config):
     if not os.path.exists(config['data_path']):
         return {}
 
-    # example: u'10.0\t/home/user\n' -> ['10.0', u'/home/user']
-    parse = lambda line: line.strip().split('\t')
-
-    correct_length = lambda x: len(x) == 2
-
-    # example: ['10.0', u'/home/user'] -> (u'/home/user', 10.0)
-    tupleize = lambda x: (x[1], float(x[0]))
-
     try:
         with open(
                 config['data_path'],
                 'r', encoding='utf-8',
                 errors='replace') as f:
-            return dict(
-                imap(
-                    tupleize,
-                    ifilter(correct_length, imap(parse, f))))
+            return parse_data(f)
     except (IOError, EOFError):
         return load_backup(config)
 
