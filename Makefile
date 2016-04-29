@@ -41,3 +41,7 @@ tar:
 test: lint
 	@find . -type f -iname "*.pyc" -delete
 	tox
+
+test-fast:
+	@find . -type f -iname "*.pyc" -delete
+	tox -e py27
