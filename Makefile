@@ -13,7 +13,7 @@ docs:
 	pandoc -s -w man docs/manpage_header.md docs/header.md docs/body.md -o docs/autojump.1
 	pandoc -s -w markdown docs/header.md docs/install.md docs/body.md -o README.md
 
-lint:
+flake8:
 	@flake8 ./ --config=tox.ini
 
 release: docs
@@ -41,6 +41,7 @@ tar:
 test: lint
 	@find . -type f -iname "*.pyc" -delete
 	tox
+	tox -e flake8
 
 test-fast:
 	@find . -type f -iname "*.pyc" -delete
