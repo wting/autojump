@@ -16,10 +16,9 @@
     -   id: fix-encoding-pragma
     -   id: flake8
         args:
-            - --ignore=E126
-            - --ignore=E128
-            - --ignore=E402
-            - --ignore=E731
+            - --max-complexity=10
+            - --ignore=E126,E128,E731
+            - --exclude=bin/autojump_argparse.py
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
 -   repo: git@github.com:asottile/reorder_python_imports.git
