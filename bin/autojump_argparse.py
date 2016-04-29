@@ -1,5 +1,5 @@
-# Author: Steven J. Bethard <steven.bethard@gmail.com>.
 # -*- coding: utf-8 -*-
+# Author: Steven J. Bethard <steven.bethard@gmail.com>.
 # flake8: noqa
 """Command-line parsing library
 
