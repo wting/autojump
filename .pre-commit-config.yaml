@@ -15,7 +15,11 @@
     -   id: end-of-file-fixer
     -   id: fix-encoding-pragma
     -   id: flake8
-        args: [--ignore=E731]
+        args:
+            - --ignore=E126
+            - --ignore=E128
+            - --ignore=E402
+            - --ignore=E731
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
 -   repo: git@github.com:asottile/reorder_python_imports.git
