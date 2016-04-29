@@ -17,6 +17,7 @@
     -   id: flake8
         args:
             - --max-complexity=10
+            - --max-line-length=130
             - --ignore=E126,E128,E731
             - --exclude=bin/autojump_argparse.py
     -   id: requirements-txt-fixer
