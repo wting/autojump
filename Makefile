@@ -14,7 +14,10 @@ docs:
 	pandoc -s -w markdown docs/header.md docs/install.md docs/body.md -o README.md
 
 flake8:
-	@flake8 ./ --config=tox.ini
+	@tox -e flake8
+
+pre-commit:
+	@tox -e pre-commit -- install -f --install-hooks
 
 release: docs
 	# Check for tag existence
@@ -38,11 +41,11 @@ tar:
 	git archive --format=tar --prefix autojump_v$(VERSION)/ $(TAGNAME) | gzip > autojump_v$(VERSION).tar.gz
 	sha1sum autojump_v$(VERSION).tar.gz
 
-test: lint
-	@find . -type f -iname "*.pyc" -delete
+test: pre-commit lint
+	@find . -type f -iname '*.py[co]' -delete
 	tox
 	tox -e flake8
 
-test-fast:
-	@find . -type f -iname "*.pyc" -delete
+test-fast: pre-commit
+	@find . -type f -iname '*.py[co]' -delete
 	tox -e py27
