@@ -63,7 +63,7 @@ INSTALLATION
 
 ### REQUIREMENTS
 
--   Python v2.6+
+-   Python v2.6+ (except Python3.2)
 -   Supported shells:
     -   bash v4.0+
     -   zsh
