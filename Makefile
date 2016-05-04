@@ -40,11 +40,11 @@ tar:
 
 test: pre-commit
 	@find . -type f -iname '*.py[co]' -delete
-	tox
+	@tox
 
 test-fast: pre-commit
 	@find . -type f -iname '*.py[co]' -delete
-	tox -e py27
+	@tox -e py27
 
 clean:
 	@find . -type f -iname '*.py[co]' -delete
