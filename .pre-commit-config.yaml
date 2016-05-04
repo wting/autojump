@@ -1,5 +1,5 @@
 -   repo: git@github.com:pre-commit/pre-commit-hooks.git
-    sha: 6f2b0a27e5b9047c6c067fb3d575ba323d572793
+    sha: 35548254adb636ce52b5574eb1904b8c795b673e
     hooks:
     -   id: autopep8-wrapper
         args:
@@ -16,10 +16,10 @@
     -   id: fix-encoding-pragma
     -   id: flake8
         args:
-            - --max-complexity=10
-            - --max-line-length=130
-            - --ignore=E126,E128,E731
-            - --exclude=bin/autojump_argparse.py
+        - --max-complexity=10
+        - --max-line-length=130
+        - --ignore=E126,E128,E731
+        - --exclude=bin/autojump_argparse.py
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
 -   repo: git@github.com:asottile/reorder_python_imports.git
