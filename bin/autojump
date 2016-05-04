@@ -38,6 +38,7 @@ else:
     from itertools import ifilter
     from itertools import imap
 
+# Vendorized argparse for Python 2.6 support
 from autojump_argparse import ArgumentParser
 
 from autojump_data import dictify
