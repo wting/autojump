@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-import sys
 from difflib import SequenceMatcher
 
+from autojump_utils import is_python3
+from autojump_utils import is_windows
+from autojump_utils import last
 
-if sys.version_info[0] == 3:
+
+if is_python3():
     ifilter = filter
     imap = map
     os.getcwdu = os.getcwd
@@ -73,7 +76,7 @@ def match_consecutive(needles, haystack, ignore_case=False):
     regex_no_sep_end = regex_no_sep + '$'
     regex_one_sep = regex_no_sep + sep + regex_no_sep
     # can't use compiled regex because of flags
-    regex_needle = regex_one_sep.join(map(re.escape, needles)).replace('\\', '\\\\') + regex_no_sep_end  # noqa
+    regex_needle = regex_one_sep.join(imap(re.escape, needles)).replace('\\', '\\\\') + regex_no_sep_end  # noqa
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda entry: re.search(
         regex_needle,
@@ -82,10 +85,10 @@ def match_consecutive(needles, haystack, ignore_case=False):
     return ifilter(found, haystack)
 
 
-def match_fuzzy(needles, haystack, ignore_case=False):
+def match_fuzzy(needles, haystack, ignore_case=False, threshold=0.6):
     """
     Performs an approximate match with the last needle against the end of
-    every path past an acceptable threshold (FUZZY_MATCH_THRESHOLD).
+    every path past an acceptable threshold.
 
     For example:
         needles = ['foo', 'bar']
@@ -115,6 +118,5 @@ def match_fuzzy(needles, haystack, ignore_case=False):
         match_percent = lambda entry: SequenceMatcher(
             a=needle,
             b=end_dir(entry.path)).ratio()
-    meets_threshold = lambda entry: match_percent(entry) >= \
-        FUZZY_MATCH_THRESHOLD
+    meets_threshold = lambda entry: match_percent(entry) >= threshold
     return ifilter(meets_threshold, haystack)
