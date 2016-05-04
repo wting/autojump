@@ -1,7 +1,7 @@
 VERSION = $(shell grep -oE "[0-9]+\.[0-9]+\.[0-9]+" bin/autojump)
 TAGNAME = release-v$(VERSION)
 
-.PHONY: docs install uninstall lint tar test
+.PHONY: clean docs install uninstall pre-commit lint tar test
 
 install:
 	./install.py
@@ -45,3 +45,8 @@ test: pre-commit
 test-fast: pre-commit
 	@find . -type f -iname '*.py[co]' -delete
 	tox -e py27
+
+clean:
+	@find . -type f -iname '*.py[co]' -delete
+	@find . -type d -iname '__pycache__' -delete
+	@rm -fr .tox
