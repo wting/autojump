@@ -27,20 +27,23 @@ def match_anywhere(needles, haystack, ignore_case=False):
         needles = ['foo', 'baz']
         regex needle = r'.*foo.*baz.*'
         haystack = [
-            (path="/foo/bar/baz", weight=10),
-            (path="/baz/foo/bar", weight=10),
-            (path="/foo/baz", weight=10)]
+            (path='/foo/bar/baz', weight=10),
+            (path='/baz/foo/bar', weight=10),
+            (path='/foo/baz', weight=10),
+        ]
 
         result = [
-            (path="/moo/foo/baz", weight=10),
-            (path="/foo/baz", weight=10)]
+            (path='/moo/foo/baz', weight=10),
+            (path='/foo/baz', weight=10),
+        ]
     """
     regex_needle = '.*' + '.*'.join(needles).replace('\\', '\\\\') + '.*'
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda haystack: re.search(
         regex_needle,
         haystack.path,
-        flags=regex_flags)
+        flags=regex_flags,
+    )
     return ifilter(found, haystack)
 
 
@@ -51,10 +54,11 @@ def match_consecutive(needles, haystack, ignore_case=False):
     For example:
         needles = ['foo', 'baz']
         haystack = [
-            (path="/foo/bar/baz", weight=10),
-            (path="/foo/baz/moo", weight=10),
-            (path="/moo/foo/baz", weight=10),
-            (path="/foo/baz", weight=10)]
+            (path='/foo/bar/baz', weight=10),
+            (path='/foo/baz/moo', weight=10),
+            (path='/moo/foo/baz', weight=10),
+            (path='/foo/baz', weight=10),
+        ]
 
         regex_needle = re.compile(r'''
             foo     # needle #1
@@ -67,8 +71,9 @@ def match_consecutive(needles, haystack, ignore_case=False):
             ''')
 
         result = [
-            (path="/moo/foo/baz", weight=10),
-            (path="/foo/baz", weight=10)]
+            (path='/moo/foo/baz', weight=10),
+            (path='/foo/baz', weight=10),
+        ]
     """
     # The normal \\ separator needs to be escaped again for use in regex.
     sep = '\\\\' if is_windows() else os.sep
@@ -81,7 +86,8 @@ def match_consecutive(needles, haystack, ignore_case=False):
     found = lambda entry: re.search(
         regex_needle,
         entry.path,
-        flags=regex_flags)
+        flags=regex_flags,
+    )
     return ifilter(found, haystack)
 
 
@@ -93,17 +99,19 @@ def match_fuzzy(needles, haystack, ignore_case=False, threshold=0.6):
     For example:
         needles = ['foo', 'bar']
         haystack = [
-            (path="/foo/bar/baz", weight=11),
-            (path="/foo/baz/moo", weight=10),
-            (path="/moo/foo/baz", weight=10),
-            (path="/foo/baz", weight=10),
-            (path="/foo/bar", weight=10)]
+            (path='/foo/bar/baz', weight=11),
+            (path='/foo/baz/moo', weight=10),
+            (path='/moo/foo/baz', weight=10),
+            (path='/foo/baz', weight=10),
+            (path='/foo/bar', weight=10),
+        ]
 
     result = [
-            (path="/foo/bar/baz", weight=11),
-            (path="/moo/foo/baz", weight=10),
-            (path="/foo/baz", weight=10),
-            (path="/foo/bar", weight=10)]
+            (path='/foo/bar/baz', weight=11),
+            (path='/moo/foo/baz', weight=10),
+            (path='/foo/baz', weight=10),
+            (path='/foo/bar', weight=10),
+        ]
 
     This is a weak heuristic and used as a last resort to find matches.
     """
