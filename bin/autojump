@@ -18,7 +18,6 @@
   along with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 """
-
 from __future__ import print_function
 
 from difflib import SequenceMatcher
@@ -41,6 +40,10 @@ else:
 # Vendorized argparse for Python 2.6 support
 from autojump_argparse import ArgumentParser
 
+# autojump is not a standard python package but rather installed as a mixed
+# shell + Python app with no outside dependencies (except Python). As a
+# consequence we use relative imports and depend on file prefixes to prevent
+# module conflicts.
 from autojump_data import dictify
 from autojump_data import entriefy
 from autojump_data import Entry
