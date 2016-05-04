@@ -37,7 +37,7 @@ def match_anywhere(needles, haystack, ignore_case=False):
             (path='/foo/baz', weight=10),
         ]
     """
-    regex_needle = '.*' + '.*'.join(needles).replace('\\', '\\\\') + '.*'
+    regex_needle = '.*' + '.*'.join(imap(re.escape, needles)) + '.*'
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda haystack: re.search(
         regex_needle,
