@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 from __future__ import print_function
 
 import os
@@ -9,7 +8,7 @@ import shutil
 import sys
 
 sys.path.append('bin')
-from autojump_argparse import ArgumentParser
+from autojump_argparse import ArgumentParser  # noqa
 
 
 def is_empty_dir(path):
@@ -28,10 +27,10 @@ def parse_arguments():
     parser = ArgumentParser(
         description='Uninstalls autojump.')
     parser.add_argument(
-        '-n', '--dryrun', action="store_true", default=False,
+        '-n', '--dryrun', action='store_true', default=False,
         help='simulate installation')
     parser.add_argument(
-        '-u', '--userdata', action="store_true", default=False,
+        '-u', '--userdata', action='store_true', default=False,
         help='delete user data')
     parser.add_argument(
         '-d', '--destdir', metavar='DIR',
@@ -61,7 +60,7 @@ def remove_custom_installation(args, dryrun=False):
     if not os.path.exists(share_dir):
         return
 
-    print("\nFound custom installation...")
+    print('\nFound custom installation...')
     rm(os.path.join(bin_dir, 'autojump'), dryrun)
     rm(os.path.join(bin_dir, 'autojump_data.py'), dryrun)
     rm(os.path.join(bin_dir, 'autojump_utils.py'), dryrun)
@@ -94,18 +93,27 @@ def remove_system_installation(dryrun=False):
     default_zshshare = '/usr/share/zsh/site-functions'
 
     bin_dir = os.path.join(default_destdir, default_prefix, 'bin')
-    doc_dir = os.path.join(default_destdir, default_prefix, 'share', 'man', 'man1')
+    doc_dir = os.path.join(
+        default_destdir,
+        default_prefix,
+        'share',
+        'man',
+        'man1')
     etc_dir = os.path.join(default_destdir, 'etc', 'profile.d')
-    share_dir = os.path.join(default_destdir, default_prefix, 'share', 'autojump')
+    share_dir = os.path.join(
+        default_destdir,
+        default_prefix,
+        'share',
+        'autojump')
     zshshare_dir = os.path.join(default_destdir, default_zshshare)
 
     if not os.path.exists(share_dir):
         return
 
-    print("\nFound system installation...")
+    print('\nFound system installation...')
 
     if os.geteuid() != 0:
-        print("Please rerun as root for system-wide uninstall, skipping...",
+        print('Please rerun as root for system-wide uninstall, skipping...',
               file=sys.stderr)
         return
 
@@ -142,7 +150,7 @@ def remove_user_data(dryrun=False):
                 'autojump'))
 
     if os.path.exists(data_home):
-        print("\nFound user data...")
+        print('\nFound user data...')
         rmdir(data_home, dryrun)
 
 
@@ -152,10 +160,10 @@ def remove_user_installation(dryrun=False):
                                        'autojump')
         clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
     else:
-        default_destdir = os.path.join(os.path.expanduser("~"), '.autojump')
+        default_destdir = os.path.join(os.path.expanduser('~'), '.autojump')
 
     if os.path.exists(default_destdir):
-        print("\nFound user installation...")
+        print('\nFound user installation...')
         rmdir(default_destdir, dryrun)
         if platform.system() == 'Windows' and os.path.exists(clink_dir):
             rm(os.path.join(clink_dir, 'autojump.lua'), dryrun)
@@ -163,23 +171,23 @@ def remove_user_installation(dryrun=False):
 
 def rm(path, dryrun):
     if os.path.exists(path):
-        print("deleting file:", path)
+        print('deleting file:', path)
         if not dryrun:
             os.remove(path)
 
 
 def rmdir(path, dryrun):
     if os.path.exists(path):
-        print("deleting directory:", path)
+        print('deleting directory:', path)
         if not dryrun:
             shutil.rmtree(path)
 
 
 def main(args):
     if args.dryrun:
-        print("Uninstalling autojump (DRYRUN)...")
+        print('Uninstalling autojump (DRYRUN)...')
     else:
-        print("Uninstalling autojump...")
+        print('Uninstalling autojump...')
 
     remove_user_installation(args.dryrun)
     remove_system_installation(args.dryrun)
@@ -188,5 +196,5 @@ def main(args):
         remove_user_data(args.dryrun)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main(parse_arguments()))

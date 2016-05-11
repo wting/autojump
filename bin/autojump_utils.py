@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 from __future__ import print_function
 
 import errno
-from itertools import islice
 import os
 import platform
 import re
 import shutil
 import sys
 import unicodedata
+from itertools import islice
 
 if sys.version_info[0] == 3:
     os.getcwdu = os.getcwd
@@ -60,7 +59,7 @@ def get_pwd():
     try:
         return os.getcwdu()
     except OSError:
-        print("Current directory no longer exists.", file=sys.stderr)
+        print('Current directory no longer exists.', file=sys.stderr)
         raise
 
 
@@ -119,7 +118,7 @@ def move_file(src, dst):
 
 
 def print_entry(entry):
-    print_local("%.1f:\t%s" % (entry.weight, entry.path))
+    print_local('%.1f:\t%s' % (entry.weight, entry.path))
 
 
 def print_local(string):

@@ -2,26 +2,27 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-from codecs import open
-from collections import namedtuple
 import os
 import shutil
 import sys
+from codecs import open
+from collections import namedtuple
 from tempfile import NamedTemporaryFile
 from time import time
+
+from autojump_utils import create_dir
+from autojump_utils import is_osx
+from autojump_utils import is_python3
+from autojump_utils import move_file
+from autojump_utils import unico
+
 
 if sys.version_info[0] == 3:
     ifilter = filter
     imap = map
 else:
-    from itertools import ifilter
-    from itertools import imap
-
-from autojump_utils import create_dir
-from autojump_utils import unico
-from autojump_utils import is_osx
-from autojump_utils import is_python3
-from autojump_utils import move_file
+    from itertools import ifilter  # noqa
+    from itertools import imap  # noqa
 
 
 BACKUP_THRESHOLD = 24 * 60 * 60
@@ -89,7 +90,7 @@ def migrate_osx_xdg_data(config):
     Older versions incorrectly used Linux XDG_DATA_HOME paths on OS X. This
     migrates autojump files from ~/.local/share/autojump to ~/Library/autojump
     """
-    assert is_osx(), "This function should only be run on OS X."
+    assert is_osx(), 'This function should only be run on OS X.'
 
     xdg_data_home = os.path.join(os.path.expanduser('~'), '.local', 'share')
     xdg_aj_home = os.path.join(xdg_data_home, 'autojump')
@@ -119,12 +120,12 @@ def save(config, data):
 
         with open(temp.name, 'w', encoding='utf-8', errors='replace') as f:
             for path, weight in data.items():
-                f.write(unico("%s\t%s\n" % (weight, path)))
+                f.write(unico('%s\t%s\n' % (weight, path)))
 
             f.flush()
             os.fsync(f)
     except IOError as ex:
-        print("Error saving autojump data (disk full?)" % ex, file=sys.stderr)
+        print('Error saving autojump data (disk full?)' % ex, file=sys.stderr)
         sys.exit(1)
 
     # move temp_file -> autojump.txt

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 IPython autojump magic
 
@@ -13,8 +14,8 @@ And copy this file into the "startup" folder of your new profile (e.g.
 
 @TODO: extend %cd to call "autojump -a"
 """
-from subprocess import Popen
 from subprocess import PIPE
+from subprocess import Popen
 
 from IPython.core.magic import register_line_magic
 
@@ -25,9 +26,9 @@ ip = get_ipython()  # noqa
 def j(path):
     cmd = ['autojump'] + path.split()
     newpath = Popen(
-            cmd,
-            stdout=PIPE,
-            shell=False).communicate()[0].strip()
+        cmd,
+        stdout=PIPE,
+        shell=False).communicate()[0].strip()
 
     if newpath:
         ip.magic('cd %s' % newpath.decode('utf-8'))

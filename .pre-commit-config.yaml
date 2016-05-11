@@ -1,0 +1,29 @@
+-   repo: git@github.com:pre-commit/pre-commit-hooks.git
+    sha: 6f2b0a27e5b9047c6c067fb3d575ba323d572793
+    hooks:
+    -   id: autopep8-wrapper
+        args:
+        - --in-place
+        - --aggressive
+        - --aggressive
+    -   id: check-added-large-files
+    -   id: check-ast
+    -   id: check-case-conflict
+    -   id: check-docstring-first
+    -   id: debug-statements
+    -   id: double-quote-string-fixer
+    -   id: end-of-file-fixer
+    -   id: fix-encoding-pragma
+    -   id: flake8
+        args:
+            - --max-complexity=10
+            - --max-line-length=130
+            - --ignore=E126,E128,E731
+            - --exclude=bin/autojump_argparse.py
+    -   id: requirements-txt-fixer
+    -   id: trailing-whitespace
+-   repo: git@github.com:asottile/reorder_python_imports.git
+    sha: 017e2f64306853ec7f000db52b8280da27eb3b96
+    hooks:
+    -   id: reorder-python-imports
+        language_version: python2.7
