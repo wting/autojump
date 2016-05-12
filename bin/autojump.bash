@@ -61,11 +61,11 @@ j() {
 
     output="$(autojump ${@})"
     if [[ -d "${output}" ]]; then
-				if [ -t 1 ]; then  # if stdout is a terminal, use colors
-						echo -e "\\033[31m${output}\\033[0m"
-				else
-						echo -e "${output}"
-				fi
+        if [ -t 1 ]; then  # if stdout is a terminal, use colors
+                echo -e "\\033[31m${output}\\033[0m"
+        else
+                echo -e "${output}"
+        fi
         cd "${output}"
     else
         echo "autojump: directory '${@}' not found"
