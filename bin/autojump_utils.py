@@ -12,10 +12,7 @@ import unicodedata
 from itertools import islice
 
 if sys.version_info[0] == 3:
-    imap = map
     os.getcwdu = os.getcwd
-else:
-    from itertools import imap
 
 
 def create_dir(path):
@@ -36,12 +33,7 @@ def encode_local(string):
 
 def first(xs):
     it = iter(xs)
-    try:
-        if is_python3():
-            return it.__next__()
-        return it.next()
-    except StopIteration:
-        return None
+    return next(it, None)
 
 
 def get_tab_entry_info(entry, separator):
@@ -50,23 +42,16 @@ def get_tab_entry_info(entry, separator):
 
         [needle]__[index]__[path]
     """
-    needle, index, path = None, None, None
-
-    match_needle = re.search(r'(.*?)' + separator, entry)
-    match_index = re.search(separator + r'([0-9]{1})', entry)
-    match_path = re.search(
-        separator + r'[0-9]{1}' + separator + r'(.*)',
-        entry)
-
-    if match_needle:
-        needle = match_needle.group(1)
-
-    if match_index:
-        index = int(match_index.group(1))
-
-    if match_path:
-        path = match_path.group(1)
-
+    needle = index = path = None
+    parts = entry.split('__', 2)
+    if len(parts) > 1:
+        needle = parts[0]
+        try:
+            index = int(parts[1])
+        except ValueError:
+            index = None
+        if len(parts) > 2:
+            path = parts[2]
     return needle, index, path
 
 
@@ -113,17 +98,10 @@ def is_windows():
 
 
 def last(xs):
-    it = iter(xs)
-    tmp = None
-    try:
-        if is_python3():
-            while True:
-                tmp = it.__next__()
-        else:
-            while True:
-                tmp = it.next()
-    except StopIteration:
-        return tmp
+    v = None
+    for i in iter(xs):
+        v = i
+    return v
 
 
 def move_file(src, dst):
@@ -168,21 +146,15 @@ def print_tab_menu(needle, tab_entries, separator):
 
 def sanitize(directories):
     # edge case to allow '/' as a valid path
-    clean = lambda x: unico(x) if x == os.sep else unico(x).rstrip(os.sep)
-    return list(imap(clean, directories))
+    def clean(x):
+        return unico(x) if x == os.sep else unico(x).rstrip(os.sep)
+    return [clean(d) for d in directories]
 
 
 def second(xs):
     it = iter(xs)
-    try:
-        if is_python2():
-            it.next()
-            return it.next()
-        elif is_python3():
-            next(it)
-            return next(it)
-    except StopIteration:
-        return None
+    next(it, None)
+    return next(it, None)
 
 
 def surround_quotes(string):
