@@ -7,19 +7,19 @@ import mock
 import pytest
 
 sys.path.append(os.path.join(os.getcwd(), 'bin'))
-import autojump_utils
-from autojump_utils import encode_local
-from autojump_utils import first
-from autojump_utils import get_tab_entry_info
-from autojump_utils import has_uppercase
-from autojump_utils import in_bash
-from autojump_utils import is_python3
-from autojump_utils import last
-from autojump_utils import sanitize
-from autojump_utils import second
-from autojump_utils import surround_quotes
-from autojump_utils import take
-from autojump_utils import unico
+import autojump_utils  # noqa
+from autojump_utils import encode_local  # noqa
+from autojump_utils import first  # noqa
+from autojump_utils import get_tab_entry_info  # noqa
+from autojump_utils import has_uppercase  # noqa
+from autojump_utils import in_bash  # noqa
+from autojump_utils import is_python3  # noqa
+from autojump_utils import last  # noqa
+from autojump_utils import sanitize  # noqa
+from autojump_utils import second  # noqa
+from autojump_utils import surround_quotes  # noqa
+from autojump_utils import take  # noqa
+from autojump_utils import unico  # noqa
 
 
 if is_python3():
@@ -37,27 +37,27 @@ def u(string):
 
 
 # strings
-@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
+@pytest.mark.skipif(is_python3(), reason='Unicode sucks.')
 @mock.patch.object(sys, 'getfilesystemencoding', return_value='ascii')
 def test_encode_local_ascii(_):
     assert encode_local(u('foo')) == b'foo'
 
 
-@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
-@pytest.mark.xfail(reason="disabled due to pytest bug: https://bitbucket.org/hpk42/pytest/issue/534/pytest-fails-to-catch-unicodedecodeerrors")  # noqa
+@pytest.mark.skipif(is_python3(), reason='Unicode sucks.')
+@pytest.mark.xfail(reason='disabled due to pytest bug: https://bitbucket.org/hpk42/pytest/issue/534/pytest-fails-to-catch-unicodedecodeerrors')  # noqa
 @mock.patch.object(sys, 'getfilesystemencoding', return_value='ascii')
 def test_encode_local_ascii_fails(_):
     with pytest.raises(UnicodeDecodeError):
         encode_local(u('日本語'))
 
 
-@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
+@pytest.mark.skipif(is_python3(), reason='Unicode sucks.')
 @mock.patch.object(sys, 'getfilesystemencoding', return_value=None)
 def test_encode_local_empty(_):
     assert encode_local(b'foo') == u('foo')
 
 
-@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
+@pytest.mark.skipif(is_python3(), reason='Unicode sucks.')
 @mock.patch.object(sys, 'getfilesystemencoding', return_value='utf-8')
 def test_encode_local_unicode(_):
     assert encode_local(b'foo') == u('foo')
@@ -86,7 +86,7 @@ def test_sanitize():
     assert sanitize([r'/foo/bar/', r'/']) == [u('/foo/bar'), u('/')]
 
 
-@pytest.mark.skipif(is_python3(), reason="Unicode sucks.")
+@pytest.mark.skipif(is_python3(), reason='Unicode sucks.')
 def test_unico():
     assert unico(str('blah')) == u('blah')
     assert unico(str('日本語')) == u('日本語')
