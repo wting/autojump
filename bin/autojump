@@ -60,7 +60,7 @@ from autojump_utils import sanitize
 from autojump_utils import take
 from autojump_utils import unico
 
-VERSION = '22.3.1'
+VERSION = '22.3.2'
 FUZZY_MATCH_THRESHOLD = 0.6
 TAB_ENTRIES_COUNT = 9
 TAB_SEPARATOR = '__'
