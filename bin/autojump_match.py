@@ -5,11 +5,10 @@ import re
 from difflib import SequenceMatcher
 
 from autojump_utils import is_python3
-from autojump_utils import is_windows
 from autojump_utils import last
 
 
-if is_python3():
+if is_python3():  # pragma: no cover
     ifilter = filter
     imap = map
     os.getcwdu = os.getcwd
@@ -60,6 +59,7 @@ def match_consecutive(needles, haystack, ignore_case=False):
             (path='/foo/baz', weight=10),
         ]
 
+        # We can't actually use re.compile because of re.UNICODE
         regex_needle = re.compile(r'''
             foo     # needle #1
             [^/]*   # all characters except os.sep zero or more times
@@ -75,13 +75,10 @@ def match_consecutive(needles, haystack, ignore_case=False):
             (path='/foo/baz', weight=10),
         ]
     """
-    # The normal \\ separator needs to be escaped again for use in regex.
-    sep = '\\\\' if is_windows() else os.sep
-    regex_no_sep = '[^' + sep + ']*'
+    regex_no_sep = '[^' + os.sep + ']*'
     regex_no_sep_end = regex_no_sep + '$'
-    regex_one_sep = regex_no_sep + sep + regex_no_sep
-    # can't use compiled regex because of flags
-    regex_needle = regex_one_sep.join(imap(re.escape, needles)).replace('\\', '\\\\') + regex_no_sep_end  # noqa
+    regex_one_sep = regex_no_sep + os.sep + regex_no_sep
+    regex_needle = regex_one_sep.join(imap(re.escape, needles)) + regex_no_sep_end
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda entry: re.search(
         regex_needle,
