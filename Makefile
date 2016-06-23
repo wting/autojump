@@ -39,11 +39,12 @@ tar:
 	sha1sum autojump_v$(VERSION).tar.gz
 
 test: pre-commit
-	@find . -type f -iname '*.py[co]' -delete
 	@tox
 
+test-xfail: pre-commit
+	@tox -- --runxfail
+
 test-fast: pre-commit
-	@find . -type f -iname '*.py[co]' -delete
 	@tox -e py27
 
 clean:
