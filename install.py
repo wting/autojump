@@ -181,6 +181,7 @@ def main(args):
     cp('./bin/autojump', bin_dir, args.dryrun)
     cp('./bin/autojump_argparse.py', bin_dir, args.dryrun)
     cp('./bin/autojump_data.py', bin_dir, args.dryrun)
+    cp('./bin/autojump_match.py', bin_dir, args.dryrun)
     cp('./bin/autojump_utils.py', bin_dir, args.dryrun)
     cp('./bin/icon.png', share_dir, args.dryrun)
     cp('./docs/autojump.1', doc_dir, args.dryrun)
