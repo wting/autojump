@@ -63,7 +63,7 @@ INSTALLATION
 
 ### REQUIREMENTS
 
--   Python v2.6+
+-   Python v2.6+ except v3.2
 -   Supported shells:
     -   bash v4.0+
     -   zsh
@@ -148,7 +148,7 @@ maintained by William Ting. More contributors can be found in `AUTHORS`.
 COPYRIGHT
 ---------
 
-Copyright © 2012 Free Software Foundation, Inc. License GPLv3+: GNU GPL
+Copyright © 2016 Free Software Foundation, Inc. License GPLv3+: GNU GPL
 version 3 or later <http://gnu.org/licenses/gpl.html>. This is free
 software: you are free to change and redistribute it. There is NO
 WARRANTY, to the extent permitted by law.

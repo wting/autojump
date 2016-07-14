@@ -6,20 +6,20 @@ import sys
 import mock
 import pytest
 
-sys.path.append(os.path.join(os.getcwd(), 'bin'))
-import autojump_utils  # noqa
-from autojump_utils import encode_local  # noqa
-from autojump_utils import first  # noqa
-from autojump_utils import get_tab_entry_info  # noqa
-from autojump_utils import has_uppercase  # noqa
-from autojump_utils import in_bash  # noqa
-from autojump_utils import is_python3  # noqa
-from autojump_utils import last  # noqa
-from autojump_utils import sanitize  # noqa
-from autojump_utils import second  # noqa
-from autojump_utils import surround_quotes  # noqa
-from autojump_utils import take  # noqa
-from autojump_utils import unico  # noqa
+sys.path.append(os.path.join(os.getcwd(), 'bin'))  # noqa
+import autojump_utils
+from autojump_utils import encode_local
+from autojump_utils import first
+from autojump_utils import get_tab_entry_info
+from autojump_utils import has_uppercase
+from autojump_utils import in_bash
+from autojump_utils import is_python3
+from autojump_utils import last
+from autojump_utils import sanitize
+from autojump_utils import second
+from autojump_utils import surround_quotes
+from autojump_utils import take
+from autojump_utils import unico
 
 
 if is_python3():

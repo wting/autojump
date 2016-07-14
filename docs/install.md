@@ -2,7 +2,7 @@
 
 ### REQUIREMENTS
 
-- Python v2.6+
+- Python v2.6+ except v3.2
 - Supported shells:
     - bash v4.0+
     - zsh
@@ -41,7 +41,7 @@ MacPorts also available:
 
 ## Windows
 
-Windows support is enabled by [clink](https://code.google.com/p/clink/) which
+Windows support is enabled by [clink](https://mridgers.github.io/clink/) which
 should be installed prior to installing autojump.
 
 ### MANUAL
