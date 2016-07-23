@@ -11,6 +11,14 @@ sys.path.append('bin')
 from autojump_argparse import ArgumentParser  # noqa
 
 
+def get_shell():
+    return os.path.basename(os.getenv('SHELL', ''))
+
+
+def in_bash():
+    return get_shell == 'bash'
+
+
 def is_empty_dir(path):
     """
     Checks if any files are present within a directory and all sub-directories.
@@ -72,7 +80,7 @@ def remove_custom_installation(args, dryrun=False):
     rm(os.path.join(bin_dir, 'autojump_data.py'), dryrun)
     rm(os.path.join(bin_dir, 'autojump_utils.py'), dryrun)
     rm(os.path.join(bin_dir, 'autojump_argparse.py'), dryrun)
-    if platform.system() == 'Windows':
+    if platform.system() == 'Windows' and not in_bash():
         if os.path.exists(args.clinkdir):
             rm(os.path.join(args.clinkdir, 'autojump.lua'), dryrun)
         rm(os.path.join(bin_dir, 'autojump.bat'), dryrun)
