@@ -193,8 +193,8 @@ def find_matches(entries, needles, check_entries=True):
         lambda entry: not is_cwd(entry) and path_exists(entry),
         chain(
             match_consecutive(needles, data, ignore_case),
-            match_fuzzy(needles, data, ignore_case),
-            match_anywhere(needles, data, ignore_case)))
+            match_anywhere(needles, data, ignore_case),
+            match_fuzzy(needles, data, ignore_case)))
 
 
 def handle_tab_completion(needle, entries):

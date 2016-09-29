@@ -32,7 +32,7 @@ def match_anywhere(needles, haystack, ignore_case=False):
         ]
 
         result = [
-            (path='/moo/foo/baz', weight=10),
+            (path='/foo/bar/baz', weight=10),
             (path='/foo/baz', weight=10),
         ]
     """
