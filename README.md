@@ -25,8 +25,8 @@ can be used with `autojump` can be used with `j` and vice versa.
 -   Jump To A Child Directory:
 
     Sometimes it's convenient to jump to a child directory
-    (sub-directory of current directory) rather than typing out the full
-    name.
+    (sub-directory of current directory) rather than typing out the
+    full name.
 
         jc bar
 
@@ -49,10 +49,10 @@ can be used with `autojump` can be used with `j` and vice versa.
         30   /home/user/mail/inbox
         10   /home/user/work/inbox
 
-    `j in` would jump into /home/user/mail/inbox as the higher weighted
-    entry. However you can pass multiple arguments to autojump to prefer
-    a different entry. In the above example, `j w in` would then change
-    directory to /home/user/work/inbox.
+    `j in` would jump into /home/user/mail/inbox as the higher
+    weighted entry. However you can pass multiple arguments to autojump
+    to prefer a different entry. In the above example, `j w in` would
+    then change directory to /home/user/work/inbox.
 
 For more options refer to help:
 
@@ -128,7 +128,7 @@ KNOWN ISSUES
 
         export PROMPT_COMMAND="history -a"
 
-    Instead append to the end of the existing $PROMPT\_COMMAND:
+    Instead append to the end of the existing \$PROMPT\_COMMAND:
 
         export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ;} history -a"
 
