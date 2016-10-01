@@ -10,9 +10,11 @@ fi
 
 
 # set homebrew installation paths
-local brew_prefix=${BREW_PREFIX:-$(brew --prefix)}
-if [[ -d "${brew_prefix}/share/zsh/site-functions" ]]; then
+if command -v brew &>/dev/null; then
+  local brew_prefix=${BREW_PREFIX:-$(brew --prefix)}
+  if [[ -d "${brew_prefix}/share/zsh/site-functions" ]]; then
     fpath=("${brew_prefix}/share/zsh/site-functions" ${fpath})
+  fi
 fi
 
 
