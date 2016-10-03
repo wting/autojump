@@ -40,6 +40,7 @@ def match_anywhere(needles, haystack, ignore_case=False):
     regex_some_seps = '.*' + os.sep + '.*'
     regex_no_sep_end = '[^' + os.sep + ']*$'
     regex_needle = regex_some_seps.join(imap(re.escape, needles)) + regex_no_sep_end
+    regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda haystack: re.search(
         regex_needle,
         haystack.path,
