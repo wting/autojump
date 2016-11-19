@@ -74,7 +74,7 @@ function jc
         case '-*'
             j $argv
         case '*'
-            j (pwd) $argv
+            j (pwd)/$argv
     end
 end
 
