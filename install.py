@@ -64,9 +64,11 @@ def parse_arguments():  # noqa
             '.autojump')
     default_user_prefix = ''
     default_user_zshshare = 'functions'
+    default_user_fishfunc = 'fish_functions'
     default_system_destdir = '/'
     default_system_prefix = '/usr/local'
     default_system_zshshare = '/usr/share/zsh/site-functions'
+    default_system_fishfunc = '/usr/share/fish/vendor_functions.d'
     default_clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
 
     parser = ArgumentParser(
@@ -87,6 +89,9 @@ def parse_arguments():  # noqa
     parser.add_argument(
         '-z', '--zshshare', metavar='DIR', default=default_user_zshshare,
         help='set zsh share destination to DIR')
+    parser.add_argument(
+        '-i', '--fishfunc', metavar='DIR', default=default_user_fishfunc,
+        help='set fish function destination to DIR')
     parser.add_argument(
         '-c', '--clinkdir', metavar='DIR', default=default_clink_dir,
         help='set clink directory location to DIR (Windows only)')
@@ -118,7 +123,8 @@ def parse_arguments():  # noqa
 
     if args.destdir != default_user_destdir \
             or args.prefix != default_user_prefix \
-            or args.zshshare != default_user_zshshare:
+            or args.zshshare != default_user_zshshare \
+            or args.fishfunc != default_user_fishfunc:
         args.custom_install = True
     else:
         args.custom_install = False
@@ -132,17 +138,17 @@ def parse_arguments():  # noqa
         args.destdir = default_system_destdir
         args.prefix = default_system_prefix
         args.zshshare = default_system_zshshare
+        args.fishfunc = default_system_fishfunc
 
     return args
 
 
-def show_post_installation_message(etc_dir, share_dir, bin_dir):
+def show_post_installation_message(args, etc_dir, share_dir, bin_dir, fishfunc_dir):
     if platform.system() == 'Windows':
         print('\nPlease manually add %s to your user path' % bin_dir)
     else:
-        if get_shell() == 'fish':
-            aj_shell = '%s/autojump.fish' % share_dir
-            source_msg = 'if test -f %s; . %s; end' % (aj_shell, aj_shell)
+        if get_shell() == 'fish' and not args.system:
+            source_msg = 'set fish_function_path %s $fish_function_path' % fishfunc_dir
             rcfile = '~/.config/fish/config.fish'
         else:
             aj_shell = '%s/autojump.sh' % etc_dir
@@ -172,6 +178,7 @@ def main(args):
     doc_dir = os.path.join(args.destdir, args.prefix, 'share', 'man', 'man1')
     share_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
     zshshare_dir = os.path.join(args.destdir, args.zshshare)
+    fishfunc_dir = os.path.join(args.destdir, args.fishfunc)
 
     mkdir(bin_dir, args.dryrun)
     mkdir(doc_dir, args.dryrun)
@@ -200,17 +207,18 @@ def main(args):
         mkdir(etc_dir, args.dryrun)
         mkdir(share_dir, args.dryrun)
         mkdir(zshshare_dir, args.dryrun)
+        mkdir(fishfunc_dir, args.dryrun)
 
         cp('./bin/autojump.sh', etc_dir, args.dryrun)
         cp('./bin/autojump.bash', share_dir, args.dryrun)
-        cp('./bin/autojump.fish', share_dir, args.dryrun)
+        cp('./bin/autojump.fish', fishfunc_dir+'/j.fish', args.dryrun)
         cp('./bin/autojump.zsh', share_dir, args.dryrun)
         cp('./bin/_j', zshshare_dir, args.dryrun)
 
         if args.custom_install:
             modify_autojump_sh(etc_dir, share_dir, args.dryrun)
 
-    show_post_installation_message(etc_dir, share_dir, bin_dir)
+    show_post_installation_message(args, etc_dir, share_dir, bin_dir, fishfunc_dir)
 
 
 if __name__ == '__main__':

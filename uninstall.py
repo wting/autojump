@@ -42,6 +42,9 @@ def parse_arguments():
         '-z', '--zshshare', metavar='DIR', default='functions',
         help='custom zshshare')
     parser.add_argument(
+        '-i', '--fishfunc', metavar='DIR', default='fish_functions',
+        help='set fish function destination to DIR')
+    parser.add_argument(
         '-c', '--clinkdir', metavar='DIR', default=default_clink_dir)
 
     return parser.parse_args()
@@ -56,6 +59,7 @@ def remove_custom_installation(args, dryrun=False):
     etc_dir = os.path.join(args.destdir, 'etc', 'profile.d')
     share_dir = os.path.join(args.destdir, args.prefix, 'share', 'autojump')
     zshshare_dir = os.path.join(args.destdir, args.zshshare)
+    fishfunc_dir = os.path.join(args.destdir, args.fishfunc)
 
     if not os.path.exists(share_dir):
         return
@@ -76,7 +80,7 @@ def remove_custom_installation(args, dryrun=False):
     else:
         rm(os.path.join(etc_dir, 'autojump.sh'), dryrun)
         rm(os.path.join(share_dir, 'autojump.bash'), dryrun)
-        rm(os.path.join(share_dir, 'autojump.fish'), dryrun)
+        rm(os.path.join(fishfunc_dir, 'j.fish'), dryrun)
         rm(os.path.join(share_dir, 'autojump.tcsh'), dryrun)
         rm(os.path.join(share_dir, 'autojump.zsh'), dryrun)
         rm(os.path.join(zshshare_dir, '_j'), dryrun)
@@ -91,6 +95,7 @@ def remove_system_installation(dryrun=False):
     default_destdir = '/'
     default_prefix = '/usr/local'
     default_zshshare = '/usr/share/zsh/site-functions'
+    default_fishfunc = '/usr/share/fish/vendor_functions.d'
 
     bin_dir = os.path.join(default_destdir, default_prefix, 'bin')
     doc_dir = os.path.join(
@@ -106,6 +111,7 @@ def remove_system_installation(dryrun=False):
         'share',
         'autojump')
     zshshare_dir = os.path.join(default_destdir, default_zshshare)
+    fishfunc_dir = os.path.join(default_destdir, default_fishfunc)
 
     if not os.path.exists(share_dir):
         return
@@ -122,7 +128,7 @@ def remove_system_installation(dryrun=False):
     rm(os.path.join(bin_dir, 'autojump_utils.py'), dryrun)
     rm(os.path.join(etc_dir, 'autojump.sh'), dryrun)
     rm(os.path.join(share_dir, 'autojump.bash'), dryrun)
-    rm(os.path.join(share_dir, 'autojump.fish'), dryrun)
+    rm(os.path.join(fishfunc_dir, 'j.fish'), dryrun)
     rm(os.path.join(share_dir, 'autojump.tcsh'), dryrun)
     rm(os.path.join(share_dir, 'autojump.zsh'), dryrun)
     rm(os.path.join(zshshare_dir, '_j'), dryrun)
