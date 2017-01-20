@@ -130,12 +130,14 @@ def save(config, data):
 
             f.flush()
             os.fsync(f)
+            
+	    # move temp_file -> autojump.txt
+    	    move_file(temp.name, config['data_path'])
     except IOError as ex:
-        print('Error saving autojump data (disk full?)' % ex, file=sys.stderr)
+        print('%s Error saving autojump data (disk full?)' % ex, file=sys.stderr)
         sys.exit(1)
 
-    # move temp_file -> autojump.txt
-    move_file(temp.name, config['data_path'])
+
 
     # create backup file if it doesn't exist or is older than BACKUP_THRESHOLD
     if not os.path.exists(config['backup_path']) or \
