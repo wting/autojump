@@ -75,9 +75,10 @@ def match_consecutive(needles, haystack, ignore_case=False):
             (path='/foo/baz', weight=10),
         ]
     """
-    regex_no_sep = '[^' + os.sep + ']*'
+    sep = '\\\\' if os.sep == '\\' else os.sep
+    regex_no_sep = '[^' + sep + ']*'
     regex_no_sep_end = regex_no_sep + '$'
-    regex_one_sep = regex_no_sep + os.sep + regex_no_sep
+    regex_one_sep = regex_no_sep + sep + regex_no_sep
     regex_needle = regex_one_sep.join(imap(re.escape, needles)) + regex_no_sep_end
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda entry: re.search(
