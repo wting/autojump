@@ -17,7 +17,7 @@
 autojump is included in the following distro repositories, please use relevant
 package management utilities to install (e.g. yum, apt-get, etc):
 
-- Debian testing/unstable, Ubuntu, Linux Mint
+- Debian, Ubuntu, Linux Mint
 
     All Debian-derived distros require manual activation for policy reasons,
     please see `/usr/share/doc/autojump/README.Debian`.
