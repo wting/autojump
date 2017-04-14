@@ -132,6 +132,11 @@ KNOWN ISSUES
 
         export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ;} history -a"
 
+-   When used with `bash` in combination with
+    [liquidprompt](https://github.com/nojhan/liquidprompt), autojump needs to be
+    loaded *before* liquidprompt. Otherwise it breaks liquidprompt's tracking of
+    the runtime of the previous command.
+
 REPORTING BUGS
 --------------
 
