@@ -90,6 +90,7 @@ etc):
 -   Gentoo
 -   Frugalware
 -   Slackware
+-   Void Linux
 
 #### OS X
 
