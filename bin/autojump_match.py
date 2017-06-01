@@ -20,23 +20,26 @@ else:
 def match_anywhere(needles, haystack, ignore_case=False):
     """
     Matches needles anywhere in the path as long as they're in the same (but
-    not necessary consecutive) order.
+    not necessary consecutive) order, and the last needle is at the end.
 
     For example:
         needles = ['foo', 'baz']
-        regex needle = r'.*foo.*baz.*'
+        regex needle = r'foo.*/.*baz[^/]*$'
         haystack = [
             (path='/foo/bar/baz', weight=10),
             (path='/baz/foo/bar', weight=10),
+            (path='/foo/baz/bar', weight=11),
             (path='/foo/baz', weight=10),
         ]
 
         result = [
-            (path='/moo/foo/baz', weight=10),
+            (path='/foo/bar/baz', weight=10),
             (path='/foo/baz', weight=10),
         ]
     """
-    regex_needle = '.*' + '.*'.join(imap(re.escape, needles)) + '.*'
+    regex_some_seps = '.*' + os.sep + '.*'
+    regex_no_sep_end = '[^' + os.sep + ']*$'
+    regex_needle = regex_some_seps.join(imap(re.escape, needles)) + regex_no_sep_end
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
     found = lambda haystack: re.search(
         regex_needle,
