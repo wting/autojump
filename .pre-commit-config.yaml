@@ -1,5 +1,5 @@
 -   repo: git@github.com:pre-commit/pre-commit-hooks.git
-    sha: 35548254adb636ce52b5574eb1904b8c795b673e
+    sha: v0.7.1
     hooks:
     -   id: autopep8-wrapper
         args:
@@ -24,7 +24,7 @@
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
 -   repo: git@github.com:asottile/reorder_python_imports.git
-    sha: 017e2f64306853ec7f000db52b8280da27eb3b96
+    sha: v0.3.2
     hooks:
     -   id: reorder-python-imports
         language_version: python2.7
