@@ -13,6 +13,10 @@ docs:
 	pandoc -s -w man docs/manpage_header.md docs/header.md docs/body.md -o docs/autojump.1
 	pandoc -s -w markdown docs/header.md docs/install.md docs/body.md -o README.md
 
+.PHONY: lint
+lint: pre-commit
+	@tox -e pre-commit -- run --all-files
+
 pre-commit:
 	@tox -e pre-commit -- install -f --install-hooks
 
