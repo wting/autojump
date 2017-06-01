@@ -7,6 +7,7 @@
         - --aggressive
         - --aggressive
         - --max-line-length=131
+        - --ignore=E126,E128,E731
     -   id: check-added-large-files
     -   id: check-ast
     -   id: check-case-conflict

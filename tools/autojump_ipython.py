@@ -33,5 +33,6 @@ def j(path):
     if newpath:
         ip.magic('cd %s' % newpath.decode('utf-8'))
 
+
 # remove from namespace
 del j
