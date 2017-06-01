@@ -106,8 +106,8 @@ def parse_arguments():
         'directory', metavar='DIRECTORY', nargs='*', default='',
         help='directory to jump to')
     parser.add_argument(
-        '-a', '--add', metavar='DIRECTORY',
-        help='add path')
+        '-a', '--add', metavar='DIRECTORY', nargs='+',
+        help='add paths')
     parser.add_argument(
         '-i', '--increase', metavar='WEIGHT', nargs='?', type=int,
         const=10, default=False,
@@ -140,8 +140,11 @@ def add_path(data, path, weight=10):
     with resulting duplicate entries in the database than a single canonical
     path.
     """
-    path = unico(path).rstrip(os.sep)
+    path = os.path.abspath(unico(path))
     if path == os.path.expanduser('~'):
+        return data, Entry(path, 0)
+
+    if not os.path.isdir(path):
         return data, Entry(path, 0)
 
     data[path] = sqrt((data.get(path, 0) ** 2) + (weight ** 2))
@@ -261,7 +264,8 @@ def main(args):  # noqa
 
     # all arguments are mutually exclusive
     if args.add:
-        save(config, first(add_path(load(config), args.add)))
+        for arg in args.add:
+            save(config, first(add_path(load(config), arg)))
     elif args.complete:
         handle_tab_completion(
             needle=first(chain(sanitize(args.directory), [''])),
