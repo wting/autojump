@@ -7,7 +7,7 @@
         - --aggressive
         - --aggressive
         - --max-line-length=131
-        - --ignore=E126,E128,E731
+        - --ignore=E126,E128,E402,E731
     -   id: check-added-large-files
     -   id: check-ast
     -   id: check-case-conflict
@@ -20,7 +20,7 @@
         args:
         - --max-complexity=10
         - --max-line-length=131
-        - --ignore=E126,E128,E731
+        - --ignore=E126,E128,E402,E731
         - --exclude=bin/autojump_argparse.py
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
