@@ -1,5 +1,5 @@
 -   repo: git@github.com:pre-commit/pre-commit-hooks.git
-    sha: v0.7.1
+    sha: v0.9.1
     hooks:
     -   id: autopep8-wrapper
         args:
@@ -25,7 +25,11 @@
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
 -   repo: git@github.com:asottile/reorder_python_imports.git
-    sha: v0.3.2
+    sha: v0.3.5
     hooks:
     -   id: reorder-python-imports
         language_version: python2.7
+-   repo: https://github.com/asottile/add-trailing-comma
+    sha: v0.6.1
+    hooks:
+    -   id: add-trailing-comma
