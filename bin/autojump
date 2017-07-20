@@ -101,7 +101,7 @@ def set_defaults():
 def parse_arguments():
     parser = ArgumentParser(
         description='Automatically jump to directory passed as an argument.',
-        epilog="Please see autojump(1) man pages for full documentation.")
+        epilog='Please see autojump(1) man pages for full documentation.')
     parser.add_argument(
         'directory', metavar='DIRECTORY', nargs='*', default='',
         help='directory to jump to')
@@ -117,16 +117,16 @@ def parse_arguments():
         const=15, default=False,
         help='decrease current directory weight')
     parser.add_argument(
-        '--complete', action="store_true", default=False,
+        '--complete', action='store_true', default=False,
         help='used for tab completion')
     parser.add_argument(
-        '--purge', action="store_true", default=False,
+        '--purge', action='store_true', default=False,
         help='remove non-existent paths from database')
     parser.add_argument(
-        '-s', '--stat', action="store_true", default=False,
+        '-s', '--stat', action='store_true', default=False,
         help='show database entries and their key weights')
     parser.add_argument(
-        '-v', '--version', action="version", version="%(prog)s v" +
+        '-v', '--version', action='version', version='%(prog)s v' +
         VERSION, help='show version information')
 
     return parser.parse_args()
@@ -167,7 +167,7 @@ def detect_smartcase(needles):
 def find_matches(entries, needles, check_entries=True):
     """Return an iterator to matching entries."""
     # TODO(wting|2014-02-24): replace assertion with unit test
-    assert isinstance(needles, list), "Needles must be a list."
+    assert isinstance(needles, list), 'Needles must be a list.'
     ignore_case = detect_smartcase(needles)
 
     try:
@@ -236,25 +236,25 @@ def print_stats(data, data_path):
     for path, weight in sorted(data.items(), key=itemgetter(1)):
         print_entry(Entry(path, weight))
 
-    print("________________________________________\n")
-    print("%d:\t total weight" % sum(data.values()))
-    print("%d:\t number of entries" % len(data))
+    print('________________________________________\n')
+    print('%d:\t total weight' % sum(data.values()))
+    print('%d:\t number of entries' % len(data))
 
     try:
         print_local(
-            "%.2f:\t current directory weight" % data.get(os.getcwdu(), 0))
+            '%.2f:\t current directory weight' % data.get(os.getcwdu(), 0))
     except OSError:
         # current directory no longer exists
         pass
 
-    print("\ndata:\t %s" % data_path)
+    print('\ndata:\t %s' % data_path)
 
 
 def main(args):  # noqa
     if not is_autojump_sourced() and not is_windows():
         print("Please source the correct autojump file in your shell's")
-        print("startup file. For more information, please reinstall autojump")
-        print("and read the post installation instructions.")
+        print('startup file. For more information, please reinstall autojump')
+        print('and read the post installation instructions.')
         return 1
 
     config = set_defaults()
@@ -278,7 +278,7 @@ def main(args):  # noqa
         old_data = load(config)
         new_data = dictify(purge_missing_paths(entriefy(old_data)))
         save(config, new_data)
-        print("Purged %d entries." % (len(old_data) - len(new_data)))
+        print('Purged %d entries.' % (len(old_data) - len(new_data)))
     elif args.stat:
         print_stats(load(config), config['data_path'])
     elif not args.directory:
@@ -316,5 +316,5 @@ def main(args):  # noqa
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main(parse_arguments()))
