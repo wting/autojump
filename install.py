@@ -45,7 +45,8 @@ def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
     """Prepend custom AUTOJUMP_BIN_DIR definition to autojump.lua"""
     custom_install = "local AUTOJUMP_BIN_DIR = \"%s\"\n" % bin_dir.replace(
         '\\',
-        '\\\\')
+        '\\\\',
+    )
     clink_file = os.path.join(clink_dir, 'autojump.lua')
     with open(clink_file, 'r') as f:
         original = f.read()
@@ -57,11 +58,13 @@ def parse_arguments():  # noqa
     if platform.system() == 'Windows':
         default_user_destdir = os.path.join(
             os.getenv('LOCALAPPDATA', ''),
-            'autojump')
+            'autojump',
+        )
     else:
         default_user_destdir = os.path.join(
             os.path.expanduser('~'),
-            '.autojump')
+            '.autojump',
+        )
     default_user_prefix = ''
     default_user_zshshare = 'functions'
     default_system_destdir = '/'
@@ -71,28 +74,36 @@ def parse_arguments():  # noqa
 
     parser = ArgumentParser(
         description='Installs autojump globally for root users, otherwise \
-            installs in current user\'s home directory.')
+            installs in current user\'s home directory.'
+    )
     parser.add_argument(
         '-n', '--dryrun', action='store_true', default=False,
-        help='simulate installation')
+        help='simulate installation',
+    )
     parser.add_argument(
         '-f', '--force', action='store_true', default=False,
-        help='skip root user, shell type, Python version checks')
+        help='skip root user, shell type, Python version checks',
+    )
     parser.add_argument(
         '-d', '--destdir', metavar='DIR', default=default_user_destdir,
-        help='set destination to DIR')
+        help='set destination to DIR',
+    )
     parser.add_argument(
         '-p', '--prefix', metavar='DIR', default=default_user_prefix,
-        help='set prefix to DIR')
+        help='set prefix to DIR',
+    )
     parser.add_argument(
         '-z', '--zshshare', metavar='DIR', default=default_user_zshshare,
-        help='set zsh share destination to DIR')
+        help='set zsh share destination to DIR',
+    )
     parser.add_argument(
         '-c', '--clinkdir', metavar='DIR', default=default_clink_dir,
-        help='set clink directory location to DIR (Windows only)')
+        help='set clink directory location to DIR (Windows only)',
+    )
     parser.add_argument(
         '-s', '--system', action='store_true', default=False,
-        help='install system wide for all users')
+        help='install system wide for all users',
+    )
 
     args = parser.parse_args()
 
@@ -102,18 +113,24 @@ def parse_arguments():  # noqa
             sys.exit(1)
         if args.system:
             if platform.system() == 'Windows':
-                print('System-wide installation is not supported on Windows.',
-                      file=sys.stderr)
+                print(
+                    'System-wide installation is not supported on Windows.',
+                    file=sys.stderr,
+                )
                 sys.exit(1)
             elif os.geteuid() != 0:
-                print('Please rerun as root for system-wide installation.',
-                      file=sys.stderr)
+                print(
+                    'Please rerun as root for system-wide installation.',
+                    file=sys.stderr,
+                )
                 sys.exit(1)
 
         if platform.system() != 'Windows' \
                 and get_shell() not in SUPPORTED_SHELLS:
-            print('Unsupported shell: %s' % os.getenv('SHELL'),
-                  file=sys.stderr)
+            print(
+                'Unsupported shell: %s' % os.getenv('SHELL'),
+                file=sys.stderr,
+            )
             sys.exit(1)
 
     if args.destdir != default_user_destdir \
@@ -125,8 +142,10 @@ def parse_arguments():  # noqa
 
     if args.system:
         if args.custom_install:
-            print('Custom paths incompatible with --system option.',
-                  file=sys.stderr)
+            print(
+                'Custom paths incompatible with --system option.',
+                file=sys.stderr,
+            )
             sys.exit(1)
 
         args.destdir = default_system_destdir

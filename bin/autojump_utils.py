@@ -56,7 +56,8 @@ def get_tab_entry_info(entry, separator):
     match_index = re.search(separator + r'([0-9]{1})', entry)
     match_path = re.search(
         separator + r'[0-9]{1}' + separator + r'(.*)',
-        entry)
+        entry,
+    )
 
     if match_needle:
         needle = match_needle.group(1)
@@ -163,7 +164,9 @@ def print_tab_menu(needle, tab_entries, separator):
                 separator,
                 i + 1,
                 separator,
-                entry.path))
+                entry.path,
+            ),
+        )
 
 
 def sanitize(directories):

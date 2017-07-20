@@ -28,7 +28,8 @@ def j(path):
     newpath = Popen(
         cmd,
         stdout=PIPE,
-        shell=False).communicate()[0].strip()
+        shell=False,
+    ).communicate()[0].strip()
 
     if newpath:
         ip.magic('cd %s' % newpath.decode('utf-8'))

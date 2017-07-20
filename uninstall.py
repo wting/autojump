@@ -25,24 +25,31 @@ def parse_arguments():
     default_clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
 
     parser = ArgumentParser(
-        description='Uninstalls autojump.')
+        description='Uninstalls autojump.',
+    )
     parser.add_argument(
         '-n', '--dryrun', action='store_true', default=False,
-        help='simulate installation')
+        help='simulate installation',
+    )
     parser.add_argument(
         '-u', '--userdata', action='store_true', default=False,
-        help='delete user data')
+        help='delete user data',
+    )
     parser.add_argument(
         '-d', '--destdir', metavar='DIR',
-        help='custom destdir')
+        help='custom destdir',
+    )
     parser.add_argument(
         '-p', '--prefix', metavar='DIR', default='',
-        help='custom prefix')
+        help='custom prefix',
+    )
     parser.add_argument(
         '-z', '--zshshare', metavar='DIR', default='functions',
-        help='custom zshshare')
+        help='custom zshshare',
+    )
     parser.add_argument(
-        '-c', '--clinkdir', metavar='DIR', default=default_clink_dir)
+        '-c', '--clinkdir', metavar='DIR', default=default_clink_dir,
+    )
 
     return parser.parse_args()
 
@@ -98,13 +105,15 @@ def remove_system_installation(dryrun=False):
         default_prefix,
         'share',
         'man',
-        'man1')
+        'man1',
+    )
     etc_dir = os.path.join(default_destdir, 'etc', 'profile.d')
     share_dir = os.path.join(
         default_destdir,
         default_prefix,
         'share',
-        'autojump')
+        'autojump',
+    )
     zshshare_dir = os.path.join(default_destdir, default_zshshare)
 
     if not os.path.exists(share_dir):
@@ -113,8 +122,10 @@ def remove_system_installation(dryrun=False):
     print('\nFound system installation...')
 
     if os.geteuid() != 0:
-        print('Please rerun as root for system-wide uninstall, skipping...',
-              file=sys.stderr)
+        print(
+            'Please rerun as root for system-wide uninstall, skipping...',
+            file=sys.stderr,
+        )
         return
 
     rm(os.path.join(bin_dir, 'autojump'), dryrun)
@@ -135,11 +146,13 @@ def remove_user_data(dryrun=False):
         data_home = os.path.join(
             os.path.expanduser('~'),
             'Library',
-            'autojump')
+            'autojump',
+        )
     elif platform.system() == 'Windows':
         data_home = os.path.join(
             os.getenv('APPDATA'),
-            'autojump')
+            'autojump',
+        )
     else:
         data_home = os.getenv(
             'XDG_DATA_HOME',
@@ -147,7 +160,9 @@ def remove_user_data(dryrun=False):
                 os.path.expanduser('~'),
                 '.local',
                 'share',
-                'autojump'))
+                'autojump',
+            ),
+        )
 
     if os.path.exists(data_home):
         print('\nFound user data...')
@@ -156,8 +171,10 @@ def remove_user_data(dryrun=False):
 
 def remove_user_installation(dryrun=False):
     if platform.system() == 'Windows':
-        default_destdir = os.path.join(os.getenv('LOCALAPPDATA', ''),
-                                       'autojump')
+        default_destdir = os.path.join(
+            os.getenv('LOCALAPPDATA', ''),
+            'autojump',
+        )
         clink_dir = os.path.join(os.getenv('LOCALAPPDATA', ''), 'clink')
     else:
         default_destdir = os.path.join(os.path.expanduser('~'), '.autojump')

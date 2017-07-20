@@ -117,11 +117,13 @@ def match_fuzzy(needles, haystack, ignore_case=False, threshold=0.6):
         needle = last(needles).lower()
         match_percent = lambda entry: SequenceMatcher(
             a=needle,
-            b=end_dir(entry.path.lower())).ratio()
+            b=end_dir(entry.path.lower()),
+        ).ratio()
     else:
         needle = last(needles)
         match_percent = lambda entry: SequenceMatcher(
             a=needle,
-            b=end_dir(entry.path)).ratio()
+            b=end_dir(entry.path),
+        ).ratio()
     meets_threshold = lambda entry: match_percent(entry) >= threshold
     return ifilter(meets_threshold, haystack)

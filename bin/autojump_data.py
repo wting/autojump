@@ -55,7 +55,8 @@ def load(config):
         os.path.expanduser('~'),
         '.local',
         'share',
-        'autojump')
+        'autojump',
+    )
 
     if is_osx() and os.path.exists(xdg_aj_home):
         migrate_osx_xdg_data(config)
@@ -75,11 +76,14 @@ def load(config):
         with open(
                 config['data_path'],
                 'r', encoding='utf-8',
-                errors='replace') as f:
+                errors='replace',
+        ) as f:
             return dict(
                 imap(
                     tupleize,
-                    ifilter(correct_length, imap(parse, f))))
+                    ifilter(correct_length, imap(parse, f)),
+                ),
+            )
     except (IOError, EOFError):
         return load_backup(config)
 
