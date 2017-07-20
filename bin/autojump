@@ -20,12 +20,12 @@
 """
 from __future__ import print_function
 
+import os
+import sys
 from itertools import chain
 from math import sqrt
 from operator import attrgetter
 from operator import itemgetter
-import os
-import sys
 
 if sys.version_info[0] == 3:
     ifilter = filter
