@@ -75,16 +75,9 @@ def set_defaults():
     config = {}
 
     if is_osx():
-        data_home = os.path.join(
-            os.path.expanduser('~'),
-            'Library',
-            'autojump',
-        )
+        data_home = os.path.join(os.path.expanduser('~'), 'Library')
     elif is_windows():
-        data_home = os.path.join(
-            os.getenv('APPDATA'),
-            'autojump',
-        )
+        data_home = os.getenv('APPDATA')
     else:
         data_home = os.getenv(
             'XDG_DATA_HOME',
@@ -92,12 +85,10 @@ def set_defaults():
                 os.path.expanduser('~'),
                 '.local',
                 'share',
-                'autojump',
             ),
         )
-
-    config['data_path'] = os.path.join(data_home, 'autojump.txt')
-    config['backup_path'] = os.path.join(data_home, 'autojump.txt.bak')
+    config['data_path'] = os.path.join(data_home, 'autojump', 'autojump.txt')
+    config['backup_path'] = os.path.join(data_home, 'autojump', 'autojump.txt.bak')
 
     return config
 
