@@ -83,7 +83,8 @@ etc):
 
     All Debian-derived distros require manual activation for policy
     reasons, please see `/usr/share/doc/autojump/README.Debian`.
-
+    Activation will add `j` and other commands to your shell after sourcing autojump files.
+    
 -   RedHat, Fedora, CentOS (install `autojump-zsh` for zsh,
     `autojump-fish` for fish, etc.)
 -   ArchLinux
