@@ -1,3 +1,6 @@
+# set the environment variable to let autojump know it's been loaded
+setenv AUTOJUMP_SOURCED 1
+
 # set user installation paths
 if (-d ~/.autojump/bin) then
     set path = (~/.autojump/bin path)
