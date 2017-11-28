@@ -91,6 +91,12 @@ etc):
 -   Frugalware
 -   Slackware
 
+Add source command to bashrc file by executing :
+```
+echo "source /usr/share/autojump/autojump.bash" >> ~/.bashrc
+```
+Other source files for zsh, fish can be found in ```/usr/share/autojump```
+
 #### OS X
 
 Homebrew is the recommended installation method for Mac OS X:
