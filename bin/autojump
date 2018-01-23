@@ -210,6 +210,9 @@ def handle_tab_completion(needle, entries):
     if tab_path:
         print_local(tab_path)
     elif tab_index:
+        # As our display menu shows the starting index from 1, we want to reduce the user-input
+        # index by 1.
+        tab_index = max(0, tab_index - 1)
         get_ith_path = lambda i, iterable: last(take(i, iterable)).path
         print_local(get_ith_path(
             tab_index,
