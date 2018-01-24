@@ -87,6 +87,17 @@ def match_consecutive(needles, haystack, ignore_case=False):
     )
     return ifilter(found, haystack)
 
+def percent_matcher(needles, path, ignore_case=False):
+    percent = 0.0
+    source = path
+    if ignore_case:
+        source = source.lower()
+    for i in needles:
+        p = i
+        if ignore_case:
+            p = i.lower()
+        percent += SequenceMatcher(p, source).ratio()
+    return percent
 
 def match_fuzzy(needles, haystack, ignore_case=False, threshold=0.6):
     """
@@ -113,17 +124,7 @@ def match_fuzzy(needles, haystack, ignore_case=False, threshold=0.6):
     This is a weak heuristic and used as a last resort to find matches.
     """
     end_dir = lambda path: last(os.path.split(path))
-    if ignore_case:
-        needle = last(needles).lower()
-        match_percent = lambda entry: SequenceMatcher(
-            a=needle,
-            b=end_dir(entry.path.lower()),
-        ).ratio()
-    else:
-        needle = last(needles)
-        match_percent = lambda entry: SequenceMatcher(
-            a=needle,
-            b=end_dir(entry.path),
-        ).ratio()
+    match_percent = lambda entry: percent_matcher(needles, entry.path,\
+        ignore_case)
     meets_threshold = lambda entry: match_percent(entry) >= threshold
     return ifilter(meets_threshold, haystack)
