@@ -76,20 +76,26 @@ INSTALLATION
 #### Linux
 
 autojump is included in the following distro repositories, please use
-relevant package management utilities to install (e.g. yum, apt-get,
+relevant package management utilities to install (e.g. yum/dnf, apt-get,
 etc):
 
--   Debian testing/unstable, Ubuntu, Linux Mint
-
-    All Debian-derived distros require manual activation for policy
+-   Debian testing/unstable, Ubuntu, Linux Mint. All Debian-derived distros require manual activation for policy
     reasons, please see `/usr/share/doc/autojump/README.Debian`.
-
 -   RedHat, Fedora, CentOS (install `autojump-zsh` for zsh,
     `autojump-fish` for fish, etc.)
 -   ArchLinux
 -   Gentoo
 -   Frugalware
 -   Slackware
+
+Once the package installed, add the following lines to `~/.bashrc`:
+
+```
+# source autojump
+if [ -f /etc/profile.d/autojump.sh ]; then
+        . /etc/profile.d/autojump.sh
+fi
+```
 
 #### OS X
 
