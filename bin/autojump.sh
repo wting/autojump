@@ -14,7 +14,7 @@ fi
 
 # prevent circular loop for sh shells
 if [ "${shell}" = "sh" ]; then
-    return 0
+    :
 
 # check local install
 elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
@@ -24,3 +24,5 @@ elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
 elif [ -s /usr/local/share/autojump/autojump.${shell} ]; then
     source /usr/local/share/autojump/autojump.${shell}
 fi
+
+unset shell
