@@ -32,9 +32,7 @@ repos:
     args:
     - --max-complexity=10
     - --max-line-length=131
-    - --ignore=E126
-    - --ignore=E128
-    - --ignore=E731
+    - --ignore=E402,E731
     - --exclude=bin/autojump_argparse.py
   - id: name-tests-test
     language_version: python2
