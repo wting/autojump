@@ -311,9 +311,11 @@ class HelpFormatter(object):
         return help
 
     def _join_parts(self, part_strings):
-        return ''.join([part
-                        for part in part_strings
-                        if part and part is not SUPPRESS])
+        return ''.join([
+            part
+            for part in part_strings
+            if part and part is not SUPPRESS
+        ])
 
     def _format_usage(self, usage, actions, groups, prefix):
         if prefix is None:
@@ -1526,9 +1528,11 @@ class _ActionsContainer(object):
 
     def _handle_conflict_error(self, action, conflicting_actions):
         message = _('conflicting option string(s): %s')
-        conflict_string = ', '.join([option_string
-                                     for option_string, action
-                                     in conflicting_actions])
+        conflict_string = ', '.join([
+            option_string
+            for option_string, action
+            in conflicting_actions
+        ])
         raise ArgumentError(action, message % conflict_string)
 
     def _handle_conflict_resolve(self, action, conflicting_actions):
@@ -1760,14 +1764,18 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
         return action
 
     def _get_optional_actions(self):
-        return [action
-                for action in self._actions
-                if action.option_strings]
+        return [
+            action
+            for action in self._actions
+            if action.option_strings
+        ]
 
     def _get_positional_actions(self):
-        return [action
-                for action in self._actions
-                if not action.option_strings]
+        return [
+            action
+            for action in self._actions
+            if not action.option_strings
+        ]
 
     # =====================================
     # Command line argument parsing methods
@@ -1991,7 +1999,8 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
             next_option_string_index = min([
                 index
                 for index in option_string_indices
-                if index >= start_index])
+                if index >= start_index
+            ])
             if start_index != next_option_string_index:
                 positionals_end_index = consume_positionals(start_index)
 
@@ -2040,9 +2049,11 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
 
                 # if no actions were used, report the error
                 else:
-                    names = [_get_action_name(action)
-                             for action in group._group_actions
-                             if action.help is not SUPPRESS]
+                    names = [
+                        _get_action_name(action)
+                        for action in group._group_actions
+                        if action.help is not SUPPRESS
+                    ]
                     msg = _('one of the arguments %s is required')
                     self.error(msg % ' '.join(names))
 
@@ -2106,8 +2117,10 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
         result = []
         for i in range(len(actions), 0, -1):
             actions_slice = actions[:i]
-            pattern = ''.join([self._get_nargs_pattern(action)
-                               for action in actions_slice])
+            pattern = ''.join([
+                self._get_nargs_pattern(action)
+                for action in actions_slice
+            ])
             match = _re.match(pattern, arg_strings_pattern)
             if match is not None:
                 result.extend([len(string) for string in match.groups()])
