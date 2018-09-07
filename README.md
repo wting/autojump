@@ -111,7 +111,7 @@ which should be installed prior to installing autojump.
 
 Grab a copy of autojump:
 
-    git clone git://github.com/joelthelion/autojump.git
+    git clone git://github.com/wting/autojump.git
 
 Run the installation script and follow on screen instructions.
 
