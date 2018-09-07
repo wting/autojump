@@ -1,5 +1,5 @@
 ## Summary of release changes, see commit history for more details:
-## https://github.com/joelthelion/autojump/commits/master/
+## https://github.com/wting/autojump/commits/master/
 
 ### Release v22.4.0:
 - minor zsh performance improvement
