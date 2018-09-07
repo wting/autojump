@@ -11,6 +11,9 @@ uninstall:
 
 .PHONY: docs
 docs:
+	@echo "% autojump(1) ${TAGNAME}" >docs/manpage_header.md
+	@echo "%" >>docs/manpage_header.md
+	@echo "% $(shell \date +%Y-%m-%d)" >>docs/manpage_header.md
 	pandoc -s -w man docs/manpage_header.md docs/header.md docs/body.md -o docs/autojump.1
 	pandoc -s -w markdown docs/header.md docs/install.md docs/body.md -o README.md
 
