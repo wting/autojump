@@ -120,12 +120,11 @@ def migrate_osx_xdg_data(config):
 
 def save(config, data):
     """Save data and create backup, creating a new data file if necessary."""
-    data_dir = os.path.dirname(config['data_path'])
-    create_dir(data_dir)
+    create_dir(os.path.dirname(config['data_path']))
 
     # atomically save by writing to temporary file and moving to destination
     try:
-        temp = NamedTemporaryFile(delete=False, dir=data_dir)
+        temp = NamedTemporaryFile(delete=False)
         # Windows cannot reuse the same open file name
         temp.close()
 

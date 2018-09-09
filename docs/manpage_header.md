@@ -1,3 +1,3 @@
-% autojump(1) release-v22.5.2
+% autojump(1) release-v22.5.1
 %
-% 2018-09-07
+% 2018-09-06
