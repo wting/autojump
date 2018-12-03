@@ -25,6 +25,7 @@ from autojump_utils import unico
 if is_python3():
     os.getcwdu = os.getcwd
     xrange = range
+    unicode = str
 
 
 def u(string):
