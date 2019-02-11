@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/wting/autojump.svg?branch=master)](https://travis-ci.org/wting/autojump)
+[![Codecov Test Coverage](https://codecov.io/github/wting/autojump/coverage.svg?branch=master)](https://codecov.io/github/wting/autojump)
+
 NAME
 ----
 
