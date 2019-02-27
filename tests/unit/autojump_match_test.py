@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import platform
 
 import pytest
 
@@ -10,6 +11,7 @@ from autojump_data import Entry
 from autojump_match import match_anywhere
 from autojump_match import match_consecutive
 
+is_windows = platform.system() == 'Windows'
 
 class TestMatchAnywhere(object):
 
@@ -19,8 +21,8 @@ class TestMatchAnywhere(object):
     entry4 = Entry('/中/zhong/国/guo', 10)
     entry5 = Entry('/is\'t/this/a/b*tchin/edge/case?', 10)
     win_entry1 = Entry('C:\\foo\\bar\\baz', 10)
-    win_entry2 = Entry('D:\Program Files (x86)\GIMP', 10)
-    win_entry3 = Entry('C:\Windows\System32', 10)
+    win_entry2 = Entry(r'D:\Program Files (x86)\GIMP', 10)
+    win_entry3 = Entry(r'C:\Windows\System32', 10)
 
     @pytest.fixture
     def haystack(self):
@@ -75,9 +77,10 @@ class TestMatchConsecutive(object):
     entry4 = Entry('/中/zhong/国/guo', 10)
     entry5 = Entry('/日/本', 10)
     entry6 = Entry('/is\'t/this/a/b*tchin/edge/case?', 10)
-    win_entry1 = Entry('C:\Foo\Bar\Baz', 10)
-    win_entry2 = Entry('D:\Program Files (x86)\GIMP', 10)
-    win_entry3 = Entry('C:\Windows\System32', 10)
+    win_entry1 = Entry(r'C:\Foo\Bar\Baz', 10)
+    win_entry2 = Entry(r'D:\Program Files (x86)\GIMP', 10)
+    win_entry3 = Entry(r'C:\Windows\System32', 10)
+    win_entry4 = Entry('C:\\is\'t\\this\\a\\b*tchin\\edge\\case?', 10)
 
     @pytest.fixture
     def haystack(self):
@@ -91,18 +94,21 @@ class TestMatchConsecutive(object):
 
     @pytest.fixture
     def windows_haystack(self):
-        return [self.win_entry1, self.win_entry2, self.win_entry3]
+        return [self.win_entry1, self.win_entry2, self.win_entry3, self.win_entry4]
 
+    @pytest.mark.skipif(is_windows, reason='Different reference data for path.')
     def test_single_needle(self, haystack):
         assert list(match_consecutive(['baz'], haystack)) == [self.entry1, self.entry3]
         assert list(match_consecutive(['本'], haystack)) == [self.entry5]
 
+    @pytest.mark.skipif(is_windows, reason='Different reference data for path.')
     def test_consecutive(self, haystack):
         assert list(match_consecutive(['bar', 'baz'], haystack)) == [self.entry1]
         assert list(match_consecutive(['foo', 'bar'], haystack)) == [self.entry2]
         assert list(match_consecutive(['国', 'guo'], haystack)) == [self.entry4]
         assert list(match_consecutive(['bar', 'foo'], haystack)) == []
 
+    @pytest.mark.skipif(is_windows, reason='Different reference data for path.')
     def test_ignore_case(self, haystack):
         assert list(match_consecutive(['FoO', 'bAR'], haystack, ignore_case=True)) \
             == [self.entry2]
@@ -110,22 +116,29 @@ class TestMatchConsecutive(object):
     def test_windows_ignore_case(self, windows_haystack):
         assert list(match_consecutive(['gimp'], windows_haystack, True)) == [self.win_entry2]
 
-    @pytest.mark.xfail(reason='https://github.com/wting/autojump/issues/418')
+    @pytest.mark.skipif(not is_windows, reason='Different path seperator')
     def test_backslashes_for_windows_paths(self, windows_haystack):
+        # https://github.com/wting/autojump/issues/418
         assert list(match_consecutive(['program', 'gimp'], windows_haystack, True)) \
             == [self.win_entry2]
 
-    @pytest.mark.xfail(reason='https://github.com/wting/autojump/issues/418')
+    @pytest.mark.skipif(not is_windows, reason='Different path seperator')
     def test_foo_bar_baz(self, windows_haystack):
+        # https://github.com/wting/autojump/issues/418
         assert list(match_consecutive(['bar', 'baz'], windows_haystack, ignore_case=True)) \
             == [self.win_entry1]
 
-    @pytest.mark.xfail(reason='https://github.com/wting/autojump/issues/402')
+    @pytest.mark.skipif(not is_windows, reason='Different path seperator')
     def test_thing(self, windows_haystack):
         assert list(match_consecutive(['win', '32'], windows_haystack, True)) \
             == [self.win_entry3]
 
-    @pytest.mark.xfail(reason='https://github.com/wting/autojump/issues/402')
+    @pytest.mark.skipif(is_windows, reason='Different reference data for path.')
     def test_wildcard_in_needle(self, haystack):
         assert list(match_consecutive(['*', 'this'], haystack)) == []
         assert list(match_consecutive(['*', 'edge', 'case'], haystack)) == [self.entry6]
+
+    @pytest.mark.skipif(not is_windows, reason='Different path seperator')
+    def test_wildcard_in_needle(self, windows_haystack):
+        assert list(match_consecutive(['*', 'this'], windows_haystack)) == []
+        assert list(match_consecutive(['*', 'edge', 'case'], windows_haystack)) == [self.win_entry4]
