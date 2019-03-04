@@ -23,6 +23,9 @@ environment:
     - PYTHON: "C:\\Python36-x64"
       TOX_ENV: "py36"
 
+    - PYTHON: "C:\\Python37-x64"
+      TOX_ENV: "py37"
+
 install:
   - "%PYTHON%\\python.exe -m pip install tox"
 
