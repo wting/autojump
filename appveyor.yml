@@ -5,7 +5,7 @@ environment:
     # For Python versions available on Appveyor, see
     # https://www.appveyor.com/docs/windows-images-software/#python
 
-    - PYTHON: "C:\\C:\Python26-x64"
+    - PYTHON: "C:\\Python26-x64"
       TOX_ENV: "py26"
 
     - PYTHON: "C:\\Python27-x64"
