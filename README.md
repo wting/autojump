@@ -61,6 +61,9 @@ For more options refer to help:
 INSTALLATION
 ------------
 
+### IMPORTANT NOTE
+You must visit directories with `cd` before you can visit them with `j`
+
 ### REQUIREMENTS
 
 -   Python v2.6+ or Python v3.3+
