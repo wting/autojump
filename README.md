@@ -53,6 +53,10 @@ can be used with `autojump` can be used with `j` and vice versa.
     weighted entry. However you can pass multiple arguments to autojump
     to prefer a different entry. In the above example, `j w in` would
     then change directory to /home/user/work/inbox.
+    
+- Print first matching directory that contains `foo` to stdout:
+
+        autojump foo
 
 For more options refer to help:
 
