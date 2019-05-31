@@ -37,8 +37,9 @@ def modify_autojump_sh(etc_dir, share_dir, dryrun=False):
         \n    source %s/autojump.${shell} \
         \nfi\n' % (share_dir, share_dir)
 
-    with open(os.path.join(etc_dir, 'autojump.sh'), 'a') as f:
-        f.write(custom_install)
+    if not dryrun:
+        with open(os.path.join(etc_dir, 'autojump.sh'), 'a') as f:
+            f.write(custom_install)
 
 
 def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
@@ -48,10 +49,11 @@ def modify_autojump_lua(clink_dir, bin_dir, dryrun=False):
         '\\\\',
     )
     clink_file = os.path.join(clink_dir, 'autojump.lua')
-    with open(clink_file, 'r') as f:
-        original = f.read()
-    with open(clink_file, 'w') as f:
-        f.write(custom_install + original)
+    if not dryrun:
+        with open(clink_file, 'r') as f:
+            original = f.read()
+        with open(clink_file, 'w') as f:
+            f.write(custom_install + original)
 
 
 def parse_arguments():  # noqa
