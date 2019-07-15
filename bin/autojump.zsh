@@ -91,20 +91,24 @@ jo() {
     setopt localoptions noautonamedirs
     local output="$(autojump ${@})"
     if [[ -d "${output}" ]]; then
-        case ${OSTYPE} in
-            linux*)
-                xdg-open "${output}"
-                ;;
-            darwin*)
-                open "${output}"
-                ;;
-            cygwin)
-                cygstart "" $(cygpath -w -a ${output})
-                ;;
-            *)
-                echo "Unknown operating system: ${OSTYPE}" 1>&2
-                ;;
-        esac
+        if command -v explorer.exe >/dev/null 2>&1; then
+            explorer.exe "${output}"
+        else
+            case ${OSTYPE} in
+                linux*)
+                    xdg-open "${output}"
+                    ;;
+                darwin*)
+                    open "${output}"
+                    ;;
+                cygwin)
+                    cygstart "" $(cygpath -w -a ${output})
+                    ;;
+                *)
+                    echo "Unknown operating system: ${OSTYPE}" 1>&2
+                    ;;
+            esac
+        fi
     else
         echo "autojump: directory '${@}' not found"
         echo "\n${output}\n"
