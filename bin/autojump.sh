@@ -18,9 +18,9 @@ if [ "${shell}" = "sh" ]; then
 
 # check local install
 elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
-    source ~/.autojump/share/autojump/autojump.${shell}
+    . ~/.autojump/share/autojump/autojump.${shell}
 
 # check global install
 elif [ -s /usr/local/share/autojump/autojump.${shell} ]; then
-    source /usr/local/share/autojump/autojump.${shell}
+    . /usr/local/share/autojump/autojump.${shell}
 fi
