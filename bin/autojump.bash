@@ -67,6 +67,8 @@ j() {
                 echo -e "${output}"
         fi
         cd "${output}"
+    elif [[ -f "${output}" ]]; then
+        $EDITOR "${output}"
     else
         echo "autojump: directory '${@}' not found"
         echo "\n${output}\n"
