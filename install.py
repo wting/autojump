@@ -20,7 +20,7 @@ def cp(src, dest, dryrun=False):
 
 
 def in_bash():
-    return get_shell() == 'bash'
+    return get_shell().startswith('bash')
 
 
 def in_msysgit():
