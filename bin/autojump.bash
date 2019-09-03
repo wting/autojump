@@ -112,6 +112,9 @@ jo() {
             cygwin)
                 cygstart "" $(cygpath -w -a ${output})
                 ;;
+            msys)
+                start "${output}"
+                ;;
             *)
                 echo "Unknown operating system: ${OSTYPE}." 1>&2
                 ;;
