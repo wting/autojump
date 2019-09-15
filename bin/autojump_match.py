@@ -3,10 +3,10 @@
 import os
 import re
 from difflib import SequenceMatcher
+from sys import stderr
 
 from autojump_utils import is_python3
 from autojump_utils import last
-
 
 if is_python3():  # pragma: no cover
     ifilter = filter
@@ -36,13 +36,9 @@ def match_anywhere(needles, haystack, ignore_case=False):
             (path='/foo/baz', weight=10),
         ]
     """
-    regex_needle = '.*' + '.*'.join(imap(re.escape, needles)) + '.*'
+    regex_needle = ".*" + ".*".join(imap(re.escape, needles)) + ".*"
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
-    found = lambda haystack: re.search(
-        regex_needle,
-        haystack.path,
-        flags=regex_flags,
-    )
+    found = lambda haystack: re.search(regex_needle, haystack.path, flags=regex_flags)
     return ifilter(found, haystack)
 
 
@@ -75,16 +71,21 @@ def match_consecutive(needles, haystack, ignore_case=False):
             (path='/foo/baz', weight=10),
         ]
     """
-    regex_no_sep = '[^' + os.sep + ']*'
-    regex_no_sep_end = regex_no_sep + '$'
-    regex_one_sep = regex_no_sep + os.sep + regex_no_sep
-    regex_needle = regex_one_sep.join(imap(re.escape, needles)) + regex_no_sep_end
+    regex_needle = ""
+    for needle in needles:
+        slash_only_needle = re.sub(re.escape(os.sep), "/", needle)
+        if regex_needle == "":
+            regex_needle = slash_only_needle
+        else:
+            regex_needle += "[^/]*/.*" + slash_only_needle
+    regex_needle += "[^/]*$"
     regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
-    found = lambda entry: re.search(
-        regex_needle,
-        entry.path,
-        flags=regex_flags,
-    )
+    stderr.write("Regex: " + regex_needle + "\n")
+
+    def found(entry):
+        slash_only_path = re.sub(re.escape(os.sep), "/", entry.path)
+        return re.search(regex_needle, slash_only_path, flags=regex_flags)
+
     return ifilter(found, haystack)
 
 
@@ -115,15 +116,9 @@ def match_fuzzy(needles, haystack, ignore_case=False, threshold=0.6):
     end_dir = lambda path: last(os.path.split(path))
     if ignore_case:
         needle = last(needles).lower()
-        match_percent = lambda entry: SequenceMatcher(
-            a=needle,
-            b=end_dir(entry.path.lower()),
-        ).ratio()
+        match_percent = lambda entry: SequenceMatcher(a=needle, b=end_dir(entry.path.lower())).ratio()
     else:
         needle = last(needles)
-        match_percent = lambda entry: SequenceMatcher(
-            a=needle,
-            b=end_dir(entry.path),
-        ).ratio()
+        match_percent = lambda entry: SequenceMatcher(a=needle, b=end_dir(entry.path)).ratio()
     meets_threshold = lambda entry: match_percent(entry) >= threshold
     return ifilter(meets_threshold, haystack)
