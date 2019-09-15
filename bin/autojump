@@ -118,7 +118,6 @@ def add_path(data, path, weight=10):
     slash_only_path = re.sub(re.escape(os.sep), "/", path)
     orig_weight = data.get(slash_only_path, 0)
     data[slash_only_path] = sqrt((orig_weight ** 2) + (weight ** 2))
-    stderr.write(f"Original weight: {orig_weight} plus weight {weight} = {data[slash_only_path]}")
 
     return data, Entry(path, data[slash_only_path])
 
