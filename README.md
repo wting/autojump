@@ -117,7 +117,11 @@ pacman, etc):
 -   RedHat, Fedora, CentOS
 
     Install `autojump-zsh` for zsh, `autojump-fish` for fish, etc.
+    
+-   openSUSE
 
+    All the completion files for `zsh`, `fish`, `bash`, etc. live under `/usr/share/autojump/`. Be sure to source them in the `.*rc` file of the shell of your choice
+    
 -   ArchLinux
 -   Gentoo
 -   Frugalware
