@@ -23,4 +23,11 @@ elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
 # check global install
 elif [ -s /usr/local/share/autojump/autojump.${shell} ]; then
     source /usr/local/share/autojump/autojump.${shell}
+else
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+  if [ -s "$SCRIPT_DIR/autojump.${shell}" ]; then
+    source "$SCRIPT_DIR/autojump.${shell}"
+  else
+    echo "ERROR: autojump not found"
+  fi
 fi
