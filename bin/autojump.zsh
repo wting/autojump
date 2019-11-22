@@ -123,3 +123,14 @@ jco() {
         jo $(pwd) ${@}
     fi
 }
+
+# Jump around a git repo
+g() {
+    if [[ ${1} == -* ]] && [[ ${1} != "--" ]]; then
+        autojump ${@}
+        return
+    else
+        REPO_ROOT=`git rev-parse --show-toplevel`
+        j "$REPO_ROOT" ${@}
+    fi
+}
