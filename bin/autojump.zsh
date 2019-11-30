@@ -1,6 +1,8 @@
 export AUTOJUMP_SOURCED=1
+SCRIPT_DIR="${0:a:h}"
 
 # set user installation paths
+path=(${SCRIPT_DIR} ${path})
 if [[ -d ~/.autojump/bin ]]; then
     path=(~/.autojump/bin ${path})
 fi
@@ -17,7 +19,7 @@ if command -v brew &>/dev/null; then
   fi
 fi
 
-
+# set this installation path
 # set error file location
 if [[ "$(uname)" == "Darwin" ]]; then
     export AUTOJUMP_ERROR_PATH=~/Library/autojump/errors.log
