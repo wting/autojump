@@ -1,6 +1,18 @@
 #compdef j
 cur=${words[2, -1]}
 
-autojump --complete ${=cur[*]} | while read i; do
-    compadd -U "$i";
+integer i=1
+declare -A displayMap
+
+autojump --complete "${=cur[*]}" | while read c; do
+    hidden=$(echo "$c" | sed 's/\(.*__[0-9][0-9]*__\).*/\1/')
+    display=$(echo "$c" | sed 's/.*__[0-9][0-9]*__\(.*\)/\1/')
+
+    (( $+displayMap[$display] )) && continue
+    displayMap[$display]=true
+    
+    compadd -V $i -U "$display";
+    i=$((i+1))
 done
+
+(( $i > 2 )) && compadd -V $i -U "${=cur[*]}"
