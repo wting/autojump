@@ -1,13 +1,14 @@
 # the login $SHELL isn't always the one used
 # NOTE: problems might occur if /bin/sh is symlinked to /bin/bash
+# Because csh is so different from sh, we cannot use the same code
+echo $shell | grep -q csh && goto CSH
+
 if [ -n "${BASH}" ]; then
     shell="bash"
 elif [ -n "${ZSH_NAME}" ]; then
     shell="zsh"
 elif [ -n "${__fish_datadir}" ]; then
     shell="fish"
-elif [ -n "${version}" ]; then
-    shell="tcsh"
 else
     shell=$(echo ${SHELL} | awk -F/ '{ print $NF }')
 fi
@@ -24,3 +25,15 @@ elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
 elif [ -s /usr/local/share/autojump/autojump.${shell} ]; then
     source /usr/local/share/autojump/autojump.${shell}
 fi
+
+return
+
+# csh/tcsh jump here
+CSH:
+
+if ( -f ~/.autojump/share/autojump/autojump.tcsh ) then
+    source ~/.autojump/share/autojump/autojump.tcsh
+# check global install
+else if ( -f /usr/local/share/autojump/autojump.tcsh ) then
+    source /usr/local/share/autojump/autojump.tcsh
+endif
