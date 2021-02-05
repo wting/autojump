@@ -1,6 +1,6 @@
 # set user installation paths
 if (-d ~/.autojump/bin) then
-    set path = (~/.autojump/bin path)
+    set path = (~/.autojump/bin:${path})
 endif
 
 # prepend autojump to cwdcmd (run after every change of working directory)
