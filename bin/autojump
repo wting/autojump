@@ -129,8 +129,8 @@ def parse_arguments():
         help='show database entries and their key weights',
     )
     parser.add_argument(
-        '-v', '--version', action='version', version='%(prog)s v' +
-        VERSION, help='show version information',
+        '-v', '--version', action='version', version='%(prog)s v' + VERSION,
+        help='show version information',
     )
 
     return parser.parse_args()
