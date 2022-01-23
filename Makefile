@@ -59,7 +59,7 @@ test-xfail: pre-commit
 
 .PHONY: test-fast
 test-fast: pre-commit
-	@tox -e py27
+	@tox -e py39
 
 .PHONY: clean
 clean:
