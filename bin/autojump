@@ -196,11 +196,11 @@ def find_matches(entries, needles, check_entries=True):
 
     return ifilter(
         lambda entry: not is_cwd(entry) and path_exists(entry),
-        chain(
+        set(chain(
             match_consecutive(needles, data, ignore_case),
             match_fuzzy(needles, data, ignore_case),
             match_anywhere(needles, data, ignore_case),
-        ),
+        )),
     )
 
 
