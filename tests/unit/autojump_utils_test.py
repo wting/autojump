@@ -3,7 +3,7 @@
 import os
 import sys
 
-import mock
+from unittest import mock
 import pytest
 
 sys.path.append(os.path.join(os.getcwd(), 'bin'))  # noqa
