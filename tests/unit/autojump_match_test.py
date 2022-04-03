@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.getcwd(), 'bin'))  # noqa
 from autojump_data import Entry
 from autojump_match import match_anywhere
 from autojump_match import match_consecutive
+from autojump_match import match_initials
 
 
 class TestMatchAnywhere(object):
@@ -129,3 +130,59 @@ class TestMatchConsecutive(object):
     def test_wildcard_in_needle(self, haystack):
         assert list(match_consecutive(['*', 'this'], haystack)) == []
         assert list(match_consecutive(['*', 'edge', 'case'], haystack)) == [self.entry6]
+
+
+class TestMatchInitials(object):
+
+    entry1 = Entry('/f-o-o/b-a-r/b-a-z', 10)
+    entry2 = Entry('/b_a_z/f_o_o/b_a_r', 10)
+    entry3 = Entry('/f-o-o/b-a-z', 10)
+    entry4 = Entry('/中/zhong/国/guo', 10)
+    entry5 = Entry('/CamelCaseFolder/SubFolder', 10)
+    win_entry1 = Entry('C:\\f-o-o\\b-a-r\\b-a-z', 10)
+    win_entry2 = Entry('D:\Program Files (x86)\GIMP', 10)
+    win_entry3 = Entry('C:\Windows\System32', 10)
+
+    @pytest.fixture
+    def haystack(self):
+        return [
+            self.entry1,
+            self.entry2,
+            self.entry3,
+            self.entry4,
+            self.entry5,
+        ]
+
+    @pytest.fixture
+    def windows_haystack(self):
+        return [self.win_entry1, self.win_entry2, self.win_entry3]
+
+    def test_single_needle(self, haystack):
+        assert list(match_initials(['bar'], haystack)) == [self.entry1, self.entry2]
+
+    def test_consecutive(self, haystack):
+        assert list(match_initials(['foo', 'bar'], haystack)) \
+            == [self.entry1, self.entry2]
+        assert list(match_initials(['bar', 'foo'], haystack)) == []
+
+    def test_skip(self, haystack):
+        assert list(match_initials(['baz', 'bar'], haystack)) == [self.entry2]
+        assert list(match_initials(['zng', 'g'], haystack)) == [self.entry4]
+
+    def test_ignore_case(self, haystack):
+        assert list(match_initials(['bAz', 'bAR'], haystack, ignore_case=True)) \
+            == [self.entry2]
+
+    def test_backslashes_for_windows_paths(self, windows_haystack):
+        # https://github.com/wting/autojump/issues/281
+        assert list(match_initials(['foo', 'baz'], windows_haystack)) \
+            == [self.win_entry1]
+        assert list(match_initials(['pgm', 'gmp'], windows_haystack, True)) \
+            == [self.win_entry2]
+        assert list(match_initials(['wndw', 'stm'], windows_haystack, True)) \
+            == [self.win_entry3]
+
+    def test_camel_case_initials(self, haystack):
+        assert list(match_initials(['ccf'], haystack, ignore_case=True)) == [self.entry5]
+        assert list(match_initials(['sf'], haystack, ignore_case=True)) == [self.entry5]
+        assert list(match_initials(['ccf', 'sf'], haystack, ignore_case=True)) == [self.entry5]

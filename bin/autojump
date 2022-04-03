@@ -50,6 +50,7 @@ from autojump_data import save
 from autojump_match import match_anywhere
 from autojump_match import match_consecutive
 from autojump_match import match_fuzzy
+from autojump_match import match_initials
 from autojump_utils import first
 from autojump_utils import get_pwd
 from autojump_utils import get_tab_entry_info
@@ -200,6 +201,7 @@ def find_matches(entries, needles, check_entries=True):
             match_consecutive(needles, data, ignore_case),
             match_fuzzy(needles, data, ignore_case),
             match_anywhere(needles, data, ignore_case),
+            match_initials(needles, data, ignore_case),
         ),
     )
 
