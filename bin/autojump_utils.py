@@ -194,7 +194,7 @@ def surround_quotes(string):
     path outputs with quotes.
     """
     if in_bash() and string:
-        # Python 2.6 requres field numbers
+        # Python 2.6 requires field numbers
         return '"{0}"'.format(string)
     return string
 

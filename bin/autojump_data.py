@@ -50,7 +50,7 @@ def entriefy(data):
 
 
 def load(config):
-    """Returns a dictonary (key=path, value=weight) loaded from data file."""
+    """Returns a dictionary (key=path, value=weight) loaded from data file."""
     xdg_aj_home = os.path.join(
         os.path.expanduser('~'),
         '.local',
