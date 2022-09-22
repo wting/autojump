@@ -64,17 +64,24 @@ INSTALLATION
 ### REQUIREMENTS
 
 -   Python v2.6+ or Python v3.3+
--   Supported shells
-    -   bash - first class support
-    -   zsh - first class support
-    -   fish - community supported
-    -   tcsh - community supported
-    -   clink - community supported
--   Supported platforms
-    -   Linux - first class support
-    -   OS X - first class support
-    -   Windows - community supported
-    -   BSD - community supported
+
+-   Supported Shells:
+    |            |                       |
+    | :--------- | :----------------     |
+    | `bash`     |  First Class Support  |
+    | `zsh`      |  First Class Support  |
+    | `fish`     |  Community Supported  |
+    | `tcsh`     |  Community Supported  |
+    | `clink`    |  Community Supported  |
+
+-   Supported Platforms:
+    |            |                       |
+    | :--------  | :----------------     |
+    | `Linux`    |  First Class Support  |
+    | `OS X`     |  First Class Support  |
+    | `Windows`  |  Community Supported  |
+    | `BSD`      |  Community Supported  |
+
 -   Supported installation methods
     -   source code - first class support
     -   Debian and derivatives - first class support
