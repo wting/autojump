@@ -141,9 +141,12 @@ which should be installed prior to installing autojump.
 
 Adding Source File to shell profiles
 -------
-ZSH: echo "/usr/share/autojump/autojump.zsh" >> ~/.zshrc
-FISH: echo "/usr/share/autojump/autojump.fish" >> ~/.fishrc
-BASH: echo "/usr/share/autojump/autojump.bash" >> ~/.bashrc
+ZSH 
+`echo "/usr/share/autojump/autojump.zsh" >> ~/.zshrc`
+FISH 
+`echo "/usr/share/autojump/autojump.fish" >> ~/.fishrc`
+BASH
+`echo "/usr/share/autojump/autojump.bash" >> ~/.bashrc`
 
 KNOWN ISSUES
 ------------
