@@ -94,7 +94,7 @@ troubleshoot and submit enhancements and fixes.
 
 Grab a copy of autojump:
 
-    git clone git://github.com/wting/autojump.git
+    git clone git@github.com:wting/autojump.git
 
 Run the installation script and follow on screen instructions.
 
