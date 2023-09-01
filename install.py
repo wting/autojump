@@ -224,6 +224,7 @@ def main(args):
         cp('./bin/autojump.bash', share_dir, args.dryrun)
         cp('./bin/autojump.fish', share_dir, args.dryrun)
         cp('./bin/autojump.zsh', share_dir, args.dryrun)
+        cp('./bin/autojump.tcsh', share_dir, args.dryrun)
         cp('./bin/_j', zshshare_dir, args.dryrun)
 
         if args.custom_install:
