@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import platform
 
 import mock
 import pytest
@@ -21,6 +22,7 @@ from autojump_utils import surround_quotes
 from autojump_utils import take
 from autojump_utils import unico
 
+is_windows = platform.system() == 'Windows'
 
 if is_python3():
     os.getcwdu = os.getcwd
@@ -80,11 +82,15 @@ def test_surround_quotes_in_bash(_):
 def test_dont_surround_quotes_not_in_bash(_):
     assert surround_quotes('foo') == 'foo'
 
-
+@pytest.mark.skipif(is_windows, reason='Different reference data for path.')
 def test_sanitize():
     assert sanitize([]) == []
     assert sanitize([r'/foo/bar/', r'/']) == [u('/foo/bar'), u('/')]
 
+@pytest.mark.skipif(not is_windows, reason='Different reference data for path.')
+def test_sanitize_on_windows():
+    assert sanitize([]) == []
+    assert sanitize(['C:\\foo\\bar\\', 'C:\\']) == [u('C:\\foo\\bar'), u('C:')]
 
 @pytest.mark.skipif(is_python3(), reason='Unicode sucks.')
 def test_unico():
