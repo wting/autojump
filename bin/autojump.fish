@@ -54,7 +54,7 @@ function j
                 cd $argv
             else
                 if test -d "$output"
-                    set_color red
+                    set_color green
                     echo $output
                     set_color normal
                     cd $output
