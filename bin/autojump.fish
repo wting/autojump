@@ -83,15 +83,19 @@ end
 function jo
     set -l output (autojump $argv)
     if test -d "$output"
-        switch $OSTYPE
-            case 'linux*'
-                xdg-open (autojump $argv)
-            case 'darwin*'
-                open (autojump $argv)
-            case cygwin
-                cygstart "" (cygpath -w -a (pwd))
-            case '*'
-                __aj_err "Unknown operating system: \"$OSTYPE\""
+        if command --search explorer.exe >/dev/null 2>&1 do
+            explorer.exe (autojump $argv)
+        else
+            switch $OSTYPE
+                case 'linux*'
+                    xdg-open (autojump $argv)
+                case 'darwin*'
+                    open (autojump $argv)
+                case cygwin
+                    cygstart "" (cygpath -w -a (pwd))
+                case '*'
+                    __aj_err "Unknown operating system: \"$OSTYPE\""
+            end
         end
     else
         __aj_err "autojump: directory '"$argv"' not found"
