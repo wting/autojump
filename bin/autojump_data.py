@@ -51,16 +51,6 @@ def entriefy(data):
 
 def load(config):
     """Returns a dictonary (key=path, value=weight) loaded from data file."""
-    xdg_aj_home = os.path.join(
-        os.path.expanduser('~'),
-        '.local',
-        'share',
-        'autojump',
-    )
-
-    if is_osx() and os.path.exists(xdg_aj_home):
-        migrate_osx_xdg_data(config)
-
     if not os.path.exists(config['data_path']):
         return {}
 
@@ -93,29 +83,6 @@ def load_backup(config):
         move_file(config['backup_path'], config['data_path'])
         return load(config)
     return {}
-
-
-def migrate_osx_xdg_data(config):
-    """
-    Older versions incorrectly used Linux XDG_DATA_HOME paths on OS X. This
-    migrates autojump files from ~/.local/share/autojump to ~/Library/autojump
-    """
-    assert is_osx(), 'This function should only be run on OS X.'
-
-    xdg_data_home = os.path.join(os.path.expanduser('~'), '.local', 'share')
-    xdg_aj_home = os.path.join(xdg_data_home, 'autojump')
-    data_path = os.path.join(xdg_aj_home, 'autojump.txt')
-    backup_path = os.path.join(xdg_aj_home, 'autojump.txt.bak')
-
-    if os.path.exists(data_path):
-        move_file(data_path, config['data_path'])
-    if os.path.exists(backup_path):
-        move_file(backup_path, config['backup_path'])
-
-    # cleanup
-    shutil.rmtree(xdg_aj_home)
-    if len(os.listdir(xdg_data_home)) == 0:
-        shutil.rmtree(xdg_data_home)
 
 
 def save(config, data):

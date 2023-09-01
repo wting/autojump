@@ -7,7 +7,7 @@ fi
 
 
 # set error file location
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "$(uname)" == "Darwin" && "${AUTOJUMP_DARWIN_XDG:-0}" == "0" ]]; then
     export AUTOJUMP_ERROR_PATH=~/Library/autojump/errors.log
 elif [[ -n "${XDG_DATA_HOME}" ]]; then
     export AUTOJUMP_ERROR_PATH="${XDG_DATA_HOME}/autojump/errors.log"

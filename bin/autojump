@@ -74,19 +74,17 @@ TAB_SEPARATOR = '__'
 def set_defaults():
     config = {}
 
-    if is_osx():
-        data_home = os.path.join(os.path.expanduser('~'), 'Library')
-    elif is_windows():
+    if is_windows():
         data_home = os.getenv('APPDATA')
     else:
-        data_home = os.getenv(
-            'XDG_DATA_HOME',
-            os.path.join(
-                os.path.expanduser('~'),
-                '.local',
-                'share',
-            ),
-        )
+        data_home = os.getenv('XDG_DATA_HOME')
+        if data_home is None:
+            user_home = os.path.expanduser('~')
+            if is_osx() and os.getenv('AUTOJUMP_DARWIN_XDG', '0') == '0':
+                data_home = os.path.join(user_home, 'Library')
+            else:
+                data_home = os.path.join(user_home, '.local', 'share')
+
     config['data_path'] = os.path.join(data_home, 'autojump', 'autojump.txt')
     config['backup_path'] = os.path.join(data_home, 'autojump', 'autojump.txt.bak')
 
