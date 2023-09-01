@@ -129,8 +129,8 @@ def parse_arguments():
         help='show database entries and their key weights',
     )
     parser.add_argument(
-        '-v', '--version', action='version', version='%(prog)s v' +
-        VERSION, help='show version information',
+        '-v', '--version', action='version', version='%(prog)s v' + VERSION,
+        help='show version information',
     )
 
     return parser.parse_args()
@@ -188,18 +188,15 @@ def find_matches(entries, needles, check_entries=True):
     else:
         path_exists = lambda _: True
 
-    data = sorted(
-        entries,
-        key=attrgetter('weight', 'path'),
-        reverse=True,
-    )
-
     return ifilter(
         lambda entry: not is_cwd(entry) and path_exists(entry),
-        chain(
-            match_consecutive(needles, data, ignore_case),
-            match_fuzzy(needles, data, ignore_case),
-            match_anywhere(needles, data, ignore_case),
+        sorted(
+            set(chain(
+                match_consecutive(needles, entries, ignore_case),
+                match_fuzzy(needles, entries, ignore_case),
+                match_anywhere(needles, entries, ignore_case),
+            )), key=attrgetter('weight', 'path'),
+            reverse=True,
         ),
     )
 
