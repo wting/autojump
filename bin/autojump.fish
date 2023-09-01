@@ -70,12 +70,7 @@ end
 
 # jump to child directory (subdirectory of current path)
 function jc
-    switch "$argv"
-        case '-*'
-            j $argv
-        case '*'
-            j (pwd) $argv
-    end
+    j $argv --child
 end
 
 
@@ -103,10 +98,5 @@ end
 
 # open autojump results (child directory) in file browser
 function jco
-    switch "$argv"
-        case '-*'
-            j $argv
-        case '*'
-            jo (pwd) $argv
-    end
+    jo $argv --child
 end
