@@ -127,3 +127,32 @@ def match_fuzzy(needles, haystack, ignore_case=False, threshold=0.6):
         ).ratio()
     meets_threshold = lambda entry: match_percent(entry) >= threshold
     return ifilter(meets_threshold, haystack)
+
+
+def match_initials(needles, haystack, ignore_case=False):
+    """
+    Performs a match of initials anywhere in the path as long as they're in the same (but
+    not necessary consecutive) order.
+
+    For example:
+        needles = ['foo', 'baz']
+        haystack = [
+            (path='/f-o-o/b-a-r/b-a-z', weight=10),
+            (path='/b_a_z/f_o_o/b_a_r', weight=10),
+            (path='/f-o-o/b_a_z', weight=10),
+        ]
+
+        result = [
+            (path='/f-o-o/b-a-r/b-a-z', weight=10),
+            (path='/f-o-o/b_a_z', weight=10),
+        ]
+    """
+    wildcard_needles = imap(lambda n: '.*'.join(list(re.escape(n))), needles)
+    regex_needle = '.*' + '.*'.join(wildcard_needles) + '.*'
+    regex_flags = re.IGNORECASE | re.UNICODE if ignore_case else re.UNICODE
+    found = lambda entry: re.search(
+        regex_needle,
+        entry.path,
+        flags=regex_flags,
+    )
+    return ifilter(found, haystack)
