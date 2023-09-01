@@ -19,8 +19,26 @@ def cp(src, dest, dryrun=False):
         shutil.copy(src, dest)
 
 
+def in_bash():
+    return get_shell().startswith('bash')
+
+
+def in_msysgit():
+    return platform.system() == 'Windows' and in_bash()
+
+
 def get_shell():
     return os.path.basename(os.getenv('SHELL', ''))
+
+
+def unixify(path):
+    if in_msysgit():
+        idx = path.find(':')
+        if idx == -1:
+            return path
+        drive_letter = path[0:idx].lower()
+        path = '/' + drive_letter + path[idx + 1:].replace('\\', '/')
+    return path
 
 
 def mkdir(path, dryrun=False):
@@ -156,7 +174,7 @@ def parse_arguments():  # noqa
 
 
 def show_post_installation_message(etc_dir, share_dir, bin_dir):
-    if platform.system() == 'Windows':
+    if platform.system() == 'Windows' and not in_bash():
         print('\nPlease manually add %s to your user path' % bin_dir)
     else:
         if get_shell() == 'fish':
@@ -164,7 +182,7 @@ def show_post_installation_message(etc_dir, share_dir, bin_dir):
             source_msg = 'if test -f %s; . %s; end' % (aj_shell, aj_shell)
             rcfile = '~/.config/fish/config.fish'
         else:
-            aj_shell = '%s/autojump.sh' % etc_dir
+            aj_shell = '%s/autojump.sh' % unixify(etc_dir)
             source_msg = '[[ -s %s ]] && source %s' % (aj_shell, aj_shell)
 
             if platform.system() == 'Darwin' and get_shell() == 'bash':
@@ -205,7 +223,7 @@ def main(args):
     cp('./bin/icon.png', share_dir, args.dryrun)
     cp('./docs/autojump.1', doc_dir, args.dryrun)
 
-    if platform.system() == 'Windows':
+    if platform.system() == 'Windows' and not in_bash():
         cp('./bin/autojump.lua', args.clinkdir, args.dryrun)
         cp('./bin/autojump.bat', bin_dir, args.dryrun)
         cp('./bin/j.bat', bin_dir, args.dryrun)

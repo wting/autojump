@@ -1,8 +1,14 @@
 export AUTOJUMP_SOURCED=1
 
+if [[ "${OS}" =~ Windows ]]; then
+    local_autojump_dir="${LOCALAPPDATA}/autojump"
+else
+    local_autojump_dir="~/.autojump"
+fi
+
 # set user installation paths
-if [[ -d ~/.autojump/ ]]; then
-    export PATH=~/.autojump/bin:"${PATH}"
+if [[ -d "${local_autojump_dir}" ]]; then
+    export PATH="${local_autojump_dir}":"${PATH}"
 fi
 
 
@@ -105,6 +111,9 @@ jo() {
                 ;;
             cygwin)
                 cygstart "" $(cygpath -w -a ${output})
+                ;;
+            msys)
+                start "${output}"
                 ;;
             *)
                 echo "Unknown operating system: ${OSTYPE}." 1>&2

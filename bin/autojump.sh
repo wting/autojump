@@ -12,13 +12,20 @@ else
     shell=$(echo ${SHELL} | awk -F/ '{ print $NF }')
 fi
 
+# Support git-bash (msysgit)
+if [[ "${OS}" =~ Windows ]]; then
+    local_autojump_dir="${LOCALAPPDATA}/autojump"
+else
+    local_autojump_dir="~/.autojump"
+fi
+
 # prevent circular loop for sh shells
 if [ "${shell}" = "sh" ]; then
     return 0
 
 # check local install
-elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
-    source ~/.autojump/share/autojump/autojump.${shell}
+elif [ -s "${local_autojump_dir}/share/autojump/autojump.${shell}" ]; then
+    source "${local_autojump_dir}/share/autojump/autojump.${shell}"
 
 # check global install
 elif [ -s /usr/local/share/autojump/autojump.${shell} ]; then
