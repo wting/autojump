@@ -2,12 +2,12 @@ export AUTOJUMP_SOURCED=1
 SCRIPT_DIR="${0:a:h}"
 
 # set user installation paths
-path=(${SCRIPT_DIR} ${path})
+path=(${SCRIPT_DIR} "${path[@]}")
 if [[ -d ~/.autojump/bin ]]; then
-    path=(~/.autojump/bin ${path})
+    path=(~/.autojump/bin "${path[@]}")
 fi
 if [[ -d ~/.autojump/functions ]]; then
-    fpath=(~/.autojump/functions ${fpath})
+    fpath=(~/.autojump/functions "${fpath[@]}")
 fi
 
 
@@ -15,7 +15,7 @@ fi
 if command -v brew &>/dev/null; then
   local brew_prefix=${BREW_PREFIX:-$(brew --prefix)}
   if [[ -d "${brew_prefix}/share/zsh/site-functions" ]]; then
-    fpath=("${brew_prefix}/share/zsh/site-functions" ${fpath})
+    fpath=("${brew_prefix}/share/zsh/site-functions" "${fpath[@]}")
   fi
 fi
 
