@@ -59,6 +59,7 @@ j() {
         return
     fi
 
+    local output
     output="$(autojump ${@})"
     if [[ -d "${output}" ]]; then
         if [ -t 1 ]; then  # if stdout is a terminal, use colors
@@ -94,6 +95,7 @@ jo() {
         return
     fi
 
+    local output
     output="$(autojump ${@})"
     if [[ -d "${output}" ]]; then
         case ${OSTYPE} in
