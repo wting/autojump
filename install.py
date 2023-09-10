@@ -161,7 +161,7 @@ def show_post_installation_message(etc_dir, share_dir, bin_dir):
     else:
         if get_shell() == 'fish':
             aj_shell = '%s/autojump.fish' % share_dir
-            source_msg = 'if test -f %s; . %s; end' % (aj_shell, aj_shell)
+            source_msg = 'if test -f %s; source %s; end' % (aj_shell, aj_shell)
             rcfile = '~/.config/fish/config.fish'
         else:
             aj_shell = '%s/autojump.sh' % etc_dir
