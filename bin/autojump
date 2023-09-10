@@ -325,7 +325,7 @@ def main(args):  # noqa
             print_local(
                 get_ith_path(
                     tab_index,
-                    find_matches(entries, [tab_needle]),
+                    find_matches(entries, [tab_needle], check_entries=False),
                 ),
             )
         else:
