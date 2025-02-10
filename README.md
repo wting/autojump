@@ -22,13 +22,11 @@ can be used with `autojump` can be used with `j` and vice versa.
 
         j foo
 
--   Jump To A Child Directory:
+-   Jump To A Directory That Contains `foo`, Preferring Child Directories:
 
-    Sometimes it's convenient to jump to a child directory
-    (sub-directory of current directory) rather than typing out the
-    full name.
+      If a child directory that contains `foo` exists, you can prioritize that over other matches in the databases via
 
-        jc bar
+        jc foo
 
 -   Open File Manager To Directories (instead of jumping):
 
