@@ -24,7 +24,7 @@ can be used with `autojump` can be used with `j` and vice versa.
 
 -   Jump To A Directory That Contains `foo`, Preferring Child Directories:
 
-      If a child directory that contains `foo` exists, you can prioritize that over other matches in the databases via
+    You can prioritize child directories over other matches in the databases via
 
         jc foo
 
