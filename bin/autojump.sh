@@ -1,8 +1,10 @@
 # the login $SHELL isn't always the one used
 # NOTE: problems might occur if /bin/sh is symlinked to /bin/bash
 if [ -n "${BASH}" ]; then
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     shell="bash"
 elif [ -n "${ZSH_NAME}" ]; then
+    SCRIPT_DIR="${0:a:h}"
     shell="zsh"
 elif [ -n "${__fish_datadir}" ]; then
     shell="fish"
@@ -23,4 +25,10 @@ elif [ -s ~/.autojump/share/autojump/autojump.${shell} ]; then
 # check global install
 elif [ -s /usr/local/share/autojump/autojump.${shell} ]; then
     source /usr/local/share/autojump/autojump.${shell}
+else
+    if [ -s "$SCRIPT_DIR/autojump.${shell}" ]; then
+        source "$SCRIPT_DIR/autojump.${shell}"
+    else
+        echo "ERROR: autojump not found"
+    fi
 fi

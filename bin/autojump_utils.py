@@ -13,6 +13,7 @@ from itertools import islice
 
 if sys.version_info[0] == 3:
     imap = map
+    unicode = str
     os.getcwdu = os.getcwd
 else:
     from itertools import imap

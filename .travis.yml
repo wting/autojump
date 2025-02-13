@@ -1,17 +1,15 @@
 language: python
 
-python: 2.7
-
-env:
-  - TOX_ENV=py26
-  - TOX_ENV=py27
-  - TOX_ENV=py32
-  - TOX_ENV=py33
-  - TOX_ENV=py34
-  - TOX_ENV=flake8
-
+python:
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
+  - 3.6
+  
 install:
-  - pip install tox
+  - pip install mock coverage ipdb ipython pytest pre-commit autopep8 flake8
 
 script:
-  - tox -e $TOX_ENV
+  - coverage run --source=bin/ --omit=bin/autojump_argparse.py -m py.test -vv -rxs --tb native -s --strict
+  - coverage report -m
