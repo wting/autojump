@@ -2,7 +2,7 @@ set -gx AUTOJUMP_SOURCED 1
 
 # set user installation path
 if test -d ~/.autojump
-    set -x PATH ~/.autojump/bin $PATH
+    contains ~/.autojump/bin $PATH or set -x PATH ~/.autojump/bin $PATH
 end
 
 # Set ostype, if not set
